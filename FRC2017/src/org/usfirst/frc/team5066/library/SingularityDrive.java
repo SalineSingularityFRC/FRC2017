@@ -222,6 +222,23 @@ public class SingularityDrive {
 	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
 	 *            and 0 = forward
 	 */
+	
+	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
+		
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
+		
+		// Do squared inputs if necessary
+		if (squaredInputs) {
+			translationVelocity *= Math.abs(translation);
+			rotationVelocity *= Math.abs(rotation);
+		}
+		
+		// Guard against illegal values
+		double mainWheekMaximum = Math.max(1, Math.abs(translationVelocity) + Math.abs(rotationVelocity));
+		double hWheelMaximum = Math.max(1, horizontal);
+		
+	}
+	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		double translationVelocity = translation, rotationVelocity = rotation;
 		
