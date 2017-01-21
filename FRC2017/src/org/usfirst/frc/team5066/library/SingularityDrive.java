@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class SingularityDrive {
 
 	private double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
-
+	
 	private SpeedController m_frontLeftMotor, m_rearLeftMotor, m_frontRightMotor, m_rearRightMotor;
+	private SpeedController m_leftMotor, m_rightMotor, m_middleMotor;
 
 	private final static double DEFAULT_VELOCITY_MULTIPLIER = 1.0;
 	private double velocityMultiplier = 1.0;
@@ -218,10 +219,40 @@ public class SingularityDrive {
 	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
 	 *            and 0 = forward
 	 */
+	
+	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
+		
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
+		
+		// Do squared inputs if necessary
+		if (squaredInputs) {
+			vertical *= Math.abs(vertical);
+			rotation *= Math.abs(rotation);
+			horizontal *= Math.abs(horizontal);
+		}
+		
+		// Guard against illegal values
+		double mainWheelMaximum = Math.max(1, Math.abs(vertical) + Math.abs(rotation));
+		double hWheelMaximum = Math.max(1, Math.abs(horizontal));
+		
+		if (buttonPressed) {
+			mainWheelMaximum *= 1 / reducedVelocity;
+			hWheelMaximum *= 1  / reducedVelocity;
+		}
+		
+		vertical = threshold(vertical);
+		horizontal = threshold(horizontal);
+		rotation = threshold(rotation);
+		
+		m_leftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
+		m_rightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
+		m_middleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));		
+	}
+	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		double translationVelocity = translation, rotationVelocity = rotation;
 		
-		setVelocityMultiplerBasedOnSpeedMode(speedMode);
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
 		
 		// Do squared inputs if necessary
 		if (squaredInputs) {
@@ -256,7 +287,7 @@ public class SingularityDrive {
 		this.arcade(translation, rotation, squaredInputs, SpeedMode.NORMAL);
 	}
 	
-	private void setVelocityMultiplerBasedOnSpeedMode(SpeedMode speedMode) {
+	private void setVelocityMultiplierBasedOnSpeedMode(SpeedMode speedMode) {
 		
 		switch(speedMode) {
 		case SLOW:
@@ -434,7 +465,7 @@ public class SingularityDrive {
 	public void tank(double left, double right, boolean squaredInputs, SpeedMode speedMode) {
 		double leftVelocity = left, rightVelocity = right;
 		
-		this.setVelocityMultiplerBasedOnSpeedMode(speedMode);
+		this.setVelocityMultiplierBasedOnSpeedMode(speedMode);
 		
 		// Do squared inputs if necessary
 		if (squaredInputs) {
