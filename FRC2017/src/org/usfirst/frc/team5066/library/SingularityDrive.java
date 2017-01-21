@@ -21,7 +21,7 @@ public class SingularityDrive {
 
 	private double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
 
-	private SpeedController m_frontLeftMotor, m_rearLeftMotor, m_frontRightMotor, m_rearRightMotor;
+	private SpeedController m_leftMotor, m_rightMotor, m_middleMotor;
 
 	private final static double DEFAULT_VELOCITY_MULTIPLIER = 1.0;
 	private double velocityMultiplier = 1.0;
@@ -234,9 +234,20 @@ public class SingularityDrive {
 		}
 		
 		// Guard against illegal values
-		double mainWheekMaximum = Math.max(1, Math.abs(translationVelocity) + Math.abs(rotationVelocity));
-		double hWheelMaximum = Math.max(1, horizontal);
+		double mainWheelMaximum = Math.max(1, Math.abs(translationVelocity) + Math.abs(rotationVelocity));
+		double hWheelMaximum = Math.max(1, Math.abs(horizontal));
 		
+		if (buttonPressed) {
+			maximum *= 1 / reducedVelocity;
+		}
+		
+		vertical = threshold(vertical);
+		horizontal = threshold(horizontal);
+		rotation = threshold(rotation);
+		
+		m_leftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
+		m_rightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
+		m_middleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));		
 	}
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
