@@ -1,10 +1,6 @@
 package org.usfirst.frc.team5066.library;
 
 import com.ctre.CANTalon;
-<<<<<<< HEAD
-
-=======
->>>>>>> 869ddc5cb269caa4f3507e06369bdab0021db034
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
