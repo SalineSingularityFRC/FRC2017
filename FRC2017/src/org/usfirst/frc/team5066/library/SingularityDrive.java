@@ -105,6 +105,49 @@ public class SingularityDrive {
 		this(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor, DEFAULT_TALON_TYPE,
 				DEFAULT_SLOW_SPEED_CONSTANT, DEFAULT_NORMAL_SPEED_CONSTANT, DEFAULT_FAST_SPEED_CONSTANT);
 	}
+	
+	/**
+	 * Constructor for {@link org.usfirst.frc.team5066.library.SingularityDrive
+	 * SingularityDrive}. Takes in integers to use for motor ports.
+	 *  
+	 * @param leftMotor
+	 * 			channel for the left motor, which controls the front and rear left wheels
+	 * @param rightMotor
+	 * 			channel for the right motor, which controls the front and rear right wheels
+	 * @param middleMotor
+	 * 			channel for the middle motor, 
+	 * 			which controls the middle wheels, one on the right and one on the left
+	 * @param talonType
+	 * 			describes the type of talon, 0 for CANTalon and 1 for talon
+	 * @param slowSpeedConstant
+	 * 			a multiplier for the inputs when we want precise drive
+	 * @param normalSpeedConstant
+	 * 			a multiplier for the inputs when we want normal drive
+	 * @param fastSpeedConstant
+	 * 			a multiplier for the inputs when we want fast drive
+	 */
+	
+	public SingularityDrive (int leftMotor, int rightMotor, int middleMotor, int talonType, 
+			double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant) {
+		if (talonType == CANTALON_DRIVE) {
+			m_leftMotor = new CANTalon(leftMotor);
+			m_rightMotor = new CANTalon(rightMotor);
+			m_middleMotor = new CANTalon(middleMotor);
+
+		} else if (talonType == TALON_SR_DRIVE) {
+			m_leftMotor = new CANTalon(leftMotor);
+			m_rightMotor = new CANTalon(rightMotor);
+			m_middleMotor = new CANTalon(middleMotor);
+		} else {
+			SmartDashboard.putNumber("INVALID VALUE FOR TALON TYPE.\tvalue=", talonType);
+		}
+
+		this.velocityMultiplier = normalSpeedConstant;
+		this.talonType = talonType;
+		this.slowSpeedConstant = slowSpeedConstant;
+		this.normalSpeedConstant = normalSpeedConstant;
+		this.fastSpeedConstant = fastSpeedConstant;
+	}
 
 	/**
 	 * Constructor for {@link org.usfirst.frc.team5066.library.SingularityDrive
@@ -201,25 +244,24 @@ public class SingularityDrive {
 		else return false;
 	}
 	*/
-	/**
-	 * So called "arcade drive" method for driving a robot around. Drives much
-	 * like one would expect a vehicle to move with a joy stick.
-	 * 
-	 * @param translation
-	 *            Speed and direction at which to translate forwards
-	 * @param rotation
-	 *            Speed and direction at which to rotate clockwise
-	 * @param squaredInputs
-	 *            Whether or not to square the magnitude of the input values in
-	 *            order to provide for finer motor control at lower velocities
-	 * @param speedMode
-	 *            The enum value corrresponding to the current speed mode: slow,
-	 *            normal, or fast
-	 * @param reverse
-	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
-	 *            and 0 = forward
-	 */
 	
+	
+	/**
+	 * A method for HDrive (used in 2017), where two wheels in the middle are for translating sideways,
+	 * and 4 that act like arcade drive.
+	 * 
+	 * @param vertical
+	 * 		the input between -1 and 1 for translating forwards or backwards
+	 * @param horizontal
+	 * 		the input between -1 and 1 for translating left or right
+	 * @param rotation
+	 * 		the input between -1 and 1 for rotating left or right
+	 * @param squaredInputs
+	 * 		a boolean deciding whether or not to square all the imputs
+	 * 		for more precise driving
+	 * @param speedMode
+	 * 		an enum for what to multiply the inputs by, fast, medium, or slow
+	 */
 	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		
 		setVelocityMultiplierBasedOnSpeedMode(speedMode);
@@ -248,6 +290,26 @@ public class SingularityDrive {
 		m_rightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_middleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));		
 	}
+	
+	
+	/**
+	 * So called "arcade drive" method for driving a robot around. Drives much
+	 * like one would expect a vehicle to move with a joy stick.
+	 * 
+	 * @param translation
+	 *            Speed and direction at which to translate forwards
+	 * @param rotation
+	 *            Speed and direction at which to rotate clockwise
+	 * @param squaredInputs
+	 *            Whether or not to square the magnitude of the input values in
+	 *            order to provide for finer motor control at lower velocities
+	 * @param speedMode
+	 *            The enum value corrresponding to the current speed mode: slow,
+	 *            normal, or fast
+	 * @param reverse
+	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
+	 *            and 0 = forward
+	 */
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		double translationVelocity = translation, rotationVelocity = rotation;

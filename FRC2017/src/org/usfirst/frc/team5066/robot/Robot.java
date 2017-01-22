@@ -2,6 +2,7 @@ package org.usfirst.frc.team5066.robot;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -28,6 +29,11 @@ public class Robot extends IterativeRobot {
 	Joystick js;
 	SingularityDrive drive;
 	
+	final int XBOX_PORT = 0;
+	final int BIG_JOYSTICK_PORT = 1;
+	final int SMALL_JOYSTICK_PORT = 2;
+	
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -39,6 +45,11 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
+		
+		drive = new SingularityDrive(leftMotor, rightMotor, middleMotor, 0, .4, .8, 1.0);
+		
+		currentScheme = new BasicDrive(this.XBOX_PORT);
+		
 	}
 
 	/**
@@ -85,6 +96,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		
+		currentScheme.drive(drive, true);
+		
 	}
 
 	/**
