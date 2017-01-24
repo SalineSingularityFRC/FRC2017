@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class SingularityIntake {
 
 	CANTalon frontWheel, lowConveyer, highConveyer;
-	double spd;
 	
 	/**
 	 * Constructor for the Singularity intake.

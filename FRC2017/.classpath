@@ -5,10 +5,18 @@
 	<classpathentry exported="true" kind="var" path="networktables" sourcepath="networktables.sources"/>
 	<classpathentry exported="true" kind="var" path="opencv" sourcepath="opencv.sources"/>
 	<classpathentry exported="true" kind="var" path="cscore" sourcepath="cscore.sources"/>
-	<classpathentry exported="true" kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
+	<classpathentry exported="true" kind="var" path="USERLIBS_DIR/CTRLib.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Lena/wpilib/user/java/lib/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Json"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Lena/wpilib/user/java/lib/CTRLib.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Lena/wpilib/user/java/lib/CTRLib.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Lena/wpilib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

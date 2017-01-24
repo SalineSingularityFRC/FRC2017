@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package org.usfirst.frc.team5066.robot;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 import static org.junit.Assert.*;
