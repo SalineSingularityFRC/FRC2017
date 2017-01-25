@@ -26,7 +26,16 @@ public class SingularityIntakeTest {
 		assertEquals("low conveyer value should be -1.0", -1.0, tester.lowConveyer);
 		assertEquals("high conveyer value should be -1.0", -1.0, tester.highConveyer);
 		
+		tester.setSpeed(0.23, true);
+		assertEquals("front wheel value should be -0.23", -0.23, tester.frontWheel);
+		assertEquals("low conveyer value should be -0.23", -0.23, tester.lowConveyer);
+		assertEquals("high conveyer value should be -0.23", -0.23, tester.highConveyer);
 		
+		tester.setSpeed(0.65, false);
+		assertEquals("front wheel value should be 0.65", 0.65, tester.frontWheel);
+		assertEquals("low conveyer value should be 0.65", 0.65, tester.lowConveyer);
+		assertEquals("high conveyer value should be 0.65", 0.65, tester.highConveyer);
+
 	}
 
 }
