@@ -1,6 +1,7 @@
 package org.usfirst.frc.team5066.library;
 
 import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +19,8 @@ public class SingularityDrive {
 	private double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
 	
 	private SpeedController m_frontLeftMotor, m_rearLeftMotor, m_frontRightMotor, m_rearRightMotor;
-	private SpeedController m_leftMotor, m_rightMotor, m_middleMotor;
+	//will be made private, public for testing
+	public SpeedController m_leftMotor, m_rightMotor, m_middleMotor;
 
 	private final static double DEFAULT_VELOCITY_MULTIPLIER = 1.0;
 	private double velocityMultiplier = 1.0;
@@ -266,6 +268,10 @@ public class SingularityDrive {
 		
 		setVelocityMultiplierBasedOnSpeedMode(speedMode);
 		
+		vertical = threshold(vertical);
+		horizontal = threshold(horizontal);
+		rotation = threshold(rotation);
+		
 		// Do squared inputs if necessary
 		if (squaredInputs) {
 			vertical *= Math.abs(vertical);
@@ -282,15 +288,40 @@ public class SingularityDrive {
 			hWheelMaximum *= 1  / reducedVelocity;
 		}
 		
-		vertical = threshold(vertical);
-		horizontal = threshold(horizontal);
-		rotation = threshold(rotation);
-		
 		m_leftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
 		m_rightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_middleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));		
 	}
 	
+	
+	public void hDriveTank(double left, double right, double translate, boolean squaredInputs, SpeedMode speedMode) {
+		
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
+		left = threshold(left);
+		right = threshold(right);
+		translate = threshold(translate);
+		
+		//Square the inputs if specified
+		if (squaredInputs) {
+			left *= Math.abs(left);
+			right *= Math.abs(right);
+			translate *= Math.abs(translate);
+		}
+		
+		//Guard against illegal values
+		double leftMax = Math.max(1,  Math.abs(left));
+		double rightMax = Math.max(1,  Math.abs(right));
+		double translateMax = Math.max(1, Math.abs(translate));
+		if (buttonPressed) {
+			leftMax *= 1 / reducedVelocity;
+			rightMax *= 1  / reducedVelocity;
+			translateMax *= 1 / reducedVelocity;
+		}
+		
+		m_leftMotor.set(this.velocityMultiplier * (-left / leftMax));
+		m_rightMotor.set(this.velocityMultiplier * (right / rightMax));
+		m_middleMotor.set(this.velocityMultiplier * (translate / translateMax));		
+	}
 	
 	/**
 	 * So called "arcade drive" method for driving a robot around. Drives much

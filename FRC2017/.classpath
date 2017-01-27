@@ -8,5 +8,8 @@
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Json"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/json_simple-1.1.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
