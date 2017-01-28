@@ -46,6 +46,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
 		
+		leftMotor = 4;
+		rightMotor = 5;
+		middleMotor = 6;
+		
 		drive = new SingularityDrive(leftMotor, rightMotor, middleMotor, 0, .4, .8, 1.0);
 		
 		currentScheme = new BasicDrive(this.XBOX_PORT);
@@ -98,6 +102,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		currentScheme.drive(drive, true);
+		
+		
+		
 		
 	}
 
