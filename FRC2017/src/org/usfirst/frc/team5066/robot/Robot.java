@@ -22,9 +22,12 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 	*/
-	
+	//Holds the current control scheme
 	ControlScheme currentScheme;
+
+	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 	int leftMotor, rightMotor, middleMotor;
+	
 	Joystick js;
 	SingularityDrive drive;
 	
