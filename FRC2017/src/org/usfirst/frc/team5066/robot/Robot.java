@@ -2,6 +2,8 @@ package org.usfirst.frc.team5066.robot;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.library.SingularityProperties;
+import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -26,10 +28,33 @@ public class Robot extends IterativeRobot {
 	ControlScheme currentScheme;
 
 	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
+	//drive:
 	int leftMotor, rightMotor, middleMotor;
+	//climber:
+	int climbMotor;
+	//intake:
+	int frontMotor, lowMotor, highMotor;
+	//low goal:
+	int shootMotor;
+	
+	/*
+	 *high goal:
+	 *int highMotor;
+	 */
 	
 	Joystick js;
 	SingularityDrive drive;
+	SingularityProperties properties;
+	/*
+	 * SingularityIntake intake;
+	 * LowGoalShooter shooter;
+	 * HighGoalShooter highShooter;
+	 * SingularityClimber climber;
+	 */
+	
+	final int XBOX_PORT = 0;
+	final int BIG_JOYSTICK_PORT = 1;
+	final int SMALL_JOYSTICK_PORT = 2;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -42,6 +67,28 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
+		
+		loadDefaultProperties();
+		
+		drive = new SingularityDrive(2, 3, 4, 0, .4, .8, 1.0);
+		currentScheme = new BasicDrive(XBOX_PORT);
+		
+		/*
+		 * js = new Joystick(XBOX_PORT);
+		 * 
+		 * 
+		 * 
+		 * intake = new SingularityIntake(highMotor, lowMotor, highMotor);
+		 * shooter = new LowGoalShooter(shootMotor, 0);
+		 * climber = new SingularityClimber(climbMotor, 0);
+		 * 
+		 * 
+		 * 
+		*/
+		
+		
+		
+		
 	}
 
 	/**
@@ -88,6 +135,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		
+		currentScheme.drive(drive, true);
+		
 	}
 
 	/**
@@ -102,6 +152,22 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void loadDefaultProperties() {
+		
+		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
+		//drive:
+		/*
+		leftMotor = INSERTPORT, rightMotor = INSERTPORT, middleMotor = INSERTPORT;
+		//climber:
+		climbMotor = INSERTPORT;
+		//intake:
+		frontMotor = INSERTPORT, lowMotor = INSERTPORT, highMotor = INSERTPORT;
+		//low goal:
+		shootMotor = INSERTPORT;
+		
+		/*
+		 *high goal:
+		 *highMotor = INSERTPORT;
+		 */
 		
 	}
 }

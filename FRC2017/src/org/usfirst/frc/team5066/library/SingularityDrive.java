@@ -144,6 +144,29 @@ public class SingularityDrive {
 	 * pidGet
 	 */
 	
+	public SingularityDrive(int leftMotor, int rightMotor, int middleMotor,
+			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant) {
+
+		if (talonType == CANTALON_DRIVE) {
+			m_leftMotor = new CANTalon(leftMotor);
+			m_rightMotor = new CANTalon(rightMotor);
+			m_middleMotor = new CANTalon(middleMotor);
+
+		} else if (talonType == TALON_SR_DRIVE) {
+			m_leftMotor = new Talon(leftMotor);
+			m_rightMotor = new Talon(rightMotor);
+			m_middleMotor = new Talon(middleMotor);
+		} else {
+			SmartDashboard.putNumber("INVALID VALUE FOR TALON TYPE.      value=", talonType);
+		}
+
+		this.velocityMultiplier = normalSpeedConstant;
+		this.talonType = talonType;
+		this.slowSpeedConstant = slowSpeedConstant;
+		this.normalSpeedConstant = normalSpeedConstant;
+		this.fastSpeedConstant = fastSpeedConstant;
+	}
+	
 
 	private double clamp(double velocityMultiplier) {
 		if (velocityMultiplier > 1.0) {
