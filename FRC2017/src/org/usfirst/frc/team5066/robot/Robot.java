@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot {
 
 	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 	//drive:
-	int leftMotor, rightMotor, middleMotor;
+	int leftMotor, rightMotor, middleMotor; //TEST
 	//climber:
 	int climbMotor;
 	//intake:
@@ -72,6 +72,8 @@ public class Robot extends IterativeRobot {
 		
 		drive = new SingularityDrive(2, 3, 4, 0, .4, .8, 1.0);
 		currentScheme = new BasicDrive(XBOX_PORT);
+		
+		
 		
 		/*
 		 * js = new Joystick(XBOX_PORT);
