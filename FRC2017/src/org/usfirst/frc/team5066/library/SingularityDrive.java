@@ -18,7 +18,7 @@ public class SingularityDrive {
 	private double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
 	
 	private SpeedController m_frontLeftMotor, m_rearLeftMotor, m_frontRightMotor, m_rearRightMotor;
-	private SpeedController m_leftMotor, m_rightMotor, m_middleMotor;
+	private SpeedController m_leftMiddleMotor, m_rightMiddleMotor;
 
 	private final static double DEFAULT_VELOCITY_MULTIPLIER = 1.0;
 	private double velocityMultiplier = 1.0;
@@ -144,18 +144,24 @@ public class SingularityDrive {
 	 * pidGet
 	 */
 	
-	public SingularityDrive(int leftMotor, int rightMotor, int middleMotor,
+	public SingularityDrive(int frontLeftMotor, int rearLeftMotor, int frontRightMotor, int rearRightMotor, int leftMiddleMotor, int rightMiddleMotor,
 			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant) {
 
 		if (talonType == CANTALON_DRIVE) {
-			m_leftMotor = new CANTalon(leftMotor);
-			m_rightMotor = new CANTalon(rightMotor);
-			m_middleMotor = new CANTalon(middleMotor);
+			m_frontLeftMotor = new CANTalon(frontLeftMotor);
+			m_rearLeftMotor = new CANTalon(rearLeftMotor);
+			m_frontRightMotor = new CANTalon(frontRightMotor);
+			m_rearRightMotor = new CANTalon(rearRightMotor);
+			m_leftMiddleMotor = new CANTalon(leftMiddleMotor);
+			m_rightMiddleMotor = new CANTalon(rightMiddleMotor);
 
 		} else if (talonType == TALON_SR_DRIVE) {
-			m_leftMotor = new Talon(leftMotor);
-			m_rightMotor = new Talon(rightMotor);
-			m_middleMotor = new Talon(middleMotor);
+			m_frontLeftMotor = new Talon(frontLeftMotor);
+			m_rearLeftMotor = new Talon(rearLeftMotor);
+			m_frontRightMotor = new Talon(frontRightMotor);
+			m_rearRightMotor = new Talon(rearRightMotor);
+			m_leftMiddleMotor = new Talon(leftMiddleMotor);
+			m_rightMiddleMotor = new Talon(rightMiddleMotor);
 		} else {
 			SmartDashboard.putNumber("INVALID VALUE FOR TALON TYPE.      value=", talonType);
 		}
@@ -166,7 +172,6 @@ public class SingularityDrive {
 		this.normalSpeedConstant = normalSpeedConstant;
 		this.fastSpeedConstant = fastSpeedConstant;
 	}
-	
 
 	private double clamp(double velocityMultiplier) {
 		if (velocityMultiplier > 1.0) {
@@ -267,9 +272,12 @@ public class SingularityDrive {
 		horizontal = threshold(horizontal);
 		rotation = threshold(rotation);
 		
-		m_leftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
-		m_rightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
-		m_middleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));		
+		m_frontLeftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
+		m_rearLeftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
+		m_frontRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
+		m_rearRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
+		m_rightMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
 	}
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
