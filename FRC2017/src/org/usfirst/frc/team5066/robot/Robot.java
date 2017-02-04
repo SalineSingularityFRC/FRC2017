@@ -1,5 +1,14 @@
 package org.usfirst.frc.team5066.robot;
 
+
+import org.usfirst.frc.team5066.controller2017.ControlScheme;
+import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.library.SingularityProperties;
+import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.UsbCamera;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
@@ -7,18 +16,16 @@ import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
 import org.usfirst.frc.team5066.autonomous2017.MoveBackwards;
 import org.usfirst.frc.team5066.autonomous2017.MoveForward;
 import org.usfirst.frc.team5066.controller2017.Pipeline;
-import org.usfirst.frc.team5066.library.SingularityProperties;
-
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
+
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +34,10 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+
+
+	/*
+
 
 public class Robot extends IterativeRobot {
 	
@@ -42,6 +53,44 @@ public class Robot extends IterativeRobot {
 	
 	private final Object imgLock = new Object();
 	
+
+	final String defaultAuto = "Default";
+	final String customAuto = "My Auto";
+	
+	String autoSelected;
+	SendableChooser<String> chooser = new SendableChooser<>();
+
+	*/
+	//Holds the current control scheme
+	ControlScheme currentScheme;
+
+	
+	SingularityProperties props;
+
+
+	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
+	//drive:
+	int leftRearMotor, leftFrontMotor, rightFrontMotor, rightRearMotor, rightMiddleMotor, leftMiddleMotor; //TEST
+	//climber:
+	int climbMotor;
+	//intake:
+	int frontMotor, lowMotor, highMotor;
+	//low goal:
+	int shootMotor;
+	
+	
+	AutonomousMode autonMode;
+	
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT = 240;
+	
+	private VisionThread visionThread;
+	private double centerX = 0.0;
+	private double centerY = 0.0;
+	private SingularityDrive drive1;
+	
+	private final Object imgLock = new Object();
+	
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
 	
@@ -49,16 +98,44 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 	
 	SingularityProperties props;
-
+	
+	/*
+	 *high goal:
+	 *int highMotor;
+	 */
+	
+	Joystick js;
+	RobotDrive drive;
+	LowGoalShooter shooter;
+	SingularityClimber climber;
+	SingularityIntake intake;
+	SingularityProperties properties;
+	/*
+	 * SingularityIntake intake;
+	 * LowGoalShooter shooter;
+	 * HighGoalShooter highShooter;
+	 * SingularityClimber climber;
+	 */
+	
+	final int XBOX_PORT = 0;
+	final int BIG_JOYSTICK_PORT = 1;
+	final int SMALL_JOYSTICK_PORT = 2;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
+
+		
+		
+	
+
 		//chooser.addDefault("Default Auto", defaultAuto);
 		//chooser.addObject("My Auto", customAuto);
 		//SmartDashboard.putData("Auto choices", chooser);
+
 		
 		props = new SingularityProperties("/home/lvuser/robot.properties"); //TODO not sure what this will be
 		
@@ -81,8 +158,41 @@ public class Robot extends IterativeRobot {
 		    visionThread.start();
 		        
 		    drive = new RobotDrive(1, 2);
-		}
+
 		
+		
+		loadDefaultProperties();
+		
+		drive1 = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
+		shooter = new LowGoalShooter(8);
+		climber = new SingularityClimber(9);
+		intake = new SingularityIntake(10, 11, 12);
+		currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+		
+		
+		
+		
+		/*
+		 * js = new Joystick(XBOX_PORT);
+		 * 
+		 * 
+		 * 
+		 * intake = new SingularityIntake(highMotor, lowMotor, highMotor);
+		 * shooter = new LowGoalShooter(shootMotor, 0);
+		 * climber = new SingularityClimber(climbMotor, 0);
+		 * 
+		 * 
+		 * 
+		*/
+		
+		
+		
+		
+	}
+
+		
+		
+
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
@@ -114,9 +224,14 @@ public class Robot extends IterativeRobot {
 		
 		}
 		
-		
-		
-		
+
+		/*
+		autoSelected = chooser.getSelected();
+		// autoSelected = SmartDashboard.getString("Auto Selector",
+		// defaultAuto);
+		System.out.println("Auto selected: " + autoSelected);
+		*/
+
 	}
 
 	/**
@@ -129,6 +244,21 @@ public class Robot extends IterativeRobot {
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
+
+		}
+		
+		/*
+		switch (autoSelected) {
+		case customAuto:
+			// Put custom auto code here
+			break;
+		case defaultAuto:
+		default:
+			// Put default auto code here
+			break;
+		}
+		*/
+=======
 		}
 		double turn = centerX - (IMG_WIDTH / 2);
 		drive.(-0.6, turn * 0.005);
@@ -136,6 +266,7 @@ public class Robot extends IterativeRobot {
 		time.
 		
 		autonMode.run();
+
 	}
 
 	/**
@@ -143,6 +274,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		
+		currentScheme.drive(drive1, true);
+		currentScheme.controlShooter(shooter);
+		currentScheme.controlClimber(climber);
+		currentScheme.controlIntake(intake);
+		
 	}
 
 	/**
@@ -150,6 +287,30 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+	
+	private void loadProperties() {
+		
+	}
+	
+	private void loadDefaultProperties() {
+		
+		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
+		//drive:
+		/*
+		leftMotor = INSERTPORT, rightMotor = INSERTPORT, middleMotor = INSERTPORT;
+		//climber:
+		climbMotor = INSERTPORT;
+		//intake:
+		frontMotor = INSERTPORT, lowMotor = INSERTPORT, highMotor = INSERTPORT;
+		//low goal:
+		shootMotor = INSERTPORT;
+		
+		/*
+		 *high goal:
+		 *highMotor = INSERTPORT;
+		 */
+		
 	}
 }
 
