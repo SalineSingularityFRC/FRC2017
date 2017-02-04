@@ -1,5 +1,6 @@
 package org.usfirst.frc.team5066.robot;
 
+
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
@@ -22,6 +23,10 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
+
+
+
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -29,15 +34,39 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot{
+
+
 	/*
+
+
+public class Robot extends IterativeRobot {
+	
+	AutonomousMode autonMode;
+	
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT = 240;
+	
+	private VisionThread visionThread;
+	private double centerX = 0.0;
+	private double centerY = 0.0;
+	private RobotDrive drive;
+	
+	private final Object imgLock = new Object();
+	
+
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
+	
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
+
 	*/
 	//Holds the current control scheme
 	ControlScheme currentScheme;
+
+	
+	SingularityProperties props;
+
 
 	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 	//drive:
@@ -98,13 +127,15 @@ public class Robot extends IterativeRobot{
 	 */
 	@Override
 	public void robotInit() {
+
 		
 		
-		/*
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		SmartDashboard.putData("Auto choices", chooser);
-		*/
+	
+
+		//chooser.addDefault("Default Auto", defaultAuto);
+		//chooser.addObject("My Auto", customAuto);
+		//SmartDashboard.putData("Auto choices", chooser);
+
 		
 		props = new SingularityProperties("/home/lvuser/robot.properties"); //TODO not sure what this will be
 		
@@ -127,6 +158,7 @@ public class Robot extends IterativeRobot{
 		    visionThread.start();
 		        
 		    drive = new RobotDrive(1, 2);
+
 		
 		
 		loadDefaultProperties();
@@ -158,6 +190,10 @@ public class Robot extends IterativeRobot{
 		
 	}
 
+		
+		
+
+
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -188,13 +224,14 @@ public class Robot extends IterativeRobot{
 		
 		}
 		
-		
+
 		/*
 		autoSelected = chooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
 		*/
+
 	}
 
 	/**
@@ -207,11 +244,9 @@ public class Robot extends IterativeRobot{
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
+
 		}
-		double turn = centerX - (IMG_WIDTH / 2);
-	
 		
-		autonMode.run();
 		/*
 		switch (autoSelected) {
 		case customAuto:
@@ -223,6 +258,15 @@ public class Robot extends IterativeRobot{
 			break;
 		}
 		*/
+=======
+		}
+		double turn = centerX - (IMG_WIDTH / 2);
+		drive.(-0.6, turn * 0.005);
+		
+		time.
+		
+		autonMode.run();
+
 	}
 
 	/**
