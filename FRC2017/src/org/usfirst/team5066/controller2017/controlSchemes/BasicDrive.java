@@ -2,9 +2,13 @@ package org.usfirst.team5066.controller2017.controlSchemes;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.LogitechController;
+import org.usfirst.frc.team5066.controller2017.SmallLogitechController;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
+import org.usfirst.frc.team5066.robot.LowGoalShooter;
+import org.usfirst.frc.team5066.robot.SingularityClimber;
+import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,11 +25,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BasicDrive implements ControlScheme {
 	
+	LogitechController logitech;
 	XboxController xbox;
 	SpeedMode speedMode;
 	
-	public BasicDrive(int xboxPort) {
+	public BasicDrive(int xboxPort, int logitechPort) {
 		xbox = new XboxController(xboxPort);
+		logitech = new LogitechController(logitechPort);
 	}
 	
 	@Override
@@ -41,8 +47,22 @@ public class BasicDrive implements ControlScheme {
 			speedMode = SpeedMode.NORMAL;
 		}
 		
-		
 		sd.hDrive(xbox.getLS_Y(), xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
 	}
-
+	
+	@Override
+	public void controlShooter(LowGoalShooter lGS) {
+		lGS.setSpeed(logitech.getStickY());
+	}
+	
+	@Override
+	public void controlClimber(SingularityClimber climber) {
+		climber.setSpeed(logitech.getStickX());
+	}
+	
+	@Override
+	public void controlIntake(SingularityIntake intake) {
+		intake.setSpeed(1.0, xbox.getYButton());
+	}
+	
 }

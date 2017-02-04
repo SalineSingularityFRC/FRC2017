@@ -7,7 +7,7 @@ public class SingularityClimber {
 	private CANTalon talon;
 	double climberSpeedConstant;
 
-	public SingularityClimber(int port, double climberSpeed){
+	public SingularityClimber(int port){
 		talon = new CANTalon(port);
 		
 		//talon.setPosition(0.0);

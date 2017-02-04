@@ -278,6 +278,15 @@ public class SingularityDrive {
 		m_rearRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rightMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
 		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+		
+		//for testing purposes only
+		SmartDashboard.putNumber("Front left encoder", m_frontLeftMotor.get());
+		SmartDashboard.putNumber("Rear left encoder", m_rearLeftMotor.get());
+		SmartDashboard.putNumber("Front right encoder", m_frontRightMotor.get());
+		SmartDashboard.putNumber("Rear right encoder", m_rearRightMotor.get());
+		SmartDashboard.putNumber("Middle left encoder", m_leftMiddleMotor.get());
+		SmartDashboard.putNumber("Middle right encoder", m_rightMiddleMotor.get());
+		
 	}
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
