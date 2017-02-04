@@ -42,7 +42,7 @@ public class TankHDrive implements ControlScheme {
 	
 	@Override
 	public void controlShooter(LowGoalShooter lGS){
-		lGS.setSpeed(logitech.getStickY());
+		lGS.setSpeed(logitech.getTrigger());
 	}
 	
 	public void controlClimber(SingularityClimber climber){

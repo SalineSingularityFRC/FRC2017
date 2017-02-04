@@ -44,8 +44,8 @@ public class SingularityIntake {
 		speed /= Math.max(1, Math.abs(speed));
 		
 		if(reverse){
-			frontWheel.set(-speed);;
-			lowConveyer.set(-speed);;
+			frontWheel.set(-speed);
+			lowConveyer.set(-speed);
 			highConveyer.set(-speed);
 		}
 		
