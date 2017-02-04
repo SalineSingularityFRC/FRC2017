@@ -20,6 +20,8 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
@@ -34,6 +36,10 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
  */
 
 public class Robot extends IterativeRobot {
+	//Create a variable to hold a reference to a SendableChooser object.
+	Command autonomousCommand;
+	SendableChooser autochooser;
+	
 	
 	AutonomousMode autonMode;
 	
@@ -101,14 +107,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-
 		
+		//Create a SendableChooser object and add instances of the two commands to it. 
+		//There can be any number of commands, and the one added as a default (addDefault), 
+		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
+		//or addObject() method call on the SendableChooser instance.
 		
-	
-
-		//chooser.addDefault("Default Auto", defaultAuto);
-		//chooser.addObject("My Auto", customAuto);
-		//SmartDashboard.putData("Auto choices", chooser);
+		chooser.addDefault("Default Auto", defaultAuto);
+		chooser.addObject("My Auto", customAuto);
+		chooser.addObject("My Auto2", customAuto);
+		SmartDashboard.putData("Auto choices", chooser);
 
 		
 		props = new SingularityProperties("/home/lvuser/robot.properties"); //TODO not sure what this will be
@@ -182,6 +190,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		
+		
+		//When the autonomous period starts the SendableChooser object is polled to get
+		//the selected command and that command is scheduled.
+		autonomousCommand = (Command) autochooser.getSelected();
+		autonomousCommand.start();
+		
 		autoSelected = props.getString("autonMode");
 		
 		switch(autoSelected){
@@ -214,15 +228,16 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		
+		//RobotBuilder will generate code automatically that 
+		//runs the scheduler every driver station update period (about every 20ms). 
+		//This will cause the selected autonomous command to run
+		Scheduler.getInstance().run();
 		
 		
 		
-		double centerX;
-		synchronized (imgLock) {
-			centerX = this.centerX;
-
+		double turn = centerX - (IMG_WIDTH / 2);
 		
-		/*
+		drive.hDrive(vertical, horizontal, rotation, squaredInputs, speedMode);
 		switch (autoSelected) {
 		case customAuto:
 			// Put custom auto code here
@@ -232,17 +247,14 @@ public class Robot extends IterativeRobot {
 			// Put default auto code here
 			break;
 		}
-		*/
-		double turn = centerX - (IMG_WIDTH / 2);
-		//drive.(-0.6, turn * 0.005);
 		
-		//time.
+		
 		
 		autonMode.run();
 		
 		}
 
-	}
+	
 
 	/**
 	 * This function is called periodically during operator control
