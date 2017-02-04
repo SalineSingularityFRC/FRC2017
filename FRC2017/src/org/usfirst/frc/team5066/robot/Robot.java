@@ -215,6 +215,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		
 		
+		
+		
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
