@@ -4,12 +4,24 @@ import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.cscore.UsbCamera;
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
+import org.usfirst.frc.team5066.autonomous2017.MoveBackwards;
+import org.usfirst.frc.team5066.autonomous2017.MoveForward;
+import org.usfirst.frc.team5066.controller2017.Pipeline;
+import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.vision.VisionThread;
+import edu.wpi.first.wpilibj.vision.VisionPipeline;
+import edu.wpi.first.wpilibj.vision.VisionRunner;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -17,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends IterativeRobot{
 	/*
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
@@ -37,13 +49,34 @@ public class Robot extends IterativeRobot {
 	//low goal:
 	int shootMotor;
 	
+	
+	AutonomousMode autonMode;
+	
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT = 240;
+	
+	private VisionThread visionThread;
+	private double centerX = 0.0;
+	private double centerY = 0.0;
+	private SingularityDrive drive1;
+	
+	private final Object imgLock = new Object();
+	
+	final String defaultAuto = "Default";
+	final String customAuto = "My Auto";
+	
+	String autoSelected;
+	SendableChooser<String> chooser = new SendableChooser<>();
+	
+	SingularityProperties props;
+	
 	/*
 	 *high goal:
 	 *int highMotor;
 	 */
 	
 	Joystick js;
-	SingularityDrive drive;
+	RobotDrive drive;
 	LowGoalShooter shooter;
 	SingularityClimber climber;
 	SingularityIntake intake;
@@ -65,15 +98,40 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
+		
 		/*
 		chooser.addDefault("Default Auto", defaultAuto);
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
 		
+		props = new SingularityProperties("/home/lvuser/robot.properties"); //TODO not sure what this will be
+		
+		 UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		    camera.setResolution(324, 240);
+		
+		    visionThread = new VisionThread(camera, new Pipeline(), pipeline -> 
+		    {
+		        if (!pipeline.filterContoursOutput().isEmpty()) {
+		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+		            
+		            synchronized (imgLock)
+		            {
+		                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
+		                centerY = (r.height / 2 );
+		                
+		            }
+		        }
+		    });
+		    visionThread.start();
+		        
+		    drive = new RobotDrive(1, 2);
+		
+		
 		loadDefaultProperties();
 		
-		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
+		drive1 = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
 		shooter = new LowGoalShooter(8);
 		climber = new SingularityClimber(9);
 		intake = new SingularityIntake(10, 11, 12);
@@ -113,6 +171,24 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		
+		autoSelected = props.getString("autonMode");
+		
+		switch(autoSelected){
+		
+		case "forwards":
+			autonMode = new MoveForward();
+			break;
+		
+		case "backwards":
+			autonMode = new MoveBackwards();
+			break;
+		default:
+			DriverStation.reportError("A O nothing in the Auto Mode", false);
+		
+		}
+		
+		
 		/*
 		autoSelected = chooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
@@ -126,6 +202,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		
+		
+		double centerX;
+		synchronized (imgLock) {
+			centerX = this.centerX;
+		}
+		double turn = centerX - (IMG_WIDTH / 2);
+	
+		
+		autonMode.run();
 		/*
 		switch (autoSelected) {
 		case customAuto:
@@ -145,7 +231,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		currentScheme.drive(drive, true);
+		currentScheme.drive(drive1, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
