@@ -133,7 +133,7 @@ public class Robot extends IterativeRobot {
 		double turn = centerX - (IMG_WIDTH / 2);
 		drive.(-0.6, turn * 0.005);
 		
-		
+		time.
 		
 		autonMode.run();
 	}

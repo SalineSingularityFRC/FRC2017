@@ -18,7 +18,6 @@ public interface ControlScheme {
 	public void drive(SingularityDrive sd, boolean squaredInputs);
 	
 	
-	
 	public void controlClimber(SingularityClimber climber);
 
 	
