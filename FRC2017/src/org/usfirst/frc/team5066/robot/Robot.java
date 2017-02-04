@@ -25,8 +25,6 @@ import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
 
 
-
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -34,10 +32,6 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-
-
-	/*
-
 
 public class Robot extends IterativeRobot {
 	
@@ -49,7 +43,6 @@ public class Robot extends IterativeRobot {
 	private VisionThread visionThread;
 	private double centerX = 0.0;
 	private double centerY = 0.0;
-	private RobotDrive drive;
 	
 	private final Object imgLock = new Object();
 	
@@ -60,7 +53,6 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 
-	*/
 	//Holds the current control scheme
 	ControlScheme currentScheme;
 
@@ -78,26 +70,9 @@ public class Robot extends IterativeRobot {
 	//low goal:
 	int shootMotor;
 	
+	private SingularityDrive drive;
 	
-	AutonomousMode autonMode;
 	
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
-	
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private double centerY = 0.0;
-	private SingularityDrive drive1;
-	
-	private final Object imgLock = new Object();
-	
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
-	
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
-	
-	SingularityProperties props;
 	
 	/*
 	 *high goal:
@@ -105,7 +80,6 @@ public class Robot extends IterativeRobot {
 	 */
 	
 	Joystick js;
-	RobotDrive drive;
 	LowGoalShooter shooter;
 	SingularityClimber climber;
 	SingularityIntake intake;
@@ -157,13 +131,13 @@ public class Robot extends IterativeRobot {
 		    });
 		    visionThread.start();
 		        
-		    drive = new RobotDrive(1, 2);
+		    //drive = new SingularityDrive(1, 2);
 
 		
 		
 		loadDefaultProperties();
 		
-		drive1 = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
+		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
 		shooter = new LowGoalShooter(8);
 		climber = new SingularityClimber(9);
 		intake = new SingularityIntake(10, 11, 12);
@@ -245,7 +219,6 @@ public class Robot extends IterativeRobot {
 		synchronized (imgLock) {
 			centerX = this.centerX;
 
-		}
 		
 		/*
 		switch (autoSelected) {
@@ -258,14 +231,14 @@ public class Robot extends IterativeRobot {
 			break;
 		}
 		*/
-=======
-		}
 		double turn = centerX - (IMG_WIDTH / 2);
-		drive.(-0.6, turn * 0.005);
+		//drive.(-0.6, turn * 0.005);
 		
-		time.
+		//time.
 		
 		autonMode.run();
+		
+		}
 
 	}
 
@@ -275,7 +248,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		currentScheme.drive(drive1, true);
+		currentScheme.drive(drive, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
