@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class LowGoalShooter{
 	private CANTalon lowShooter;
 	
-	public LowGoalShooter(int port, double climberSpeed){
+	public LowGoalShooter(int port){
 		lowShooter = new CANTalon(port);
 	}
 	

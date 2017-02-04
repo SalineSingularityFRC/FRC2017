@@ -44,6 +44,9 @@ public class Robot extends IterativeRobot {
 	
 	Joystick js;
 	SingularityDrive drive;
+	LowGoalShooter shooter;
+	SingularityClimber climber;
+	SingularityIntake intake;
 	SingularityProperties properties;
 	/*
 	 * SingularityIntake intake;
@@ -71,7 +74,11 @@ public class Robot extends IterativeRobot {
 		loadDefaultProperties();
 		
 		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
-		currentScheme = new BasicDrive(XBOX_PORT);
+		shooter = new LowGoalShooter(8);
+		climber = new SingularityClimber(9);
+		intake = new SingularityIntake(10, 11, 12);
+		currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+		
 		
 		
 		
@@ -139,6 +146,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		currentScheme.drive(drive, true);
+		currentScheme.controlShooter(shooter);
+		currentScheme.controlClimber(climber);
+		currentScheme.controlIntake(intake);
 		
 	}
 

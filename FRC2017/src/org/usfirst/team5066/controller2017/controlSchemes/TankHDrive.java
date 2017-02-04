@@ -5,6 +5,9 @@ import org.usfirst.frc.team5066.controller2017.LogitechController;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
+import org.usfirst.frc.team5066.robot.LowGoalShooter;
+import org.usfirst.frc.team5066.robot.SingularityClimber;
+import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,8 +36,22 @@ public class TankHDrive implements ControlScheme {
 			speedMode = SpeedMode.NORMAL;
 		}
 		
-		//sd.hDriveTank(xbox.getLS_Y(), xbox.getRS_Y(), Math.max(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
+		sd.hDrive(xbox.getLS_Y(), xbox.getRS_Y(), Math.max(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
 		
 	}
+	
+	@Override
+	public void controlShooter(LowGoalShooter lGS){
+		lGS.setSpeed(logitech.getStickY());
+	}
+	
+	public void controlClimber(SingularityClimber climber){
+		climber.setSpeed(logitech.getStickX());
+	}
+	
+	public void controlIntake(SingularityIntake intake){
+		intake.setSpeed(1.0, xbox.getYButton());
+	}
+	
 
 }
