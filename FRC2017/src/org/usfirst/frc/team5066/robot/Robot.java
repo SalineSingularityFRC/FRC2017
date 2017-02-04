@@ -1,10 +1,12 @@
 package org.usfirst.frc.team5066.robot;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
-import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -35,7 +37,13 @@ public class Robot extends IterativeRobot {
 	//intake:
 	int frontMotor, lowMotor, highMotor;
 	//low goal:
-	int shootMotor;
+	int shootMotor, feedMotor;
+	
+	//CANTalon, Talon
+	int speedControllerType;
+	
+	//Speed constants
+	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
 	
 	/*
 	 *high goal:
@@ -71,12 +79,19 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
 		
+		//FIX THIS LATER
+		/*
+		try{
+			properties = new SingularityProperties();
+		}catch
+		*/
 		loadDefaultProperties();
 		
-		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, 0, .4, .8, 1.0);
+		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, speedControllerType, .4, .8, 1.0);
 		shooter = new LowGoalShooter(8, 13);
 		climber = new SingularityClimber(9);
 		intake = new SingularityIntake(10, 11, 12);
+		properties = new SingularityProperties();
 		currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
 		
 		
@@ -160,26 +175,73 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void loadProperties() {
+		try{
+			//Ports
+			leftRearMotor = properties.getInt("leftRearMotor");
+			leftFrontMotor = properties.getInt("leftFrontMotor");
+			rightFrontMotor = properties.getInt("rightFrontMotor");
+			rightRearMotor = properties.getInt("rightRearMotor");
+			
+			//CANTalon or Talon drive?
+			speedControllerType = properties.getInt("driveControllerType");
+			
+			climbMotor = properties.getInt("climbMotor");
+			
+			frontMotor = properties.getInt("frontMotor");
+			lowMotor = properties.getInt("lowMotor");
+			highMotor = properties.getInt("highMotor");
+			shootMotor = properties.getInt("shootmotor");
+			feedMotor = properties.getInt("feedMotor");
+			
+			slowSpeedConstant = properties.getInt("slowSpeedConstant");
+			normalSpeedConstant = properties.getInt("normalSpeedConstant");
+			fastSpeedConstant = properties.getInt("fastSpeedConstant");
+		} catch(SingularityPropertyNotFoundException e){
+			DriverStation.reportError("The property \"" + e.getPropertyName()
+				+ "was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
+				+ "\n - Typo in property name in code or file/n - using a different properties file than the one that actually contains the property you are looking for",
+				false);
+			e.printStackTrace();
+		}
 		
+		SmartDashboard.putString("DB/String 9",
+				"slow: " + slowSpeedConstant + " | normal: " + normalSpeedConstant + "| fast: " +fastSpeedConstant);
 	}
 	
 	private void loadDefaultProperties() {
-		
+
 		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 		//drive:
-		/*
-		leftMotor = INSERTPORT, rightMotor = INSERTPORT, middleMotor = INSERTPORT;
+		leftRearMotor = 2;
+		leftFrontMotor = 3;
+		rightFrontMotor = 4;
+		rightRearMotor = 5;
+		rightMiddleMotor = 6;
+		leftMiddleMotor = 7;
 		//climber:
-		climbMotor = INSERTPORT;
+		climbMotor = 8;
 		//intake:
-		frontMotor = INSERTPORT, lowMotor = INSERTPORT, highMotor = INSERTPORT;
+		frontMotor = 9;
+		lowMotor = 10;
+		highMotor = 11;
 		//low goal:
-		shootMotor = INSERTPORT;
+		shootMotor = 12;
+		feedMotor = 13;
+		
+		//CANTalon = 0 or Talon = 1
+		speedControllerType = SingularityDrive.CANTALON_DRIVE;
+		
+		//Speed mode
+		slowSpeedConstant = 0.4;
+		normalSpeedConstant = 0.8;
+		fastSpeedConstant = 1.0;
+		
 		
 		/*
 		 *high goal:
 		 *highMotor = INSERTPORT;
 		 */
+
 		
 	}
 }
