@@ -9,7 +9,7 @@ import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import org.usfirst.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,7 +19,6 @@ import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
 import org.usfirst.frc.team5066.autonomous2017.Middle;
-import org.usfirst.frc.team5066.autonomous2017.Right;
 import org.usfirst.frc.team5066.autonomous2017.Left;
 import org.usfirst.frc.team5066.controller2017.Pipeline;
 import com.ctre.CANTalon;
@@ -132,7 +131,7 @@ public class Robot extends IterativeRobot {
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
-		autoChooser.addObject("My Auto2", new Right());
+		//autoChooser.addObject("My Auto2", new Right());
 		SmartDashboard.putData("Auto choices", chooser);
 
 		
