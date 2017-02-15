@@ -13,8 +13,9 @@ import edu.wpi.cscore.UsbCamera;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
-import org.usfirst.frc.team5066.autonomous2017.MoveBackwards;
-import org.usfirst.frc.team5066.autonomous2017.MoveForward;
+import org.usfirst.frc.team5066.autonomous2017.Middle;
+import org.usfirst.frc.team5066.autonomous2017.Right;
+import org.usfirst.frc.team5066.autonomous2017.Left;
 import org.usfirst.frc.team5066.controller2017.Pipeline;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -38,7 +39,7 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
 public class Robot extends IterativeRobot {
 	//Create a variable to hold a reference to a SendableChooser object.
 	Command autonomousCommand;
-	SendableChooser autochooser;
+	SendableChooser autoChooser;
 	
 	
 	AutonomousMode autonMode;
@@ -105,6 +106,8 @@ public class Robot extends IterativeRobot {
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void robotInit() {
 		
@@ -112,10 +115,10 @@ public class Robot extends IterativeRobot {
 		//There can be any number of commands, and the one added as a default (addDefault), 
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
-		
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		chooser.addObject("My Auto2", customAuto);
+		autoChooser = new SendableChooser();
+		autoChooser.addDefault("Default Auto", new Middle());
+		autoChooser.addObject("My Auto", new Left());
+		autoChooser.addObject("My Auto2", new Right());
 		SmartDashboard.putData("Auto choices", chooser);
 
 		
@@ -138,6 +141,8 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
+		    
+		    
 		        
 		    //drive = new SingularityDrive(1, 2);
 
@@ -193,7 +198,7 @@ public class Robot extends IterativeRobot {
 		
 		//When the autonomous period starts the SendableChooser object is polled to get
 		//the selected command and that command is scheduled.
-		autonomousCommand = (Command) autochooser.getSelected();
+		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
 		autoSelected = props.getString("autonMode");
@@ -201,11 +206,11 @@ public class Robot extends IterativeRobot {
 		switch(autoSelected){
 		
 		case "forwards":
-			autonMode = new MoveForward();
+			autonMode = new Left();
 			break;
 		
 		case "backwards":
-			autonMode = new MoveBackwards();
+			autonMode = new Middle();
 			break;
 		default:
 			DriverStation.reportError("A O nothing in the Auto Mode", false);
@@ -235,9 +240,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		
-		double turn = centerX - (IMG_WIDTH / 2);
 		
-		drive.hDrive(vertical, horizontal, rotation, squaredInputs, speedMode);
 		switch (autoSelected) {
 		case customAuto:
 			// Put custom auto code here
@@ -250,7 +253,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		
-		autonMode.run();
+		autonMode.run(centerX, centerY);
 		
 		}
 
