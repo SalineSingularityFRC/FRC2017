@@ -36,7 +36,7 @@ public class TankHDrive implements ControlScheme {
 			speedMode = SpeedMode.NORMAL;
 		}
 		
-		sd.hDrive(xbox.getLS_Y(), xbox.getRS_Y(), Math.max(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
+		sd.hDriveTank(xbox.getLS_Y(), xbox.getRS_Y(), horizontalMax(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
 		
 	}
 	
@@ -51,6 +51,14 @@ public class TankHDrive implements ControlScheme {
 	
 	public void controlIntake(SingularityIntake intake){
 		intake.setSpeed(1.0, xbox.getYButton());
+	}
+	
+	private double horizontalMax(double lS, double rS) {
+		
+		if (lS < 0 && rS < 0) 
+			return Math.min(lS, rS);
+		return Math.max(lS,  rS);
+		
 	}
 	
 

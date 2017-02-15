@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SingularityIntake {
 
-	CANTalon frontWheel, lowConveyer, highConveyer;
+	CANTalon frontWheel;
 	
 	/**
 	 * Constructor for the Singularity intake.
@@ -26,11 +26,9 @@ public class SingularityIntake {
 	 * @param high
 	 * 				<b>int<b> The higher conveyer motor for the intake
 	 */
-	public SingularityIntake(int front, int low, int high){
+	public SingularityIntake(int front){
 		
 		frontWheel = new CANTalon(front);
-		lowConveyer = new CANTalon(low);
-		highConveyer = new CANTalon(high);
 	}
 	
 	/**
@@ -45,14 +43,10 @@ public class SingularityIntake {
 		
 		if(reverse){
 			frontWheel.set(-speed);
-			lowConveyer.set(-speed);
-			highConveyer.set(-speed);
 		}
 		
 		//Sets speed to the robot
 		frontWheel.set(speed);
-		lowConveyer.set(speed);
-		highConveyer.set(speed);
 
 		
 		/* Don't know how this will be implemented yet.

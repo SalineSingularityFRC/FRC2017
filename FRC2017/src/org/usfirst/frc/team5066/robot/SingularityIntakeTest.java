@@ -1,4 +1,4 @@
-
+/*
 package org.usfirst.frc.team5066.robot;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 import static org.junit.Assert.*;
@@ -8,6 +8,7 @@ import org.junit.Test;
  * @author Saline Singularity 5066
  *
  */
+/*
 public class SingularityIntakeTest {
 
 	@Test
@@ -38,4 +39,4 @@ public class SingularityIntakeTest {
 
 	}
 
-}
+}*/

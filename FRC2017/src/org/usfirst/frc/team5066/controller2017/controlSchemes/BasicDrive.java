@@ -57,7 +57,7 @@ public class BasicDrive implements ControlScheme {
 	
 	@Override
 	public void controlClimber(SingularityClimber climber) {
-		climber.setSpeed(logitech.getStickX());
+		climber.setSpeed(logitech.getStickY());
 	}
 	
 	@Override

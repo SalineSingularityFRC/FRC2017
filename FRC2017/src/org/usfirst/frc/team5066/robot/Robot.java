@@ -1,7 +1,9 @@
 package org.usfirst.frc.team5066.robot;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
@@ -35,7 +37,7 @@ public class Robot extends IterativeRobot {
 	//climber:
 	int climbMotor;
 	//intake:
-	int frontMotor, lowMotor, highMotor;
+	int frontMotor;
 	//low goal:
 	int shootMotor, feedMotor;
 	
@@ -71,6 +73,9 @@ public class Robot extends IterativeRobot {
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
+	/* (non-Javadoc)
+	 * @see edu.wpi.first.wpilibj.IterativeRobot#robotInit()
+	 */
 	@Override
 	public void robotInit() {
 		/*
@@ -79,21 +84,25 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 		*/
 		
-		//FIX THIS LATER
-		/*
 		try{
+			properties = new SingularityProperties("/home/lvuser/robot.properties");
+		}catch (Exception e){
 			properties = new SingularityProperties();
-		}catch
-		*/
-		loadDefaultProperties();
-		
-		drive = new SingularityDrive(2, 3, 4, 5, 6, 7, speedControllerType, .4, .8, 1.0);
-		shooter = new LowGoalShooter(8, 13);
-		climber = new SingularityClimber(9);
-		intake = new SingularityIntake(10, 11, 12);
-		properties = new SingularityProperties();
-		currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
-		
+			DriverStation.reportError("error in properties", true); 
+		} finally {
+			
+			setDefaultProperties();
+			
+			
+			loadProperties();
+			
+			
+			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
+			shooter = new LowGoalShooter(shootMotor);
+			climber = new SingularityClimber(climbMotor);
+			intake = new SingularityIntake(frontMotor);
+			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+		}
 		
 		
 		
@@ -101,14 +110,10 @@ public class Robot extends IterativeRobot {
 		 * js = new Joystick(XBOX_PORT);
 		 * 
 		 * 
-		 * 
-		 * intake = new SingularityIntake(highMotor, lowMotor, highMotor);
-		 * shooter = new LowGoalShooter(shootMotor, 0);
-		 * climber = new SingularityClimber(climbMotor, 0);
-		 * 
-		 * 
-		 * 
-		*/
+		 */ 
+		  intake = new SingularityIntake(frontMotor);
+		  shooter = new LowGoalShooter(shootMotor);
+		  climber = new SingularityClimber(climbMotor);
 		
 		
 		
@@ -161,9 +166,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		currentScheme.drive(drive, true);
-		currentScheme.controlShooter(shooter);
+		//currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
-		currentScheme.controlIntake(intake);
+		//currentScheme.controlIntake(intake);
 		
 	}
 
@@ -188,14 +193,12 @@ public class Robot extends IterativeRobot {
 			climbMotor = properties.getInt("climbMotor");
 			
 			frontMotor = properties.getInt("frontMotor");
-			lowMotor = properties.getInt("lowMotor");
-			highMotor = properties.getInt("highMotor");
 			shootMotor = properties.getInt("shootmotor");
-			feedMotor = properties.getInt("feedMotor");
 			
 			slowSpeedConstant = properties.getInt("slowSpeedConstant");
 			normalSpeedConstant = properties.getInt("normalSpeedConstant");
 			fastSpeedConstant = properties.getInt("fastSpeedConstant");
+		
 		} catch(SingularityPropertyNotFoundException e){
 			DriverStation.reportError("The property \"" + e.getPropertyName()
 				+ "was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
@@ -208,33 +211,34 @@ public class Robot extends IterativeRobot {
 				"slow: " + slowSpeedConstant + " | normal: " + normalSpeedConstant + "| fast: " +fastSpeedConstant);
 	}
 	
-	private void loadDefaultProperties() {
+	private void setDefaultProperties() {
 
 		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
+		
 		//drive:
-		leftRearMotor = 2;
-		leftFrontMotor = 3;
-		rightFrontMotor = 4;
-		rightRearMotor = 5;
-		rightMiddleMotor = 6;
-		leftMiddleMotor = 7;
+		properties.addDefaultProp("leftRearMotor", 2);
+		properties.addDefaultProp("leftFrontMotor", 6);
+		properties.addDefaultProp("rightFrontMotor", 3);
+		properties.addDefaultProp("rightRearMotor", 4);
+		properties.addDefaultProp("rightMiddleMotor", 10);
+		properties.addDefaultProp("leftMiddleMotor", 7);
+		
 		//climber:
-		climbMotor = 8;
+		properties.addDefaultProp("climbMotor", 9);
+		
 		//intake:
-		frontMotor = 9;
-		lowMotor = 10;
-		highMotor = 11;
+		properties.addDefaultProp("frontMotor", 5);
+		
 		//low goal:
-		shootMotor = 12;
-		feedMotor = 13;
+		properties.addDefaultProp("shootMotor", 8);
 		
 		//CANTalon = 0 or Talon = 1
 		speedControllerType = SingularityDrive.CANTALON_DRIVE;
 		
 		//Speed mode
-		slowSpeedConstant = 0.4;
-		normalSpeedConstant = 0.8;
-		fastSpeedConstant = 1.0;
+		properties.addDefaultProp("slowSpeedConstant", 0.4);
+		properties.addDefaultProp("normalSpeedConstant", 0.8);
+		properties.addDefaultProp("fastSpeedConstant", 1.0);
 		
 		
 		/*

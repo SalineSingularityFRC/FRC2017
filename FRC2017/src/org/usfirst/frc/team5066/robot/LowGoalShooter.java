@@ -4,11 +4,9 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class LowGoalShooter{
 	private CANTalon lowShooter;
-	private CANTalon feedMotor;
 	
-	public LowGoalShooter(int shootPort, int feedPort){
+	public LowGoalShooter(int shootPort){
 		lowShooter = new CANTalon(shootPort);
-		feedMotor = new CANTalon(feedPort);
 	}
 	
 	public void setSpeed(boolean shoot){
@@ -17,7 +15,6 @@ public class LowGoalShooter{
 		
 		if(shoot){
 		lowShooter.set(1.0);
-		feedMotor.set(0.5);
 		}
 		
 		/*
@@ -28,19 +25,12 @@ public class LowGoalShooter{
 		*/
 		else {
 			lowShooter.set(0.0);
-			feedMotor.set(-0.2);
 		}
 		//For Testing
 		SmartDashboard.putNumber("Low shooter speed", lowShooter.getSpeed());
-		SmartDashboard.putNumber("Feed moter speed", feedMotor.get());
 	}
 	
 	public double getSpeed(){
 		return lowShooter.get();
-	}
-	
-	//Keep getting error when using this method
-	public double getFeedSpeed(){
-		return feedMotor.get();
 	}
 }

@@ -276,17 +276,52 @@ public class SingularityDrive {
 		m_rearLeftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
 		m_frontRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rearRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
-		m_rightMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+		m_rightMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
 		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
 		
 		//for testing purposes only
-		SmartDashboard.putNumber("Front left encoder", m_frontLeftMotor.get());
-		SmartDashboard.putNumber("Rear left encoder", m_rearLeftMotor.get());
-		SmartDashboard.putNumber("Front right encoder", m_frontRightMotor.get());
-		SmartDashboard.putNumber("Rear right encoder", m_rearRightMotor.get());
-		SmartDashboard.putNumber("Middle left encoder", m_leftMiddleMotor.get());
-		SmartDashboard.putNumber("Middle right encoder", m_rightMiddleMotor.get());
+		/*SmartDashboard.putString("DB/String 0", "Front Left Motor " + m_frontLeftMotor.get());
+		SmartDashboard.putString("DB/String 1", "Rear Left Motor " + m_rearLeftMotor.get());
+		SmartDashboard.putString("DB/String 2", "Front Right Motor " +  m_frontRightMotor.get());
+		SmartDashboard.putString("DB/String 3", "Rear Right Motor " +  m_rearRightMotor.get());
+		SmartDashboard.putString("DB/String 4", "Left Middle Motor " +  m_leftMiddleMotor.get());
+		SmartDashboard.putString("DB/String 5", "Right Middle Motor " +  m_rightMiddleMotor.get());
+		*/
 		
+	}
+	
+	public void hDriveTank(double left, double right, double horizontal, boolean squaredInputs, SpeedMode speedMode) {
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
+		
+		// Do squared inputs if necessary
+		if (squaredInputs) {
+			left *= Math.abs(left);
+			right *= Math.abs(right);
+			horizontal *= Math.abs(horizontal);
+		}
+		
+		// Guard against illegal values
+		double rightWheelMaximum = Math.max(1, Math.abs(right));
+		double leftWheelMaximum = Math.max(1,  Math.abs(left));
+		double hWheelMaximum = Math.max(1, Math.abs(horizontal));
+	
+		if (buttonPressed) {
+			rightWheelMaximum *= 1 / reducedVelocity;
+			leftWheelMaximum *= 1 / reducedVelocity;
+			hWheelMaximum *= 1  / reducedVelocity;
+		}
+				
+		left = threshold(left);
+		right = threshold(right);
+		horizontal = threshold(horizontal);
+		
+		m_frontLeftMotor.set(this.velocityMultiplier * (-left /leftWheelMaximum));
+		m_rearLeftMotor.set(this.velocityMultiplier * (-left / leftWheelMaximum));
+		m_frontRightMotor.set(this.velocityMultiplier * (right / rightWheelMaximum));
+		m_rearRightMotor.set(this.velocityMultiplier * (right / rightWheelMaximum));
+		m_rightMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
+		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+				
 	}
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
