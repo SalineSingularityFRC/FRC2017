@@ -13,7 +13,6 @@ import org.usfirst.frc.team5066.controller2017.FindGreenAreasApp;
 import org.usfirst.frc.team5066.controller2017.GripRunner;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
