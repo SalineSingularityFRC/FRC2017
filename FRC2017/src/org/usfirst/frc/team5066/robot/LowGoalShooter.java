@@ -14,7 +14,7 @@ public class LowGoalShooter{
 		//speed /= Math.max(1, Math.abs(speed));
 		
 		if(shoot){
-		lowShooter.set(1.0);
+		lowShooter.set(0.7);
 		}
 		
 		/*

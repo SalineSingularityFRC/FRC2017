@@ -8,6 +8,10 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
 
+import org.usfirst.frc.team5066.controller2017.FindGreenAreas;
+import org.usfirst.frc.team5066.controller2017.FindGreenAreasApp;
+import org.usfirst.frc.team5066.controller2017.GripRunner;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -15,6 +19,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.UsbCamera;
+
+import java.io.IOException;
+
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
@@ -135,12 +142,17 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 
 		
-		props = new SingularityProperties("/home/lvuser/robot.properties"); //TODO not sure what this will be
+		try {
+			props = new SingularityProperties("/home/lvuser/robot.properties");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} //TODO not sure what this will be
 		
 		 UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		    camera.setResolution(324, 240);
 		
-		    visionThread = new VisionThread(camera, new Pipeline(), pipeline -> 
+		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
 		    {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -221,7 +233,12 @@ public class Robot extends IterativeRobot {
 		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
-		autoSelected = props.getString("autonMode");
+		try {
+			autoSelected = props.getString("autonMode");
+		} catch (SingularityPropertyNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		switch(autoSelected){
 		

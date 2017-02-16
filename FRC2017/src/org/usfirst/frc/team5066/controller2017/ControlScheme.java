@@ -26,9 +26,6 @@ public interface ControlScheme {
 	public void controlShooter(LowGoalShooter lGS);
 	public void controlClimber(SingularityClimber climber);
 	public void controlIntake(SingularityIntake intake);
-	
-	
-	public void controlClimber(SingularityClimber climber);
 
 	
 	//SingularityDrive sd = new SingularityDrive(1,2,3,4);

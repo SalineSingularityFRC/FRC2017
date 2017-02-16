@@ -2,6 +2,7 @@ package org.usfirst.frc.team5066.controller2017.controlSchemes;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.LogitechController;
+import org.usfirst.frc.team5066.controller2017.SingularityBallOutput;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
@@ -58,6 +59,12 @@ public class TankHDrive implements ControlScheme {
 		if (lS < 0 && rS < 0) 
 			return Math.min(lS, rS);
 		return Math.max(lS,  rS);
+		
+	}
+
+	@Override
+	public void controlBallOutput(SingularityBallOutput conveyer) {
+		// TODO Auto-generated method stub
 		
 	}
 	
