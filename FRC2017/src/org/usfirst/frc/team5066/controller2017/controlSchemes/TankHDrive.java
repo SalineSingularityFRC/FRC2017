@@ -61,12 +61,6 @@ public class TankHDrive implements ControlScheme {
 		return Math.max(lS,  rS);
 		
 	}
-
-	@Override
-	public void controlBallOutput(SingularityBallOutput conveyer) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 
 }

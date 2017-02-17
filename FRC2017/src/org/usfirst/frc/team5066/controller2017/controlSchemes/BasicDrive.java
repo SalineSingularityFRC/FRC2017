@@ -66,10 +66,6 @@ public class BasicDrive implements ControlScheme {
 		intake.setSpeed(1.0, xbox.getYButton());
 	}
 
-	@Override
-	public void controlBallOutput(SingularityBallOutput conveyer) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 }

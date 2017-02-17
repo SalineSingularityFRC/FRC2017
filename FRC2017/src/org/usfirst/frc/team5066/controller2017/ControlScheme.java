@@ -20,7 +20,7 @@ public interface ControlScheme {
 	//implemented by all control scheme classes in the controlSchemes package, which take input from controller classes
 	//and are called by the ControlSystem class
 	
-	public void controlBallOutput(SingularityBallOutput conveyer);
+	//public void controlBallOutput(SingularityBallOutput conveyer);
 	
 	public void drive(SingularityDrive sd, boolean squaredInputs);
 	public void controlShooter(LowGoalShooter lGS);
