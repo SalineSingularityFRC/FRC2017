@@ -1,4 +1,4 @@
-package org.usfirst.frc.team5066.controller2017.controlSchemes;
+package org.usfirst.frc.team5066.autonomous2017;
 
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
@@ -8,25 +8,23 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 import org.usfirst.frc.team5066.library.SpeedMode;
 
-public class AutonRightFuel extends AutonControlScheme {
-
+public class AutonRight extends AutonControlScheme {
+	
 	@Override
 	public void moveAuton() {
 		
-		//Drive to boiler
-		super.vertical(-0.75, -52.0);
-		//turn to face boiler
-		super.rotation(-0.75, -45);
-		//drive to the boiler
-		super.vertical(0.75, 52.0);
+		//move backward 52in
+		super.vertical(-0.75, -52);
 		
-		//shoot fuel
-		EncoderAuto.shooter.setSpeed(true);
-		Timer.delay(4);
-		//go to the peg
-		super.vertical(-0.75, -136.62);
+		//rotate counterclockwise 45
+		super.rotation(-0.75, -45);
+		
+		//move backward 136.62in
+		super.vertical(-0.75, -84.62);
+		
 		
 		//VISION:
+		
+		
 	}
-
 }

@@ -42,41 +42,7 @@ public class EncoderAuto extends Robot {
 	public void autonomous() {
 		resetAll();
 		
-		//AUTON MODE 1: left gear red side
-		
-		
-		//rotate counterclockwise
-		
 	}
-	
-	
-	public static void vertical(double verticalSpeed, double d){
-		do {
-			drive.hDrive(verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
-		} while(getAverageLeftPosition() != d  / kDistancePerRevolution && getAverageRightPosition() < d);
-		
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
-		resetAll();
-	}
-	
-	public static void horizontal(double horizontalSpeed, double distance){
-		do {
-			drive.hDrive(0.0, horizontalSpeed, 0.0, false, SpeedMode.NORMAL);
-		} while(getAverageMiddlePosition() != distance  / kDistancePerRevolution);
-		
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
-		resetAll();
-	}
-	
-	public static void rotation(double rotationSpeed, double degrees){
-		do {
-			drive.hDrive(0.0, 0.0, rotationSpeed, false, SpeedMode.NORMAL);
-		} while(getAverageMiddlePosition() != degrees / 20);
-		
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
-		resetAll();
-	}
-	
 	
 	public static void resetAll(){
 		frontLeftEncoder.reset();
