@@ -1,5 +1,6 @@
 package org.usfirst.frc.team5066.robot;
 
+import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
@@ -23,12 +24,21 @@ import java.io.IOException;
 
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
+
+import org.usfirst.frc.team5066.autonomous2017.AutonLeft;
+import org.usfirst.frc.team5066.autonomous2017.AutonLeftFuel;
+import org.usfirst.frc.team5066.autonomous2017.AutonMiddle;
+import org.usfirst.frc.team5066.autonomous2017.AutonRight;
+import org.usfirst.frc.team5066.autonomous2017.AutonRightFuel;
+
 import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
+import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.autonomous2017.Middle;
 import org.usfirst.frc.team5066.autonomous2017.Left;
 import org.usfirst.frc.team5066.controller2017.Pipeline;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Command;
@@ -36,6 +46,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
+import edu.wpi.first.wpilibj.Relay;
 
 
 /**
@@ -48,12 +59,12 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
 
 public class Robot extends IterativeRobot {
 	//Create a variable to hold a reference to a SendableChooser object.
-	Command autonomousCommand;
-	SendableChooser autoChooser;
+	//Command autonomousCommand;
+	//SendableChooser autoChooser;
 	
 	
-	AutonomousMode autonMode;
-	
+	//AutonomousMode autonMode;
+	/*VISION STUFF
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
 	
@@ -69,10 +80,13 @@ public class Robot extends IterativeRobot {
 	
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
-
+	private DigitalOutput led;
+	*/
+	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
-
+    AutonControlScheme autonScheme;
+	private boolean encoderHasRun;
 	
 	SingularityProperties props;
 
@@ -89,6 +103,9 @@ public class Robot extends IterativeRobot {
 	
 	//CANTalon, Talon
 	int speedControllerType;
+	
+	//Encoders
+	
 	
 	//Speed constants
 	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
@@ -129,42 +146,21 @@ public class Robot extends IterativeRobot {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void robotInit() {
-		
 		//Create a SendableChooser object and add instances of the two commands to it. 
 		//There can be any number of commands, and the one added as a default (addDefault), 
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
+		/*
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
 		//autoChooser.addObject("My Auto2", new Right());
 		SmartDashboard.putData("Auto choices", chooser);
-
 		
 		try {
 			props = new SingularityProperties("/home/lvuser/robot.properties");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} //TODO not sure what this will be
-		
-		 UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		    camera.setResolution(324, 240);
-		
-		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
-		    {
-		        if (!pipeline.filterContoursOutput().isEmpty()) {
-		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-		            
-		            synchronized (imgLock)
-		            {
-		                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
-		                centerY = (r.height / 2 );
-		                
-		            }
-		        }
-		    });
-		    visionThread.start();
+		*/	
 		    
 		    
 		        
@@ -172,14 +168,38 @@ public class Robot extends IterativeRobot {
 
 		
 		
-		try{
+		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
-		}catch (Exception e){
-			properties = new SingularityProperties();
-			DriverStation.reportError("error in properties", true); 
-		} finally {
+		}
+		catch (Exception e) {
 			
 			setDefaultProperties();
+			
+			properties = new SingularityProperties();
+			DriverStation.reportError("error in properties", true); 
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			//TODO not sure what this will be
+					
+				 /*UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+				    camera.setResolution(324, 240);
+				
+						visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
+					    {
+					        if (!pipeline.filterContoursOutput().isEmpty()) {
+					            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+					            
+					            synchronized (imgLock)
+					            {
+					                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
+					                centerY = (r.height / 2 );
+					                
+					            }
+					        }
+					    });
+					    visionThread.start();
+					    */
+		} finally {
 			
 			
 			loadProperties();
@@ -190,6 +210,9 @@ public class Robot extends IterativeRobot {
 			climber = new SingularityClimber(climbMotor);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+			autonScheme = new AutonMiddle(drive, shooter);
+			//led = new DigitalOutput(2);
+		
 		}
 		
 		
@@ -199,9 +222,9 @@ public class Robot extends IterativeRobot {
 		 * 
 		 * 
 		 */ 
-		  intake = new SingularityIntake(frontMotor);
-		  shooter = new LowGoalShooter(shootMotor);
-		  climber = new SingularityClimber(climbMotor);
+		 //intake = new SingularityIntake(frontMotor);
+		  //shooter = new LowGoalShooter(shootMotor);
+		  //climber = new SingularityClimber(climbMotor);
 		
 		
 		
@@ -226,10 +249,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		
+		//++encoderHasRun = false;
 		
 		//When the autonomous period starts the SendableChooser object is polled to get
 		//the selected command and that command is scheduled.
-		autonomousCommand = (Command) autoChooser.getSelected();
+		/*autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
 		try {
@@ -250,7 +274,6 @@ public class Robot extends IterativeRobot {
 			break;
 		default:
 			DriverStation.reportError("A O nothing in the Auto Mode", false);
-		
 		}
 		
 
@@ -268,12 +291,21 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		/*
+		if(!encoderHasRun) {
+			autonScheme.moveAuton();
+			encoderHasRun = true;
+		}
+		*/
+		
+		
 		
 		//RobotBuilder will generate code automatically that 
 		//runs the scheduler every driver station update period (about every 20ms). 
 		//This will cause the selected autonomous command to run
-		Scheduler.getInstance().run();
 		
+		/*
+		Scheduler.getInstance().run();
 		
 		
 		
@@ -290,10 +322,8 @@ public class Robot extends IterativeRobot {
 		
 		
 		autonMode.run(centerX, centerY);
-		
+		*/
 		}
-
-	
 
 	/**
 	 * This function is called periodically during operator control
@@ -302,17 +332,24 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		currentScheme.drive(drive, true);
-		//currentScheme.controlShooter(shooter);
+		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
-		//currentScheme.controlIntake(intake);
+		currentScheme.controlIntake(intake);
 		
 	}
-
+	
+	@Override
+	public void testInit() {
+		
+	}
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
+		//led.set(true);
+		//led.updateDutyCycle(255);
+		//led.enablePWM(255);
 	}
 	
 	private void loadProperties() {
@@ -322,18 +359,20 @@ public class Robot extends IterativeRobot {
 			leftFrontMotor = properties.getInt("leftFrontMotor");
 			rightFrontMotor = properties.getInt("rightFrontMotor");
 			rightRearMotor = properties.getInt("rightRearMotor");
+			leftMiddleMotor = properties.getInt("leftMiddleMotor");
+			rightMiddleMotor = properties.getInt("rightMiddleMotor");
 			
 			//CANTalon or Talon drive?
-			speedControllerType = properties.getInt("driveControllerType");
+			speedControllerType = properties.getInt("speedControllerType");
 			
 			climbMotor = properties.getInt("climbMotor");
 			
 			frontMotor = properties.getInt("frontMotor");
-			shootMotor = properties.getInt("shootmotor");
+			shootMotor = properties.getInt("shootMotor");
 			
-			slowSpeedConstant = properties.getInt("slowSpeedConstant");
-			normalSpeedConstant = properties.getInt("normalSpeedConstant");
-			fastSpeedConstant = properties.getInt("fastSpeedConstant");
+			slowSpeedConstant = properties.getDouble("slowSpeedConstant");
+			normalSpeedConstant = properties.getDouble("normalSpeedConstant");
+			fastSpeedConstant = properties.getDouble("fastSpeedConstant");
 		
 		} catch(SingularityPropertyNotFoundException e){
 			DriverStation.reportError("The property \"" + e.getPropertyName()
@@ -360,10 +399,10 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("leftMiddleMotor", 7);
 		
 		//climber:
-		properties.addDefaultProp("climbMotor", 9);
+		properties.addDefaultProp("climbMotor", 5);
 		
 		//intake:
-		properties.addDefaultProp("frontMotor", 5);
+		properties.addDefaultProp("frontMotor", 9);
 		
 		//low goal:
 		properties.addDefaultProp("shootMotor", 8);

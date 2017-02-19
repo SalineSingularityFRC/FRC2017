@@ -63,7 +63,7 @@ public class BasicDrive implements ControlScheme {
 	
 	@Override
 	public void controlIntake(SingularityIntake intake) {
-		intake.setSpeed(1.0, xbox.getYButton());
+		intake.setSpeed(xbox.getRS_Y(), xbox.getYButton());
 	}
 
 	

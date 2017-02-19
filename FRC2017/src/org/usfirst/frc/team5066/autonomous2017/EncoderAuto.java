@@ -7,62 +7,57 @@ import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.Robot;
 
-public class EncoderAuto extends Robot {
+import com.ctre.CANTalon;
 
+public class EncoderAuto extends Robot {
+/*
 	//Constants
-	public static final double kDistancePerRevolution = 12.56;//circumference of wheels
+	public static final double DistancePerRevolution = 12.56;//circumference of wheels
 	//TODO Fine tune this for our specific model
-	public static final double kPulsesPerRevolution = 1024;
-	public static final double kDistancePerPulse = kDistancePerRevolution / kPulsesPerRevolution;
+	//public static final double kPulsesPerRevolution = 1024;
+	//public static final double PositionPerPulse = DistancePerRevolution / kPulsesPerRevolution;
+	/*
+	static CANTalon frontLeftEncoder;
+	static CANTalon rearLeftEncoder;
+	static CANTalon middleLeftEncoder;
+	static CANTalon frontRightEncoder;
+	static CANTalon rearRightEncoder;
+	static CANTalon middleRightEncoder;
 	
+	SingularityDrive drive;
 	//initialize encoders. true = don't invert counter direction
-	static Encoder frontLeftEncoder = new Encoder(11, 12, true, EncodingType.k4X);
-	static Encoder rearLeftEncoder = new Encoder(13, 14, true, EncodingType.k4X);
-	static Encoder middleLeftEncoder = new Encoder(13, 14, true, EncodingType.k4X);
-	static Encoder frontRightEncoder = new Encoder(13, 14, true, EncodingType.k4X);
-	static Encoder rearRightEncoder = new Encoder(13, 14, true, EncodingType.k4X);
-	static Encoder middleRightEncoder = new Encoder(13, 14, true, EncodingType.k4X);
+	public EncoderAuto(SingularityDrive drive){//int ePFL, int ePRL, int ePML, int ePFR, int ePRR, int ePMR) {
+	//public EncoderAuto(int ePFLa, int ePFLb, int ePRLa, int ePRLb, int ePMLa, int ePMLb, int ePFRa, int ePFRb, int ePRRa, int ePRRb, int ePMRa, int ePMRb){
 	
+		this.drive = drive;
+		/*frontLeftEncoder = new CANTalon(ePFL);  //(ePFLa, ePFLb, true, EncodingType.k4X);
+		rearLeftEncoder = new CANTalon(ePRL); //(ePRLa, ePRLb, true, EncodingType.k4X);
+		middleLeftEncoder = new CANTalon(ePML); //(ePMLa, ePMLb, true, EncodingType.k4X);
+		frontRightEncoder = new CANTalon(ePFR); //(ePFRa, ePFRa, true, EncodingType.k4X);
+		rearRightEncoder = new CANTalon(ePRR); //(ePRRa, ePRRb, true, EncodingType.k4X);
+		middleRightEncoder = new CANTalon(ePMR); //(ePMRa, ePMRb, true, EncodingType.k4X);
+		
+	}
 	//6 motor drive
-	public static SingularityDrive drive = new SingularityDrive(2, 6, 3, 4, 10, 7);
-	public static LowGoalShooter shooter = new LowGoalShooter(8);
-	/**
-	 * Initialize robot
-	 */
-	public void robotInit(){
-		frontLeftEncoder.setDistancePerPulse(kDistancePerPulse);
-		rearLeftEncoder.setDistancePerPulse(kDistancePerPulse);
-		middleLeftEncoder.setDistancePerPulse(kDistancePerPulse);
-		frontRightEncoder.setDistancePerPulse(kDistancePerPulse);
-		rearRightEncoder.setDistancePerPulse(kDistancePerPulse);
-		middleRightEncoder.setDistancePerPulse(kDistancePerPulse);
-		
-	}
+	//public static SingularityDrive drive = new SingularityDrive(2, 6, 3, 4, 10, 7);
+	//public static LowGoalShooter shooter = new LowGoalShooter(8);
 	
-	public void autonomous() {
-		resetAll();
-		
-	}
-	
-	public static void resetAll(){
-		frontLeftEncoder.reset();
-		rearLeftEncoder.reset();
-		middleLeftEncoder.reset();
-		frontRightEncoder.reset();
-		rearRightEncoder.reset();
-		middleRightEncoder.reset();
+	public void resetAll(){
+		drive.setPosition(drive.m_frontLeftMotor);
+		drive.m_leftMiddleMotor.reset();
+		drive.m_frontRightMotor.reset();
 	}
 	
 	public static double getAverageLeftPosition(){
-		return (frontLeftEncoder.getDistance() + rearLeftEncoder.getDistance()) / 2;
+		return (frontLeftEncoder.getPosition() + rearLeftEncoder.getPosition()) / 2;
 	}
 	
 	public static double getAverageRightPosition(){
-		return (frontRightEncoder.getDistance() + rearRightEncoder.getDistance()) / 2;
+		return (frontRightEncoder.getPosition() + rearRightEncoder.getPosition()) / 2;
 	}
 	
 	public static double getAverageMiddlePosition(){
-		return (middleLeftEncoder.getDistance() + middleRightEncoder.getDistance()) / 2;
+		return (middleLeftEncoder.getPosition() + middleRightEncoder.getPosition()) / 2;
 	}
-
+*/
 }

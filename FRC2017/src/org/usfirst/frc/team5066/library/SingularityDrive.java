@@ -133,7 +133,29 @@ public class SingularityDrive {
 		this.normalSpeedConstant = normalSpeedConstant;
 		this.fastSpeedConstant = fastSpeedConstant;
 	}
+	
+	
+	//Encoder code:
+	public void resetAll(){
+		((CANTalon) m_frontLeftMotor).reset();
+		((CANTalon) m_leftMiddleMotor).reset();
+		((CANTalon) m_frontRightMotor).reset();
+	}
+	
+	public double getLeftPosition(){
+		return (((CANTalon) m_frontLeftMotor).getPosition());
+	}
+	
+	public double getRightPosition(){
+		return (((CANTalon) m_frontRightMotor).getPosition());
+	}
+	
+	public double getMiddlePosition(){
+		return (((CANTalon) m_leftMiddleMotor).getPosition());
+	}
 
+	
+	
 	private double clamp(double velocityMultiplier) {
 		if (velocityMultiplier > 1.0) {
 			return 1.0;

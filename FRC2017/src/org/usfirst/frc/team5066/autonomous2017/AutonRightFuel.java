@@ -1,6 +1,5 @@
 package org.usfirst.frc.team5066.autonomous2017;
 
-import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
@@ -10,25 +9,37 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 
-public class AutonLeft extends AutonControlScheme {
+public class AutonRightFuel extends AutonControlScheme {
 	
 	private SingularityDrive drive;
 	private LowGoalShooter shooter;
 	
-	public AutonLeft(SingularityDrive drive, LowGoalShooter shooter){
+	public AutonRightFuel(SingularityDrive drive, LowGoalShooter shooter){
 		super(drive, shooter);
 	}
-	
+
 	@Override
 	public void moveAuton() {
 		
-		//move backward 52in
-		super.vertical(0.75, 52, true);
+		//slide in front of the boiler
+		super.horizontal(0.75, 32, false);
 		
-		//rotate clockwise 45
-		super.rotation(0.75, 45, false);
+		/*
+		//Drive to boiler
+		super.vertical(0.75, 52.0, true);
+		//turn to face boiler
+		super.rotation(0.75, 45, true);
+		//drive to the boiler
+		super.vertical(0.75, 52.0, false);
+		*/
 		
-		//move backward 136.62in
-		super.vertical(0.75, 84.62, true);
-	}	
+		//shoot fuel
+		shooter.setSpeed(true);
+		Timer.delay(3);
+		//go to the peg
+		shooter.setSpeed(false);
+		super.vertical(0.75, 136.62, true);
+		
+	}
+
 }
