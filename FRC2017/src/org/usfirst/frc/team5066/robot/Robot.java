@@ -148,13 +148,12 @@ public class Robot extends IterativeRobot {
 		//There can be any number of commands, and the one added as a default (addDefault), 
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
-		/*
+		
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
-		autoChooser.addObject("My Auto2", new Right());
 		SmartDashboard.putData("Auto choices", chooser);
-		*/
+		
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");

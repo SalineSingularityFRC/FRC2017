@@ -11,7 +11,6 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 
 public class AutonRightFuel extends AutonControlScheme {
 	
-	private SingularityDrive drive;
 	private LowGoalShooter shooter;
 	
 	public AutonRightFuel(SingularityDrive drive, LowGoalShooter shooter){

@@ -30,8 +30,8 @@ public abstract class AutonControlScheme {
 	public static void vertical(double verticalSpeed, double distance, boolean reverse) {
 		
 		if (reverse) {
-			//Slowly start motors for i(10) inches
-			for(int i = 10; i > 0; i--){
+			//Slowly start motors for i(7) inches
+			for(int i = 7; i > 0; i--){
 				do{
 					drive.hDrive(-verticalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
 				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
@@ -39,11 +39,11 @@ public abstract class AutonControlScheme {
 			//normal speed
 			do {
 				drive.hDrive(-verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
-			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - 10) / DistancePerRevolution);
+			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - 7) / DistancePerRevolution);
 		} 
 		else {
-			//Slowly start motors for i(10) inches
-			for(int i = 10; i > 0; i--){
+			//Slowly start motors for i(7) inches
+			for(int i = 7; i > 0; i--){
 				do{
 					drive.hDrive(-verticalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
 				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
@@ -51,7 +51,7 @@ public abstract class AutonControlScheme {
 			//normal speed
 			do {
 				drive.hDrive(verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
-			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 < (distance - 10) / DistancePerRevolution);
+			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 < (distance - 7) / DistancePerRevolution);
 		}
 		
 		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
@@ -69,8 +69,8 @@ public abstract class AutonControlScheme {
 	 */
 	public static void horizontal(double horizontalSpeed, double distance, boolean left) {
 		if (left) {
-			//Slowly start motors for i(10) inches
-			for(int i = 10; i > 0; i--){
+			//Slowly start motors for i(7) inches
+			for(int i = 7; i > 0; i--){
 				do{
 					drive.hDrive(-horizontalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
 				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
@@ -78,11 +78,11 @@ public abstract class AutonControlScheme {
 			//normal speed
 			do {
 				drive.hDrive(0.0, -horizontalSpeed, 0.0, false, SpeedMode.NORMAL);
-			} while(drive.getMiddlePosition() > -distance  / DistancePerRevolution);
+			} while(drive.getMiddlePosition() > -(distance-7)  / DistancePerRevolution);
 		}
 		else {
-			//Slowly start motors for i(10) inches
-			for(int i = 10; i > 0; i--){
+			//Slowly start motors for i(7) inches
+			for(int i = 7; i > 0; i--){
 				do{
 					drive.hDrive(-horizontalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
 				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
@@ -90,7 +90,7 @@ public abstract class AutonControlScheme {
 			//normal speed
 			do {
 				drive.hDrive(0.0, horizontalSpeed, 0.0, false, SpeedMode.NORMAL);
-			} while(drive.getMiddlePosition() < distance  / DistancePerRevolution);
+			} while(drive.getMiddlePosition() < (distance-7)  / DistancePerRevolution);
 		}
 		
 		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);

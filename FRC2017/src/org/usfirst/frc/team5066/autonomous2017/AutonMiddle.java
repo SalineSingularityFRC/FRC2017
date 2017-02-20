@@ -12,9 +12,6 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 
 public class AutonMiddle extends AutonControlScheme {
 	
-	private SingularityDrive drive;
-	private LowGoalShooter shooter;
-	
 	public AutonMiddle(SingularityDrive drive, LowGoalShooter shooter){
 		super(drive, shooter);
 	}
