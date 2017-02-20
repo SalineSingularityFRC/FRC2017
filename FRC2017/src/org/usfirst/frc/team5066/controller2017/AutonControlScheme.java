@@ -41,7 +41,6 @@ public abstract class AutonControlScheme {
 				drive.hDrive(-verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
 			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - 10) / DistancePerRevolution);
 		} 
-		
 		else {
 			//Slowly start motors for i(10) inches
 			for(int i = 10; i > 0; i--){

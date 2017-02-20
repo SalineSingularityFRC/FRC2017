@@ -59,12 +59,11 @@ import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends IterativeRobot {
 	//Create a variable to hold a reference to a SendableChooser object.
-	//Command autonomousCommand;
-	//SendableChooser autoChooser;
+	Command autonomousCommand;
+	SendableChooser autoChooser;
 	
 	
-	//AutonomousMode autonMode;
-	/*VISION STUFF
+	AutonomousMode autonMode;
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
 	
@@ -80,8 +79,7 @@ public class Robot extends IterativeRobot {
 	
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
-	private DigitalOutput led;
-	*/
+	//private DigitalOutput led;
 	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
@@ -154,19 +152,9 @@ public class Robot extends IterativeRobot {
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
-		//autoChooser.addObject("My Auto2", new Right());
+		autoChooser.addObject("My Auto2", new Right());
 		SmartDashboard.putData("Auto choices", chooser);
-		
-		try {
-			props = new SingularityProperties("/home/lvuser/robot.properties");
-		} catch (IOException e1) {
-		*/	
-		    
-		    
-		        
-		    //drive = new SingularityDrive(1, 2);
-
-		
+		*/
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
@@ -177,28 +165,8 @@ public class Robot extends IterativeRobot {
 			
 			properties = new SingularityProperties();
 			DriverStation.reportError("error in properties", true); 
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			//TODO not sure what this will be
-					
-				 /*UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-				    camera.setResolution(324, 240);
-				
-						visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
-					    {
-					        if (!pipeline.filterContoursOutput().isEmpty()) {
-					            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-					            
-					            synchronized (imgLock)
-					            {
-					                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
-					                centerY = (r.height / 2 );
-					                
-					            }
-					        }
-					    });
-					    visionThread.start();
-					    */
+			
+					    
 		} finally {
 			
 			
@@ -212,6 +180,28 @@ public class Robot extends IterativeRobot {
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
 			autonScheme = new AutonMiddle(drive, shooter);
 			//led = new DigitalOutput(2);
+			
+			// TODO Auto-generated catch block
+						//e.printStackTrace();
+						//TODO not sure what this will be
+								
+							 UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+							    camera.setResolution(324, 240);
+							
+									visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
+								    {
+								        if (!pipeline.filterContoursOutput().isEmpty()) {
+								            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+								            
+								            synchronized (imgLock)
+								            {
+								                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
+								                centerY = (r.height / 2 );
+								                
+								            }
+								        }
+								    });
+								    visionThread.start();
 		
 		}
 		
@@ -253,7 +243,8 @@ public class Robot extends IterativeRobot {
 		
 		//When the autonomous period starts the SendableChooser object is polled to get
 		//the selected command and that command is scheduled.
-		/*autonomousCommand = (Command) autoChooser.getSelected();
+		
+		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
 		try {
@@ -277,12 +268,12 @@ public class Robot extends IterativeRobot {
 		}
 		
 
-		/*
+		
 		autoSelected = chooser.getSelected();
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
+		 autoSelected = SmartDashboard.getString("Auto Selector",
+		 defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		*/
+		
 
 	}
 
@@ -291,12 +282,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		/*
+		
 		if(!encoderHasRun) {
 			autonScheme.moveAuton();
 			encoderHasRun = true;
 		}
-		*/
+		
 		
 		
 		
@@ -304,7 +295,7 @@ public class Robot extends IterativeRobot {
 		//runs the scheduler every driver station update period (about every 20ms). 
 		//This will cause the selected autonomous command to run
 		
-		/*
+		
 		Scheduler.getInstance().run();
 		
 		
@@ -322,7 +313,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		autonMode.run(centerX, centerY);
-		*/
+		
 		}
 
 	/**
