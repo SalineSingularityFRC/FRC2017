@@ -29,6 +29,7 @@ public class BasicDrive implements ControlScheme {
 	LogitechController logitech;
 	XboxController xbox;
 	SpeedMode speedMode;
+	boolean on, prevY;
 	
 	public BasicDrive(int xboxPort, int logitechPort) {
 		xbox = new XboxController(xboxPort);
@@ -63,7 +64,10 @@ public class BasicDrive implements ControlScheme {
 	
 	@Override
 	public void controlIntake(SingularityIntake intake) {
-		intake.setSpeed(xbox.getRS_Y(), xbox.getYButton());
+		if (xbox.getYButton() && !prevY) on = on ? false : true;
+		if (!on) intake.setSpeed(0.0);
+		else if (xbox.getXButton()) intake.setSpeed(-1.0);
+		else intake.setSpeed(1.0);
 	}
 
 	

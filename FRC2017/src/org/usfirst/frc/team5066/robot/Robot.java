@@ -152,7 +152,7 @@ public class Robot extends IterativeRobot {
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
-		SmartDashboard.putData("Auto choices", chooser);
+		SmartDashboard.putData("Auto choices", autoChooser);
 		
 		
 		try {
@@ -177,30 +177,28 @@ public class Robot extends IterativeRobot {
 			climber = new SingularityClimber(climbMotor);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
-			autonScheme = new AutonMiddle(drive, shooter);
+			autonScheme = new AutonMiddle(drive, shooter, intake);
 			//led = new DigitalOutput(2);
 			
 			// TODO Auto-generated catch block
-						//e.printStackTrace();
-						//TODO not sure what this will be
-								
-							 UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-							    camera.setResolution(324, 240);
+			//e.printStackTrace();
+			//TODO not sure what this will be
 							
-									visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
-								    {
-								        if (!pipeline.filterContoursOutput().isEmpty()) {
-								            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-								            
-								            synchronized (imgLock)
-								            {
-								                centerX = (r.x + (r.width / 2))-((r.width * (3/25))+ (r.width * 3));
-								                centerY = (r.height / 2 );
-								                
-								            }
-								        }
-								    });
-								    visionThread.start();
+			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(324, 240);
+				
+			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
+		        if (!pipeline.filterContoursOutput().isEmpty()) {
+		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+			            
+		            synchronized (imgLock) {
+		            	centerX = r.x + r.width +r.width*0.76;
+						//centerY = (r.height / 2 );
+						          
+		            }
+		        }
+			});
+			visionThread.start();
 		
 		}
 		
@@ -246,7 +244,7 @@ public class Robot extends IterativeRobot {
 		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
-		try {
+		/*try {
 			autoSelected = props.getString("autonMode");
 		} catch (SingularityPropertyNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -272,7 +270,7 @@ public class Robot extends IterativeRobot {
 		 autoSelected = SmartDashboard.getString("Auto Selector",
 		 defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		
+		*/
 
 	}
 
@@ -281,12 +279,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		
+		/*
 		if(!encoderHasRun) {
 			autonScheme.moveAuton();
 			encoderHasRun = true;
 		}
-		
+		*/
 		
 		
 		
@@ -299,7 +297,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		
-		switch (autoSelected) {
+		/*switch (autoSelected) {
 		case customAuto:
 			// Put custom auto code here
 			break;
@@ -312,7 +310,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		autonMode.run(centerX, centerY);
-		
+		*/
 		}
 
 	/**
@@ -405,6 +403,7 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("normalSpeedConstant", 0.8);
 		properties.addDefaultProp("fastSpeedConstant", 1.0);
 		
+		properties.addDefaultProp("autonMode", "backwards");
 		
 		/*
 		 *high goal:

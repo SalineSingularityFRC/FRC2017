@@ -8,9 +8,10 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 
-public class Middle implements AutonomousMode{
+public class Middle extends Command implements AutonomousMode{
 	
 	private SingularityDrive drive;
 	SpeedMode speedMode;
@@ -33,7 +34,7 @@ public class Middle implements AutonomousMode{
 	            synchronized (imgLock)
 	            {
 	                centerX = r.x + r.width +r.width*0.76;
-	                centerY = r.y + (r.height / 2 );  
+	                //centerY = r.y + (r.height / 2 );  
 	            }
 	        }
 	    });
@@ -78,5 +79,11 @@ public class Middle implements AutonomousMode{
 			
 		}
 		
+	}
+
+	@Override
+	protected boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

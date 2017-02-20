@@ -12,9 +12,10 @@ import org.usfirst.frc.team5066.robot.SingularityIntake;
 public class ArcadeHDrive implements ControlScheme {
 
 	XboxController xbox;
-LogitechController logitech;
-SpeedMode speedMode;
-
+	LogitechController logitech;
+	SpeedMode speedMode;
+	boolean on, prevY;
+	
 public ArcadeHDrive(int xboxPort, int logitechPort) {
 	xbox = new XboxController(xboxPort);
 	logitech = new LogitechController(logitechPort);
@@ -46,7 +47,10 @@ public void controlClimber(SingularityClimber climber){
 }
 
 public void controlIntake(SingularityIntake intake){
-	intake.setSpeed(1.0, xbox.getYButton());
+	if (xbox.getYButton() && !prevY) on = on ? false : true;
+	if (!on) intake.setSpeed(0.0);
+	else if (xbox.getXButton()) intake.setSpeed(-1.0);
+	else intake.setSpeed(1.0);
 }
 
 }

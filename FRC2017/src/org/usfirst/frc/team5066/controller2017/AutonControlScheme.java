@@ -4,6 +4,9 @@ import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
+import org.usfirst.frc.team5066.robot.SingularityIntake;
+
+import edu.wpi.first.wpilibj.Timer;
 
 public abstract class AutonControlScheme {
 	
@@ -11,9 +14,11 @@ public abstract class AutonControlScheme {
 	
 	private static SingularityDrive drive;
 	private static LowGoalShooter shooter;
-	public AutonControlScheme(SingularityDrive drive, LowGoalShooter shooter){
+	private static SingularityIntake intake;
+	public AutonControlScheme(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		this.drive = drive;
 		this.shooter = shooter;
+		this.intake = intake;
 	}
 	
 	public abstract void moveAuton();
@@ -26,36 +31,49 @@ public abstract class AutonControlScheme {
 	 * Sets distance of movement in inches.
 	 * @param reverse
 	 * true means travel backwards, false forwards
+	 * @param acceleration
+	 * The number of stages to accelerate
 	 */
-	public static void vertical(double verticalSpeed, double distance, boolean reverse) {
+	public static void vertical(double verticalSpeed, double distance, boolean reverse, int acceleration) {
 		
+		double vertSpeed = verticalSpeed;
+
 		if (reverse) {
-			//Slowly start motors for i(7) inches
-			for(int i = 7; i > 0; i--){
-				do{
-					drive.hDrive(-verticalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
-				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
-			}	
-			//normal speed
-			do {
-				drive.hDrive(-verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
-			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - 7) / DistancePerRevolution);
-		} 
-		else {
-			//Slowly start motors for i(7) inches
-			for(int i = 7; i > 0; i--){
-				do{
-					drive.hDrive(-verticalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
-				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
-			}
-			//normal speed
-			do {
-				drive.hDrive(verticalSpeed, 0.0, 0.0, false, SpeedMode.NORMAL);
-			} while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 < (distance - 7) / DistancePerRevolution);
+			vertSpeed *= -1;
 		}
+		int distanceAccelerated = 0;
 		
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
+		//Slowly start motors for i(acceleration) inches
+		for(int i = acceleration; i > 0; i--) {
+			if (2 * (acceleration - i + 1) > distance - 2) break;
+			do {
+				drive.hDriveTank(vertSpeed/i, vertSpeed/i, 0.0, false, SpeedMode.NORMAL);
+			} 
+			while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -2.0 / DistancePerRevolution
+				&& (drive.getLeftPosition() + drive.getRightPosition()) / 2 < 2.0 / DistancePerRevolution);
+			
+			distanceAccelerated += 2;
+			
+			drive.resetAll();
+		}
+			
+		//normal speed
+		do {
+			drive.hDriveTank(verticalSpeed, verticalSpeed, 0.0, false, SpeedMode.NORMAL);
+		} 
+		while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - distanceAccelerated - 2) / DistancePerRevolution
+			&& (drive.getLeftPosition() + drive.getRightPosition()) / 2 < (distance - distanceAccelerated - 2) / DistancePerRevolution);
 		drive.resetAll();
+		
+		//slow down
+		do {
+			drive.hDriveTank(vertSpeed / 2, vertSpeed / 2, 0.0, false, SpeedMode.NORMAL);
+		}
+		while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -2 / DistancePerRevolution
+			&& (drive.getLeftPosition() + drive.getRightPosition()) / 2 < 2 / DistancePerRevolution);
+		drive.resetAll();
+		
+		drive.hDriveTank(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
 	}
 	
 	/**
@@ -66,35 +84,48 @@ public abstract class AutonControlScheme {
 	 * Sets distance of movements in inches.
 	 * @param left
 	 * true means travel left, false right
+	 * @param acceleration
+	 * The number of stages of acceleration
 	 */
-	public static void horizontal(double horizontalSpeed, double distance, boolean left) {
-		if (left) {
-			//Slowly start motors for i(7) inches
-			for(int i = 7; i > 0; i--){
-				do{
-					drive.hDrive(-horizontalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
-				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
-			}	
-			//normal speed
-			do {
-				drive.hDrive(0.0, -horizontalSpeed, 0.0, false, SpeedMode.NORMAL);
-			} while(drive.getMiddlePosition() > -(distance-7)  / DistancePerRevolution);
-		}
-		else {
-			//Slowly start motors for i(7) inches
-			for(int i = 7; i > 0; i--){
-				do{
-					drive.hDrive(-horizontalSpeed/i, 0.0, 0.0, false, SpeedMode.NORMAL);
-				} while((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -1.0 / DistancePerRevolution);
-			}	
-			//normal speed
-			do {
-				drive.hDrive(0.0, horizontalSpeed, 0.0, false, SpeedMode.NORMAL);
-			} while(drive.getMiddlePosition() < (distance-7)  / DistancePerRevolution);
-		}
+	public static void horizontal (double horizontalSpeed, double distance, boolean left, int acceleration) {
 		
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
+		double speed = horizontalSpeed;
+		if (left) {
+			speed *= -1;
+		}
+		int distanceAccelerated = 0;
+		
+		//Slowly start motors for 2 * (acceleration) inches total
+		for(int i = acceleration; i > 0; i--) {
+			if (2 * (acceleration - i + 1) > distance - 2) break;
+			do {
+				drive.hDriveTank(0.0, 0.0, speed / i, false, SpeedMode.NORMAL);
+			} 
+			while (drive.getMiddlePosition() > -2.0 / DistancePerRevolution
+				&& drive.getMiddlePosition() < 2.0 / DistancePerRevolution);
+			
+			distanceAccelerated += 2;
+			
+			drive.resetAll();
+		}
+			
+		//normal speed
+		do {
+			drive.hDriveTank(0.0, 0.0, speed, false, SpeedMode.NORMAL);
+		} 
+		while (drive.getMiddlePosition() > -(distance - distanceAccelerated - 2) / DistancePerRevolution
+			&& drive.getMiddlePosition() < (distance - distanceAccelerated - 2) / DistancePerRevolution);
 		drive.resetAll();
+		
+		//slow down
+		do {
+			drive.hDriveTank(0.0, 0.0, speed / 2, false, SpeedMode.NORMAL);
+		}
+		while (drive.getMiddlePosition() > -2 / DistancePerRevolution
+			&& drive.getMiddlePosition()  < 2 / DistancePerRevolution);
+		drive.resetAll();
+		
+		drive.hDriveTank(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
 	}
 	
 	/**
@@ -106,7 +137,8 @@ public abstract class AutonControlScheme {
 	 * @param counterClockwise
 	 * true means we are rotating left, false right
 	 */
-	//TODO Fix the Rotation
+	//TODO Fix the Rotation. Do the hard math to get this method to work.
+	/*
 	public static void rotation(double rotationSpeed, double degrees, boolean counterClockwise) {
 		if (counterClockwise) {
 			do {
@@ -120,5 +152,14 @@ public abstract class AutonControlScheme {
 		}
 		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
 		drive.resetAll();
+	}
+	*/
+	
+	public static void shoot(int time) {
+		intake.setSpeed(0.6);
+		shooter.setSpeed(true);
+		Timer.delay(time);
+		intake.setSpeed(0.0);
+		shooter.setSpeed(false);
 	}
 }

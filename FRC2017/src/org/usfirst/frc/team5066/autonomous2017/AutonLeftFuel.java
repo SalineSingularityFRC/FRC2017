@@ -10,39 +10,26 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
+import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 public class AutonLeftFuel extends AutonControlScheme {
 	
 	private LowGoalShooter shooter;
 	
-	public AutonLeftFuel(SingularityDrive drive, LowGoalShooter shooter){
-		super(drive, shooter);
+	public AutonLeftFuel(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake){
+		super(drive, shooter, intake);
 	}
 	
 	@Override
 	public void moveAuton() {
 		
 		//slide in front of the boiler
-		super.horizontal(.75, 30, true);
+		super.horizontal(.75, 32, true, 5);
 		
-		/*
-		//move backward 52in
-		super.vertical(0.75, 52, true);
-		
-		//rotate counterclockwise 45
-		super.rotation(0.75, 45, true);
-		
-		//move forward 52in
-		super.vertical(0.75, 52, false);
-		*/
-		//SHOOT
-		shooter.setSpeed(true);
-		//timer
-		Timer.delay(3);
-		shooter.setSpeed(false);
+		super.shoot(3);
 		
 		//move backward 136.62in
-		super.vertical(0.75, 136.62, true);
+		super.vertical(0.75, 136.62, true, 5);
 		
 	}	
 }

@@ -37,13 +37,9 @@ public class SingularityIntake {
 	 * @param speed
 	 * 				<b>double</b> The desired analog speed of the motors. [-1.0, 1.0]
 	 */
-	public void setSpeed(double speed, boolean reverse){
+	public void setSpeed(double speed){
 		//Calculates the correct speed
 		speed /= Math.max(1, Math.abs(speed));
-		
-		if(reverse){
-			frontWheel.set(-speed);
-		}
 		
 		//Sets speed to the robot
 		frontWheel.set(speed);
