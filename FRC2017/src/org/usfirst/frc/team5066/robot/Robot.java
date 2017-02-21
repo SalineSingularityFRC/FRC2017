@@ -8,7 +8,7 @@ import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
-
+import org.usfirst.frc.team5066.manymouse.ClientManyMouse;
 import org.usfirst.frc.team5066.controller2017.FindGreenAreas;
 import org.usfirst.frc.team5066.controller2017.FindGreenAreasApp;
 import org.usfirst.frc.team5066.controller2017.GripRunner;
@@ -62,6 +62,7 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	SendableChooser autoChooser;
 	
+	ClientManyMouse mmclient;
 	
 	AutonomousMode autonMode;
 	private static final int IMG_WIDTH = 320;
@@ -149,11 +150,13 @@ public class Robot extends IterativeRobot {
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
 		
+		mmclient = new ClientManyMouse("raspberrypi.local");
+		
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
 		autoChooser.addObject("My Auto", new Left());
 		SmartDashboard.putData("Auto choices", chooser);
-		
+		/*
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
@@ -219,6 +222,7 @@ public class Robot extends IterativeRobot {
 		
 		
 	}
+	
 
 		
 		
@@ -330,16 +334,16 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void testInit() {
-		
+		mmclient.close();
+		mmclient = new ClientManyMouse("raspberrypi.local");
 	}
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
-		//led.set(true);
-		//led.updateDutyCycle(255);
-		//led.enablePWM(255);
+		//DriverStation.reportError("testPeriodic", false);
+		mmclient.readMessages();
 	}
 	
 	private void loadProperties() {

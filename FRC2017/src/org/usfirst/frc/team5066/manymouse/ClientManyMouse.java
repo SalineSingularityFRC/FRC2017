@@ -68,7 +68,7 @@ public class ClientManyMouse {
 			is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			// Deprecated: is = new DataInputStream(socket.getInputStream());
 			os = new DataOutputStream(socket.getOutputStream());
-			DriverStation.reportWarning("connection established", false);
+			DriverStation.reportWarning("connection established.", false);
 		} catch (UnknownHostException e) {
 			DriverStation.reportError("Unknown host: " + HOST, false);
 		} catch (IOException e) {
