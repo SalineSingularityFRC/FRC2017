@@ -30,6 +30,18 @@ public class ClientManyMouse {
 		// Attempt to open socket and initialize input and output streams
 		this.open();
 	}
+	
+	public ClientManyMouse(String host, int port) {
+
+		this.HOST = host;
+		this.PORT = port;
+		socket = null;
+		os = null;
+		is = null;
+
+		// Attempt to open socket and initialize input and output streams
+		this.open();
+	}
 
 	public void readMessages() {
 
