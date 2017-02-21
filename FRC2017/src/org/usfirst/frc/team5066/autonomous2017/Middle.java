@@ -8,10 +8,14 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 
 public class Middle extends Command implements AutonomousMode{
+	
+	Ultrasonic leftGearUltra;
+	Ultrasonic rightGearUltra;
 	
 	private SingularityDrive drive;
 	SpeedMode speedMode;
@@ -23,6 +27,9 @@ public class Middle extends Command implements AutonomousMode{
 	private final Object imgLock = new Object();
 	
 	public void autonomousInit(){
+		
+		leftGearUltra = new Ultrasonic(1, 1);
+		rightGearUltra = new Ultrasonic(2, 2);
 		
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 	    camera.setResolution(324, 240);
@@ -44,7 +51,9 @@ public class Middle extends Command implements AutonomousMode{
 	}
 
 	public void run(double cntrX, double cntrY) {
-
+		
+		
+		//start vision
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 	    camera.setResolution(324, 240);
 	    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> 
@@ -61,25 +70,28 @@ public class Middle extends Command implements AutonomousMode{
 	    });
 	    visionThread.start();
 		
-		if (centerX == 160 && centerY == 120){
-			
-			drive.hDrive(0.1, 0, 0, true, speedMode);
+		if (centerX > 152 && centerX < 172){
+			drive.hDriveTank(-0.2, -0.2, 0.0, false, SpeedMode.FAST);
 			
 		}
-		else{
-			
-			if(centerX > 160 ){
-				drive.hDrive(0, 0.2, 0, true, speedMode);
+	    else if(leftGearUltra.getRangeInches() > rightGearUltra.getRangeInches() + 10){
+	    	drive.hDriveTank(0.15, -0.15, 0.0, false, SpeedMode.FAST);
+	    
+	    }
+	    else if(leftGearUltra.getRangeInches() < rightGearUltra.getRangeInches() - 10){
+	    	drive.hDriveTank(-0.15, 0.15, 0.0, false, SpeedMode.FAST);
+	    }
+
+		else if(centerX >= 172){
+			drive.hDriveTank(0, 0, -0.2, false, SpeedMode.FAST);
 				
-			}
-			else{
-				
-				drive.hDrive(0, -0.2, 0, true, speedMode);
-			}
-			
+		}
+		else if(centerX <= 152){	
+			drive.hDriveTank(0, 0, 0.2, false, SpeedMode.FAST);
 		}
 		
 	}
+		
 
 	@Override
 	protected boolean isFinished() {

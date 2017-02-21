@@ -68,8 +68,8 @@ public class Robot extends IterativeRobot {
 	private static final int IMG_HEIGHT = 240;
 	
 	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private double centerY = 0.0;
+	private double centerX;
+	private double centerY;
 	
 	private final Object imgLock = new Object();
 	
@@ -78,7 +78,7 @@ public class Robot extends IterativeRobot {
 	final String customAuto = "My Auto";
 	
 	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
+	//SendableChooser<String> chooser;
 	//private DigitalOutput led;
 	
 	//Holds the current control scheme
@@ -154,6 +154,9 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("My Auto", new Left());
 		SmartDashboard.putData("Auto choices", autoChooser);
 		
+		//chooser = new SendableChooser<>();
+		centerX = 0.0;
+		centerY = 0.0;
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
@@ -244,7 +247,7 @@ public class Robot extends IterativeRobot {
 		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
-		/*try {
+		try {
 			autoSelected = props.getString("autonMode");
 		} catch (SingularityPropertyNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -253,10 +256,10 @@ public class Robot extends IterativeRobot {
 		
 		switch(autoSelected){
 		
-		case "forwards":
+		/*case "forwards":
 			autonMode = new Left();
 			break;
-		
+		*/
 		case "backwards":
 			autonMode = new Middle();
 			break;
@@ -266,11 +269,11 @@ public class Robot extends IterativeRobot {
 		
 
 		
-		autoSelected = chooser.getSelected();
-		 autoSelected = SmartDashboard.getString("Auto Selector",
-		 defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
-		*/
+		//autoSelected = chooser.getSelected();
+		 //autoSelected = SmartDashboard.getString("Auto Selector",
+		 //defaultAuto);
+		//System.out.println("Auto selected: " + autoSelected);
+		
 
 	}
 
