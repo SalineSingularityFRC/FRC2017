@@ -8,10 +8,10 @@ public class LowGoalShooter{
 	private CANTalon lowShooter;
 	AnalogInput leftShootUltra;
 	AnalogInput rightShootUltra;
-	public LowGoalShooter(int shootPort, int leftShoot, int rightShoot){
+	public LowGoalShooter(int shootPort){//, int leftShoot, int rightShoot){
 		lowShooter = new CANTalon(shootPort);
-		leftShootUltra = new AnalogInput(leftShoot);
-		rightShootUltra = new AnalogInput(rightShoot);
+		//leftShootUltra = new AnalogInput(leftShoot);
+		//rightShootUltra = new AnalogInput(rightShoot);
 	}
 	
 	public void setSpeed(boolean shoot){

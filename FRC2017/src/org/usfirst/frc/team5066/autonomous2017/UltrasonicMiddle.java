@@ -25,7 +25,7 @@ public class UltrasonicMiddle extends Command {
 	}
 	
 public void run(double cntrX, double cntrY) {
-		
+		/*
 		if (leftBarrierUltra.getRangeInches() == rightBarrierUltra.getRangeInches() || centerX < 172){
 			drive.hDriveTank(-0.2, -0.2, 0.0, false, SpeedMode.FAST);
 			
@@ -45,8 +45,9 @@ public void run(double cntrX, double cntrY) {
 		else if(centerX <= 152){	
 			drive.hDriveTank(0, 0, 0.2, false, SpeedMode.FAST);
 		}
-		
+	*/	
 	}
+	
 	@Override
 	protected boolean isFinished() {
 		// TODO Auto-generated method stub

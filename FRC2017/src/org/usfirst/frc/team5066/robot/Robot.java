@@ -187,9 +187,12 @@ public class Robot extends IterativeRobot {
 			//e.printStackTrace();
 			//TODO not sure what this will be
 							
-			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(324, 240);
-				
+			UsbCamera gearCamera = CameraServer.getInstance().startAutomaticCapture();
+			gearCamera.setResolution(320, 240);
+			
+			UsbCamera climbCamera = CameraServer.getInstance().startAutomaticCapture();
+			climbCamera.setResolution(320, 240);
+			/*	
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -201,8 +204,9 @@ public class Robot extends IterativeRobot {
 		            }
 		        }
 			});
+			
 			visionThread.start();
-		
+			*/
 		}
 		
 		
@@ -240,10 +244,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		
 		//++encoderHasRun = false;
-		
 		//When the autonomous period starts the SendableChooser object is polled to get
 		//the selected command and that command is scheduled.
-		
+		/*
 		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
 		
@@ -260,13 +263,14 @@ public class Robot extends IterativeRobot {
 			autonMode = new Left();
 			break;
 		*/
+		/*
 		case "backwards":
 			autonMode = new Middle();
 			break;
 		default:
 			DriverStation.reportError("A O nothing in the Auto Mode", false);
 		}
-		
+		*/
 
 		
 		//autoSelected = chooser.getSelected();
@@ -300,20 +304,17 @@ public class Robot extends IterativeRobot {
 		
 		
 		
-		/*switch (autoSelected) {
+		switch (autoSelected) {
 		case customAuto:
-			// Put custom auto code here
+			autonMode.run(centerX, centerY);
 			break;
 		case defaultAuto:
 		default:
+			autonMode.run(centerX, centerY);
 			// Put default auto code here
 			break;
 		}
 		
-		
-		
-		autonMode.run(centerX, centerY);
-		*/
 		}
 
 	/**

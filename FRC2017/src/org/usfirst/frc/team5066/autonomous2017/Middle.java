@@ -27,7 +27,7 @@ public class Middle extends Command implements AutonomousMode{
 	private final Object imgLock = new Object();
 	
 	public void autonomousInit(){
-		
+		/*
 		leftGearUltra = new Ultrasonic(1, 1);
 		rightGearUltra = new Ultrasonic(2, 2);
 		
@@ -47,7 +47,7 @@ public class Middle extends Command implements AutonomousMode{
 	    });
 	    visionThread.start();
 	    
-	    
+*/	    
 	}
 
 	public void run(double cntrX, double cntrY) {
@@ -74,11 +74,11 @@ public class Middle extends Command implements AutonomousMode{
 			drive.hDriveTank(-0.2, -0.2, 0.0, false, SpeedMode.FAST);
 			
 		}
-	    else if(leftGearUltra.getRangeInches() > rightGearUltra.getRangeInches() + 10){
+	    else if(leftGearUltra.getRangeInches() > rightGearUltra.getRangeInches() + 4){
 	    	drive.hDriveTank(0.15, -0.15, 0.0, false, SpeedMode.FAST);
 	    
 	    }
-	    else if(leftGearUltra.getRangeInches() < rightGearUltra.getRangeInches() - 10){
+	    else if(leftGearUltra.getRangeInches() < rightGearUltra.getRangeInches() - 4){
 	    	drive.hDriveTank(-0.15, 0.15, 0.0, false, SpeedMode.FAST);
 	    }
 

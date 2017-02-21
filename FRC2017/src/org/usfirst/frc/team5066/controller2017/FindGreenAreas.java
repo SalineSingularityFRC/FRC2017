@@ -39,9 +39,9 @@ public class FindGreenAreas implements VisionPipeline {
 
 		// Step RGB_Threshold0:
 		Mat rgbThresholdInput = resizeImageOutput;
-		double[] rgbThresholdRed = {0.0, 117.0};
-		double[] rgbThresholdGreen = {136.0, 255.0};
-		double[] rgbThresholdBlue = {0.0, 117.0};
+		double[] rgbThresholdRed = {238.0, 255.0};
+		double[] rgbThresholdGreen = {227.0, 255.0};
+		double[] rgbThresholdBlue = {241.0, 255.0};
 		rgbThreshold(rgbThresholdInput, rgbThresholdRed, rgbThresholdGreen, rgbThresholdBlue, rgbThresholdOutput);
 
 		// Step Find_Contours0:
