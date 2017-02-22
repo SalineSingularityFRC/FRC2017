@@ -8,7 +8,7 @@ import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
-import org.usfirst.frc.team5066.manymouse.ClientManyMouse;
+import org.usfirst.frc.team5066.manymouse.*;
 import org.usfirst.frc.team5066.controller2017.FindGreenAreas;
 import org.usfirst.frc.team5066.controller2017.FindGreenAreasApp;
 import org.usfirst.frc.team5066.controller2017.GripRunner;
@@ -149,8 +149,6 @@ public class Robot extends IterativeRobot {
 		//There can be any number of commands, and the one added as a default (addDefault), 
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
-		
-		mmclient = new ClientManyMouse("raspberrypi.local");
 		
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default Auto", new Middle());
@@ -334,7 +332,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void testInit() {
-		mmclient.close();
 		mmclient = new ClientManyMouse("raspberrypi.local");
 	}
 	/**

@@ -6,25 +6,25 @@ import java.net.UnknownHostException;
 public class MouseOdometrySubsystem {
 	
 	Mouse[] mice;
-	ClientManyMouse client;
+	ClientManyMouseBROKEN client;
 	
 	public MouseOdometrySubsystem(Mouse[] miceArr, String host, int port) throws UnknownHostException, IOException{
 		this.mice = miceArr;
 		
-		client = new ClientManyMouse(host, port);
+		client = new ClientManyMouseBROKEN(host, port);
 		
 	}
 	
 	public MouseOdometrySubsystem(Mouse[] mice, String host) throws UnknownHostException, IOException{
 		
 		this.mice = mice;
-		client = new ClientManyMouse(host);
+		client = new ClientManyMouseBROKEN(host);
 	}
 	
 	public MouseOdometrySubsystem(Mouse[] mice) throws UnknownHostException, IOException{
 		
 		this.mice = mice;
-		client = new ClientManyMouse();
+		client = new ClientManyMouseBROKEN();
 	}
 	
 	//TODO

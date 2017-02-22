@@ -11,7 +11,7 @@ import java.net.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class OLDClientManyMouse {
+public class ClientManyMouseBROKEN {
 
 	public int PORT = 9999;
 	public String HOST = "raspberrypi.local";
@@ -20,24 +20,27 @@ public class OLDClientManyMouse {
 	private DataOutputStream os;
 	private BufferedReader is;
 
-	public OLDClientManyMouse(String host) {
-
-		this.HOST = host;
+	public ClientManyMouseBROKEN() throws UnknownHostException, IOException{
 		socket = null;
 		os = null;
 		is = null;
-
-		// Attempt to open socket and initialize input and output streams
+		
 		this.open();
 	}
 	
-	public OLDClientManyMouse(String host, int port) {
+	public ClientManyMouseBROKEN(String host) throws UnknownHostException, IOException{
 
+		this();
+		this.HOST = host;
+		// Attempt to open socket and initialize input and output streams
+		//this.open();
+	}
+	
+	public ClientManyMouseBROKEN(String host, int port) throws UnknownHostException, IOException{
+		
+		this();
 		this.HOST = host;
 		this.PORT = port;
-		socket = null;
-		os = null;
-		is = null;
 
 		// Attempt to open socket and initialize input and output streams
 		this.open();
@@ -66,26 +69,21 @@ public class OLDClientManyMouse {
 			DriverStation.reportError("I/O Exception for connection: " + HOST, false);
 		}
 	}
-
+	/*
 	public void reopen() {
 		close();
 		open();
 	}
+	*/
 
-	private void open() {
+	private void open() throws UnknownHostException, IOException{
 
 		// Attempt to open socket and initialize input and output streams
-		try {
 			socket = new Socket(HOST, PORT);
 			is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			// Deprecated: is = new DataInputStream(socket.getInputStream());
 			os = new DataOutputStream(socket.getOutputStream());
-			DriverStation.reportWarning("connection established.", false);
-		} catch (UnknownHostException e) {
-			DriverStation.reportError("Unknown host: " + HOST, false);
-		} catch (IOException e) {
-			DriverStation.reportError("I/O Exception for connection: " + HOST + " - Server may not exist", false);
-		}
+			DriverStation.reportWarning("Socket and streams created successfully.", false);
 	}
 
 	public void close() {
@@ -105,4 +103,13 @@ public class OLDClientManyMouse {
 		is = null;
 		socket = null;
 	}
+	
+	public String getHost() {
+		return HOST;
+	}
+	
+	public int getPort() {
+		return PORT;
+	}
+	
 }
