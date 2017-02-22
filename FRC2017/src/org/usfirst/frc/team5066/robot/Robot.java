@@ -48,7 +48,6 @@ import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
 import edu.wpi.first.wpilibj.Relay;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -58,176 +57,166 @@ import edu.wpi.first.wpilibj.Relay;
  */
 
 public class Robot extends IterativeRobot {
-	//Create a variable to hold a reference to a SendableChooser object.
+	// Create a variable to hold a reference to a SendableChooser object.
 	Command autonomousCommand;
 	SendableChooser autoChooser;
-	
-	
+
 	AutonomousMode autonMode;
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
-	
+
 	private VisionThread visionThread;
 	private double centerX;
 	private double centerY;
-	
+
 	private final Object imgLock = new Object();
-	
 
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
-	
+
 	String autoSelected;
-	//SendableChooser<String> chooser;
-	//private DigitalOutput led;
-	
-	//Holds the current control scheme
+	SendableChooser<String> chooser;
+	// private DigitalOutput led;
+
+	// Holds the current control scheme
 	ControlScheme currentScheme;
-    AutonControlScheme autonScheme;
+	AutonControlScheme autonScheme;
 	private boolean encoderHasRun;
-	
+
 	SingularityProperties props;
 
-
-	//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
-	//drive:
-	int leftRearMotor, leftFrontMotor, rightFrontMotor, rightRearMotor, rightMiddleMotor, leftMiddleMotor; //TEST
-	//climber:
+	// Holds the integer port id's for for the motors.The values are assigned
+	// when properties are loaded.
+	// drive:
+	int leftRearMotor, leftFrontMotor, rightFrontMotor, rightRearMotor, rightMiddleMotor, leftMiddleMotor; // TEST
+	// climber:
 	int climbMotor;
-	//intake:
+	// intake:
 	int frontMotor;
-	//low goal:
+	// low goal:
 	int shootMotor, feedMotor;
-	
-	//CANTalon, Talon
+
+	// CANTalon, Talon
 	int speedControllerType;
-	
-	//Encoders
-	
-	
-	//Speed constants
+
+	public UsbCamera gearCamera;
+
+	// Speed constants
 	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
-	
+
 	private SingularityDrive drive;
-	
-	
-	
+
 	/*
-	 *high goal:
-	 *int highMotor;
+	 * high goal: int highMotor;
 	 */
-	
+
 	Joystick js;
 	LowGoalShooter shooter;
 	SingularityClimber climber;
 	SingularityIntake intake;
 	SingularityProperties properties;
 	/*
-	 * SingularityIntake intake;
-	 * LowGoalShooter shooter;
-	 * HighGoalShooter highShooter;
-	 * SingularityClimber climber;
+	 * SingularityIntake intake; LowGoalShooter shooter; HighGoalShooter
+	 * highShooter; SingularityClimber climber;
 	 */
-	
+
 	final int XBOX_PORT = 0;
 	final int BIG_JOYSTICK_PORT = 1;
 	final int SMALL_JOYSTICK_PORT = 2;
-	
+
+	//Double centerX;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.wpi.first.wpilibj.IterativeRobot#robotInit()
 	 */
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void robotInit() {
-		//Create a SendableChooser object and add instances of the two commands to it. 
-		//There can be any number of commands, and the one added as a default (addDefault), 
-		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
-		//or addObject() method call on the SendableChooser instance.
-		
+		// Create a SendableChooser object and add instances of the two commands
+		// to it.
+		// There can be any number of commands, and the one added as a default
+		// (addDefault),
+		// becomes the one that is initially selected. Notice that each command
+		// is included in an addDefault()
+		// or addObject() method call on the SendableChooser instance.
+
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default Auto", new Middle());
+		autoChooser.addDefault("Default Auto", new Middle(drive));
 		autoChooser.addObject("My Auto", new Left());
 		SmartDashboard.putData("Auto choices", autoChooser);
-		
-		//chooser = new SendableChooser<>();
-		centerX = 0.0;
+
+		// chooser = new SendableChooser<>();
+		// centerX = 0.0;
+		centerX = new Double(0.0);
 		centerY = 0.0;
+
+		
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
-		}
-		catch (Exception e) {
-			
+		} catch (Exception e) {
+
 			setDefaultProperties();
-			
+
 			properties = new SingularityProperties();
-			DriverStation.reportError("error in properties", true); 
-			
-					    
+			DriverStation.reportError("error in properties", true);
+
 		} finally {
-			
-			
+
 			loadProperties();
-			
-			
-			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
+
+			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor,
+					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
 			shooter = new LowGoalShooter(shootMotor);
 			climber = new SingularityClimber(climbMotor);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
 			autonScheme = new AutonMiddle(drive, shooter, intake);
-			//led = new DigitalOutput(2);
-			
+			// led = new DigitalOutput(2);
+
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			//TODO not sure what this will be
-							
-			UsbCamera gearCamera = CameraServer.getInstance().startAutomaticCapture();
+			// e.printStackTrace();
+			// TODO not sure what this will be
+
+			gearCamera = CameraServer.getInstance().startAutomaticCapture();
 			gearCamera.setResolution(320, 240);
-			
+
 			UsbCamera climbCamera = CameraServer.getInstance().startAutomaticCapture();
 			climbCamera.setResolution(320, 240);
-			/*	
-			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
-		        if (!pipeline.filterContoursOutput().isEmpty()) {
-		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-			            
-		            synchronized (imgLock) {
-		            	centerX = r.x + r.width +r.width*0.76;
-						//centerY = (r.height / 2 );
-						          
-		            }
-		        }
+
+			visionThread = new VisionThread(gearCamera, new FindGreenAreas(), pipeline -> {
+				if (!pipeline.filterContoursOutput().isEmpty()) {
+					Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+
+					synchronized (imgLock) {
+						centerX = r.x + r.width + r.width * 0.76;
+						// centerY = (r.height / 2 );
+
+					}
+				}
 			});
-			
+
 			visionThread.start();
-			*/
+
 		}
-		
-		
-		
+
 		/*
 		 * js = new Joystick(XBOX_PORT);
 		 * 
 		 * 
-		 */ 
-		 //intake = new SingularityIntake(frontMotor);
-		  //shooter = new LowGoalShooter(shootMotor);
-		  //climber = new SingularityClimber(climbMotor);
-		
-		
-		
-		
+		 */
+		// intake = new SingularityIntake(frontMotor);
+		// shooter = new LowGoalShooter(shootMotor);
+		// climber = new SingularityClimber(climbMotor);
+
 	}
-
-		
-		
-
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
@@ -242,42 +231,39 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		
-		//++encoderHasRun = false;
-		//When the autonomous period starts the SendableChooser object is polled to get
-		//the selected command and that command is scheduled.
-		/*
-		autonomousCommand = (Command) autoChooser.getSelected();
-		autonomousCommand.start();
-		
-		try {
-			autoSelected = props.getString("autonMode");
-		} catch (SingularityPropertyNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		switch(autoSelected){
-		
-		/*case "forwards":
-			autonMode = new Left();
-			break;
-		*/
-		/*
-		case "backwards":
-			autonMode = new Middle();
-			break;
-		default:
-			DriverStation.reportError("A O nothing in the Auto Mode", false);
-		}
-		*/
 
 		
-		//autoSelected = chooser.getSelected();
-		 //autoSelected = SmartDashboard.getString("Auto Selector",
-		 //defaultAuto);
-		//System.out.println("Auto selected: " + autoSelected);
-		
+		// ++encoderHasRun = false;
+		// When the autonomous period starts the SendableChooser object is
+		// polled to get
+		// the selected command and that command is scheduled.
+
+		autonomousCommand = (Command) autoChooser.getSelected();
+		autonomousCommand.start();
+
+		// try {
+		// autoSelected = props.getString("autonMode");
+		// autoSelected = "backwards";
+		// } catch (SingularityPropertyNotFoundException e) {
+		// TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		/*
+		 * switch(autoSelected){
+		 * 
+		 * case "forwards": autonMode = new Left(); break;
+		 * 
+		 * 
+		 * case "backwards": autonMode = new Middle(); break; default:
+		 * DriverStation.reportError("A O nothing in the Auto Mode", false); }
+		 */
+		autonMode = new Middle(drive);
+
+		/*
+		 * autoSelected = chooser.getSelected(); autoSelected =
+		 * SmartDashboard.getString("Auto Selector", defaultAuto);
+		 * System.out.println("Auto selected: " + autoSelected);
+		 */
 
 	}
 
@@ -287,134 +273,141 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		/*
-		if(!encoderHasRun) {
-			autonScheme.moveAuton();
-			encoderHasRun = true;
+		 * if(!encoderHasRun) { autonScheme.moveAuton(); encoderHasRun = true; }
+		 */
+
+		// RobotBuilder will generate code automatically that
+		// runs the scheduler every driver station update period (about every
+		// 20ms).
+		// This will cause the selected autonomous command to run
+
+
+		/*
+		 * if (!pipeline.filterContoursOutput().isEmpty()) { Rect r =
+		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+		 * 
+		 * synchronized (imgLock) { centerX = r.x + r.width +r.width*0.76;
+		 * //centerY = (r.height / 2 );
+		 * 
+		 * } }
+		 */
+
+		// Scheduler.getInstance().run();
+
+		//get auton information from vision thread
+		double centerX;
+		
+		synchronized(imgLock){
+			centerX = this.centerX;
 		}
-		*/
 		
-		
-		
-		//RobotBuilder will generate code automatically that 
-		//runs the scheduler every driver station update period (about every 20ms). 
-		//This will cause the selected autonomous command to run
-		
-		
-		Scheduler.getInstance().run();
-		
-		
-		
-		switch (autoSelected) {
-		case customAuto:
-			autonMode.run(centerX, centerY);
-			break;
-		case defaultAuto:
-		default:
-			autonMode.run(centerX, centerY);
-			// Put default auto code here
-			break;
-		}
-		
-		}
+		autonMode.run(gearCamera, centerX, centerY);
+
+		/*
+		 * switch (autoSelected) { case customAuto: autonMode.run(centerX,
+		 * centerY); break; case defaultAuto: default: autonMode.run(centerX,
+		 * centerY); // Put default auto code here break; }
+		 */
+	}
 
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
 	public void teleopPeriodic() {
-		
+
 		currentScheme.drive(drive, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
-		
+
 	}
-	
+
 	@Override
 	public void testInit() {
-		
+
 	}
+
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
-		//led.set(true);
-		//led.updateDutyCycle(255);
-		//led.enablePWM(255);
+		// led.set(true);
+		// led.updateDutyCycle(255);
+		// led.enablePWM(255);
 	}
-	
+
 	private void loadProperties() {
-		try{
-			//Ports
+		try {
+			// Ports
 			leftRearMotor = properties.getInt("leftRearMotor");
 			leftFrontMotor = properties.getInt("leftFrontMotor");
 			rightFrontMotor = properties.getInt("rightFrontMotor");
 			rightRearMotor = properties.getInt("rightRearMotor");
 			leftMiddleMotor = properties.getInt("leftMiddleMotor");
 			rightMiddleMotor = properties.getInt("rightMiddleMotor");
-			
-			//CANTalon or Talon drive?
+
+			// CANTalon or Talon drive?
 			speedControllerType = properties.getInt("speedControllerType");
-			
+
 			climbMotor = properties.getInt("climbMotor");
-			
+
 			frontMotor = properties.getInt("frontMotor");
 			shootMotor = properties.getInt("shootMotor");
-			
+
 			slowSpeedConstant = properties.getDouble("slowSpeedConstant");
 			normalSpeedConstant = properties.getDouble("normalSpeedConstant");
 			fastSpeedConstant = properties.getDouble("fastSpeedConstant");
-		
-		} catch(SingularityPropertyNotFoundException e){
-			DriverStation.reportError("The property \"" + e.getPropertyName()
-				+ "was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
-				+ "\n - Typo in property name in code or file/n - using a different properties file than the one that actually contains the property you are looking for",
-				false);
+
+		} catch (SingularityPropertyNotFoundException e) {
+			DriverStation.reportError(
+					"The property \"" + e.getPropertyName()
+							+ "was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
+							+ "\n - Typo in property name in code or file/n - using a different properties file than the one that actually contains the property you are looking for",
+					false);
 			e.printStackTrace();
 		}
-		
+
 		SmartDashboard.putString("DB/String 9",
-				"slow: " + slowSpeedConstant + " | normal: " + normalSpeedConstant + "| fast: " +fastSpeedConstant);
+				"slow: " + slowSpeedConstant + " | normal: " + normalSpeedConstant + "| fast: " + fastSpeedConstant);
 	}
-	
+
 	private void setDefaultProperties() {
 
-		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
-		
-		//drive:
+		// Holds the integer port id's for for the motors.The values are
+		// assigned when properties are loaded.
+
+		// drive:
 		properties.addDefaultProp("leftRearMotor", 2);
 		properties.addDefaultProp("leftFrontMotor", 6);
 		properties.addDefaultProp("rightFrontMotor", 3);
 		properties.addDefaultProp("rightRearMotor", 4);
 		properties.addDefaultProp("rightMiddleMotor", 10);
 		properties.addDefaultProp("leftMiddleMotor", 7);
-		
-		//climber:
+
+		// climber:
 		properties.addDefaultProp("climbMotor", 5);
-		
-		//intake:
+
+		// intake:
 		properties.addDefaultProp("frontMotor", 9);
-		
-		//low goal:
+
+		// low goal:
 		properties.addDefaultProp("shootMotor", 8);
-		
-		//CANTalon = 0 or Talon = 1
+
+		// CANTalon = 0 or Talon = 1
 		speedControllerType = SingularityDrive.CANTALON_DRIVE;
-		
-		//Speed mode
+
+		// Speed mode
 		properties.addDefaultProp("slowSpeedConstant", 0.4);
 		properties.addDefaultProp("normalSpeedConstant", 0.8);
 		properties.addDefaultProp("fastSpeedConstant", 1.0);
-		
+
 		properties.addDefaultProp("autonMode", "backwards");
-		
+
 		/*
-		 *high goal:
-		 *highMotor = INSERTPORT;
+		 * high goal: highMotor = INSERTPORT;
 		 */
 
-		
 	}
 }
-
