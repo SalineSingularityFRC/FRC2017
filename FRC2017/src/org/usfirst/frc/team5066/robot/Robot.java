@@ -66,6 +66,7 @@ public class Robot extends IterativeRobot {
 	AutonomousMode autonMode;
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
+	public static UsbCamera camera;
 	
 	private VisionThread visionThread;
 	private double centerX = 0.0;
@@ -183,10 +184,11 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			//TODO not sure what this will be
-							
-			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			
+			camera = CameraServer.getInstance().startAutomaticCapture();
 			camera.setResolution(324, 240);
-				
+			
+			/* Already created in Middle.java
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -199,9 +201,8 @@ public class Robot extends IterativeRobot {
 		        }
 			});
 			visionThread.start();
-		
+		*/
 		}
-		
 		
 		
 		/*
@@ -285,8 +286,6 @@ public class Robot extends IterativeRobot {
 			encoderHasRun = true;
 		}
 		*/
-		
-		
 		
 		//RobotBuilder will generate code automatically that 
 		//runs the scheduler every driver station update period (about every 20ms). 
