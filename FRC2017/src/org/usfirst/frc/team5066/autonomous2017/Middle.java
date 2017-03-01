@@ -86,20 +86,18 @@ public class Middle extends Command{
 		synchronized (imgLock) {
 			centerX = this.centerX;
 		}
-		
+
 		if (centerX >= 140 && centerX <= 180){ //&& centerY == 120){
 			
 			drive.hDrive(0.1, 0, 0, true, speedMode);
 			
 		}
 		else{
-			
 			if(centerX > 180 ){
 				drive.hDrive(0, 0.2, 0, true, speedMode);
 				
 			}
 			else{
-				
 				drive.hDrive(0, -0.2, 0, true, speedMode);
 			}
 			
