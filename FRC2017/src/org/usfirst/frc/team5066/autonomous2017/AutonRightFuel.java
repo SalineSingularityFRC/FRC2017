@@ -38,8 +38,8 @@ public class AutonRightFuel extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveRecordableAuton() {
-		
+	public String getRecordableURL() {
+		return "NoURLFound";
 	}
 
 }

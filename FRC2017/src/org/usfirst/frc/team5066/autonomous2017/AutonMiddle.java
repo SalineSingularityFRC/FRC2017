@@ -26,7 +26,7 @@ public class AutonMiddle extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveRecordableAuton() {
-		
+	public String getRecordableURL() {
+		return "NoURLFound";
 	}
 }

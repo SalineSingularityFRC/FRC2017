@@ -8,6 +8,8 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class OneController implements ControlScheme {
 	
@@ -50,10 +52,12 @@ public class OneController implements ControlScheme {
 	public void controlIntake(SingularityIntake intake) {
 		
 		if (xbox.getYButton() && !prevY) on = on ? false : true;
-		if (!on) intake.setSpeed(0.0);
+		if (xbox.getTriggerRight() > 0.6) intake.setSpeed(1.0);
 		else if (xbox.getXButton()) intake.setSpeed(-1.0);
+		else if (!on) intake.setSpeed(0.0);
 		else intake.setSpeed(1.0);
-
+		
+		SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
 	}
 
 }

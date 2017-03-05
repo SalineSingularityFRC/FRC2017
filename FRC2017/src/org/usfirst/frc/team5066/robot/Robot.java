@@ -5,6 +5,7 @@ import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
+import org.usfirst.frc.team5066.library.RangeFinder;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
@@ -126,9 +127,20 @@ public class Robot extends IterativeRobot {
 	final int strafeXValue = 10;
 	
 	
-	Ultrasonic red1;
-	final int input = 0, output = 1;
+	Ultrasonic redLeft;
+	final int inputLeft = 0, outputLeft = 1;
+	//Ultrasonic redRight;
+	//final int inputRight = 2, outputRight = 3;
 	final int autonModeUltraDist = 48;
+	
+	/*
+	 * For the nice silver ultrasonics,
+	 * plug the main port into analog, which is the port no.
+	 * Also, plug the random red wire into the 12V/2A
+	 * on the voltage Regulator Module
+	 */
+	RangeFinder silverLeft;
+	final int ultraPort = 0;
 	
 	
 	//Holds the current control scheme
@@ -161,22 +173,10 @@ public class Robot extends IterativeRobot {
 	private SingularityDrive drive;
 	
 	
-	
-	/*
-	 *high goal:
-	 *int highMotor;
-	 */
-	
 	LowGoalShooter shooter;
 	SingularityClimber climber;
 	SingularityIntake intake;
 	SingularityProperties properties;
-	/*
-	 * SingularityIntake intake;
-	 * LowGoalShooter shooter;
-	 * HighGoalShooter highShooter;
-	 * SingularityClimber climber;
-	 */
 	
 	final int XBOX_PORT = 0;
 	final int BIG_JOYSTICK_PORT = 1;
@@ -248,8 +248,13 @@ public class Robot extends IterativeRobot {
 		    visionThread.start();
 		    
 		    
-		    red1 = new Ultrasonic(input, output);
-		    red1.setAutomaticMode(true);
+		    redLeft = new Ultrasonic(inputLeft, outputLeft);
+		    redLeft.setAutomaticMode(true);
+		    
+		    //redRight = new Ultrasonic(inputRight, outputRight);
+		    //redRight.setAutomaticMode(true);
+		    
+		    silverLeft = new RangeFinder(ultraPort);
 		    
 		    xbox = new XboxController(XBOX_PORT);
 		    
@@ -400,13 +405,13 @@ public class Robot extends IterativeRobot {
 		double turn = centerX - (IMG_WIDTH / 2);
 		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-		if (red1.getRangeInches() > autonModeUltraDist) {
+		if (redLeft.getRangeInches() > autonModeUltraDist) {
 			SmartDashboard.putString("DB/String 0", "Turn: " + turn);
 			//drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
 		}
 		
 		else {
-			if (red1.getRangeInches() < 4) {
+			if (redLeft.getRangeInches() < 4) {
 				SmartDashboard.putString("DB/String 0", "We are not moving");
 			}
 			else if(centerY < 80){

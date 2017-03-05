@@ -34,7 +34,7 @@ public abstract class AutonControlScheme {
 	}
 	
 	public abstract void moveEncoderAuton();
-	public abstract void moveRecordableAuton();
+	public abstract String getRecordableURL();
 	
 	/**
 	 * 

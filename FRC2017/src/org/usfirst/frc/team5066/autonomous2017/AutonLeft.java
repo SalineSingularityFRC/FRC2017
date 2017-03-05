@@ -14,14 +14,8 @@ import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 public class AutonLeft extends AutonControlScheme {
 	
-	Reader reader;
-	
-	public AutonLeft(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake, String recordURL){
+	public AutonLeft(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake){
 		super(drive, shooter, intake);
-		
-		try {
-			reader = 
-		}
 	}
 	
 	@Override
@@ -35,7 +29,7 @@ public class AutonLeft extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveRecordableAuton() {
-		
+	public String getRecordableURL() {
+		return "NoURLFound";
 	}
 }
