@@ -60,7 +60,7 @@ public abstract class AutonControlScheme {
 		for(int i = acceleration; i > 0; i--) {
 			if (2 * (acceleration - i + 1) > distance - 2) break;
 			do {
-				drive.hDriveTank(vertSpeed/i, vertSpeed/i, 0.0, false, SpeedMode.NORMAL);
+				drive.hDriveStraightEncoder(vertSpeed/i, 0.0);
 			} 
 			while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -2.0 / DistancePerRevolution
 				&& (drive.getLeftPosition() + drive.getRightPosition()) / 2 < 2.0 / DistancePerRevolution);
@@ -72,7 +72,7 @@ public abstract class AutonControlScheme {
 			
 		//normal speed
 		do {
-			drive.hDriveTank(verticalSpeed, verticalSpeed, 0.0, false, SpeedMode.NORMAL);
+			drive.hDriveStraightEncoder(verticalSpeed, 0.0);
 		} 
 		while ((drive.getLeftPosition() + drive.getRightPosition()) / 2 > -(distance - distanceAccelerated - 2) / DistancePerRevolution
 			&& (drive.getLeftPosition() + drive.getRightPosition()) / 2 < (distance - distanceAccelerated - 2) / DistancePerRevolution);

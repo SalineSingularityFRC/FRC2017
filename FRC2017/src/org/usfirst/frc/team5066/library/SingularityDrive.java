@@ -45,6 +45,8 @@ public class SingularityDrive {
 	private final static double DEFAULT_FAST_SPEED_CONSTANT = 1.0;
 
 	private int talonType;
+	
+	private static final double DRIVESTRAIGHT = 1.1;
 
 
 	/**
@@ -153,7 +155,11 @@ public class SingularityDrive {
 	public double getMiddlePosition(){
 		return (((CANTalon) m_leftMiddleMotor).getPosition());
 	}
-
+	
+	public double leftOverRight() {
+		return getLeftPosition() / getRightPosition();
+	}
+	
 	
 	
 	private double clamp(double velocityMultiplier) {
@@ -212,24 +218,6 @@ public class SingularityDrive {
 		else return false;
 	}
 	*/
-	/**
-	 * So called "arcade drive" method for driving a robot around. Drives much
-	 * like one would expect a vehicle to move with a joy stick.
-	 * 
-	 * @param translation
-	 *            Speed and direction at which to translate forwards
-	 * @param rotation
-	 *            Speed and direction at which to rotate clockwise
-	 * @param squaredInputs
-	 *            Whether or not to square the magnitude of the input values in
-	 *            order to provide for finer motor control at lower velocities
-	 * @param speedMode
-	 *            The enum value corrresponding to the current speed mode: slow,
-	 *            normal, or fast
-	 * @param reverse
-	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
-	 *            and 0 = forward
-	 */
 	
 	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		
@@ -306,6 +294,57 @@ public class SingularityDrive {
 		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
 				
 	}
+	
+	/*
+	 * A method for autonomously moving straight forward,
+	 * using encoders to keep on a straight path.
+	 * @param speed This is the speed to move at.
+	 * Note: speed is not changed by squaredInputs or velocityMultiplier
+	 */
+	public void hDriveStraightEncoder(double vertical, double horizontal) {
+		
+		double vertMax = Math.max(1,  Math.abs(vertical));
+		double strafeMax = Math.max(1,  Math.abs(horizontal));
+		
+		m_frontLeftMotor.set(-vertical / (vertMax * leftOverRight()));
+		m_rearLeftMotor.set(-vertical / (vertMax * leftOverRight()));
+		m_frontRightMotor.set((vertical * leftOverRight()) / vertMax);
+		m_rearRightMotor.set((vertical * leftOverRight()) / vertMax);
+		m_rightMiddleMotor.set(-horizontal / strafeMax);
+		m_leftMiddleMotor.set(horizontal / strafeMax);
+	}
+	
+	public void hDriveStraightConstant(double vertical, double horizontal) {
+		
+		double vertMax = Math.max(1,  Math.abs(vertical));
+		double strafeMax = Math.max(1, Math.abs(horizontal));
+		
+		m_frontLeftMotor.set((-vertical * DRIVESTRAIGHT) / vertMax);
+		m_rearLeftMotor.set((-vertical * DRIVESTRAIGHT) / vertMax);
+		m_frontRightMotor.set(vertical / (vertMax * DRIVESTRAIGHT));
+		m_rearRightMotor.set(vertical / (vertMax * DRIVESTRAIGHT));
+		m_rightMiddleMotor.set(-horizontal / strafeMax);
+		m_leftMiddleMotor.set(horizontal / strafeMax);
+	}
+	
+	/**
+	 * So called "arcade drive" method for driving a robot around. Drives much
+	 * like one would expect a vehicle to move with a joy stick.
+	 * 
+	 * @param translation
+	 *            Speed and direction at which to translate forwards
+	 * @param rotation
+	 *            Speed and direction at which to rotate clockwise
+	 * @param squaredInputs
+	 *            Whether or not to square the magnitude of the input values in
+	 *            order to provide for finer motor control at lower velocities
+	 * @param speedMode
+	 *            The enum value corrresponding to the current speed mode: slow,
+	 *            normal, or fast
+	 * @param reverse
+	 *            The value (180 or 0) to control reverse drive. 180 = reverse 
+	 *            and 0 = forward
+	 */
 	
 	public void arcade(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		double translationVelocity = translation, rotationVelocity = rotation;

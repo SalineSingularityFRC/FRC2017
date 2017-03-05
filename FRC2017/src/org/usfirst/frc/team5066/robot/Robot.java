@@ -397,6 +397,9 @@ public class Robot extends IterativeRobot {
             shooter.setSpeed((Double) current.get("shooter") > 0.6);
 		}
 		
+		//reset encoders to 0
+		drive.resetAll();
+		
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
@@ -405,21 +408,22 @@ public class Robot extends IterativeRobot {
 		double turn = centerX - (IMG_WIDTH / 2);
 		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-		if (redLeft.getRangeInches() > autonModeUltraDist) {
+		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
+		if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
 			SmartDashboard.putString("DB/String 0", "Turn: " + turn);
 			//drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
 		}
 		
 		else {
-			if (redLeft.getRangeInches() < 4) {
+			if (redLeft.getRangeInches() < 4 /*|| redRight.getRangeInches() < 4*/) {
 				SmartDashboard.putString("DB/String 0", "We are not moving");
-				//drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.NORMAL);
+				//drive.hDriveStraightConstant(0.0, 0.0);
 			}
 			else if(centerY < 80){
 				SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
-				//drive.hDrive(0.4, 0.0, 0, true, SpeedMode.NORMAL);
+				//drive.hDriveStraightEncoder(-0.4, 0.0);
 			}
-			
+			/*
 			else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
 				SmartDashboard.putString("DB/String 0", "Strafe: moving left");
 				//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
@@ -432,9 +436,13 @@ public class Robot extends IterativeRobot {
 			
 			else {
 				SmartDashboard.putString("DB/String 0", "moving forward");
-				//drive.hDrive(0.4, 0.0, 0, true, SpeedMode.NORMAL);
+				//drive.hDriveStraightEncoder(-0.4, 0.0);
 			}
-			
+			*/
+			else {
+				SmartDashboard.putString("DB/String 0", "Going forward, strafing");
+				//drive.hDriveStraightEncoder(-0.4, turn * 0.005);
+			}
 		}
 		
 		//RobotBuilder will generate code automatically that 
