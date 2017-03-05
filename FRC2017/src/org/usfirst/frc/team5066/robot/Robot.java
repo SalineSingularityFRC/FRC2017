@@ -155,7 +155,7 @@ public class Robot extends IterativeRobot {
 	//drive:
 	int leftRearMotor, leftFrontMotor, rightFrontMotor, rightRearMotor, rightMiddleMotor, leftMiddleMotor; //TEST
 	//climber:
-	int climbMotor;
+	int climbPlanetary, climbWorm;
 	//intake:
 	int frontMotor;
 	//low goal:
@@ -224,7 +224,7 @@ public class Robot extends IterativeRobot {
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
 			shooter = new LowGoalShooter(shootMotor);
-			climber = new SingularityClimber(climbMotor);
+			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
 			autonScheme = new AutonMiddle(drive, shooter, intake);
@@ -413,6 +413,7 @@ public class Robot extends IterativeRobot {
 		else {
 			if (redLeft.getRangeInches() < 4) {
 				SmartDashboard.putString("DB/String 0", "We are not moving");
+				//drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.NORMAL);
 			}
 			else if(centerY < 80){
 				SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
@@ -516,7 +517,8 @@ public class Robot extends IterativeRobot {
 			//CANTalon or Talon drive?
 			speedControllerType = properties.getInt("speedControllerType");
 			
-			climbMotor = properties.getInt("climbMotor");
+			climbPlanetary = properties.getInt("climbPlanetary");
+			climbWorm = properties.getInt("ClimbWorm");
 			
 			frontMotor = properties.getInt("frontMotor");
 			shootMotor = properties.getInt("shootMotor");
@@ -550,7 +552,8 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("leftMiddleMotor", 7);
 		
 		//climber:
-		properties.addDefaultProp("climbMotor", 5);
+		properties.addDefaultProp("climbPlanetary", 5);
+		properties.addDefaultProp("climbWorm", 14);
 		
 		//intake:
 		properties.addDefaultProp("frontMotor", 9);
