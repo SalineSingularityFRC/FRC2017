@@ -3,6 +3,8 @@ package org.usfirst.frc.team5066.controller2017;
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
+import org.usfirst.frc.team5066.library.playback.Reader;
+import org.usfirst.frc.team5066.library.playback.Recorder;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
@@ -15,13 +17,24 @@ public abstract class AutonControlScheme {
 	private static SingularityDrive drive;
 	private static LowGoalShooter shooter;
 	private static SingularityIntake intake;
+	
+	boolean record, play;
+	String recordingURL;
+	
+	long initialTime;
+	Reader reader;
+    Recorder recorder;
+    int currentRecordingIndex;
+	
 	public AutonControlScheme(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		this.drive = drive;
 		this.shooter = shooter;
 		this.intake = intake;
+		
 	}
 	
-	public abstract void moveAuton();
+	public abstract void moveEncoderAuton();
+	public abstract void moveRecordableAuton();
 	
 	/**
 	 * 

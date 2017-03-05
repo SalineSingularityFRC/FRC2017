@@ -115,6 +115,10 @@ public class Reader {
 		}
 	}
 	
+    public boolean isDone(long time) {
+        return (Long) ((JSONObject) data.get(data.size() - 1)).get("time") < time;
+    }
+	
 	public void close() {
 		try {
 			br.close();

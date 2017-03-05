@@ -18,10 +18,15 @@ public class AutonMiddle extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveAuton() {
+	public void moveEncoderAuton() {
 		
 		//move backward 52in
 		super.vertical(0.75, 93.25, true, 5);
 		
-	}	
+	}
+	
+	@Override
+	public void moveRecordableAuton() {
+		
+	}
 }

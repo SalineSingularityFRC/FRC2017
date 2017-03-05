@@ -17,7 +17,7 @@ public class AutonRightFuel extends AutonControlScheme {
 	}
 
 	@Override
-	public void moveAuton() {
+	public void moveEncoderAuton() {
 		
 		//slide in front of the boiler
 		super.horizontal(0.75, 32, false, 5);
@@ -34,6 +34,11 @@ public class AutonRightFuel extends AutonControlScheme {
 		//shoot fuel
 		super.shoot(3);
 		super.vertical(0.75, 136.62, true, 5);
+		
+	}
+	
+	@Override
+	public void moveRecordableAuton() {
 		
 	}
 

@@ -18,13 +18,18 @@ public class AutonRight extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveAuton() {
+	public void moveEncoderAuton() {
 		
 		//move backward 52in
 		super.horizontal(0.75, 32, true, 5);
 		
 		//move backward 136.62in
 		super.vertical(0.75, 136.62, true, 5);
+		
+	}
+	
+	@Override
+	public void moveRecordableAuton() {
 		
 	}
 }

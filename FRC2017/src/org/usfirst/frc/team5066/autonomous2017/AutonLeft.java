@@ -8,22 +8,34 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
+import org.usfirst.frc.team5066.library.playback.Reader;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 public class AutonLeft extends AutonControlScheme {
 	
-	public AutonLeft(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake){
+	Reader reader;
+	
+	public AutonLeft(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake, String recordURL){
 		super(drive, shooter, intake);
+		
+		try {
+			reader = 
+		}
 	}
 	
 	@Override
-	public void moveAuton() {
+	public void moveEncoderAuton() {
 		
 		//move backward 52in
 		super.horizontal(0.75, 32, true, 5);
 		
 		//move backward 136.62in
 		super.vertical(0.75, 136.62, true, 5);
-	}	
+	}
+	
+	@Override
+	public void moveRecordableAuton() {
+		
+	}
 }

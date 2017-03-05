@@ -21,7 +21,7 @@ public class AutonLeftFuel extends AutonControlScheme {
 	}
 	
 	@Override
-	public void moveAuton() {
+	public void moveEncoderAuton() {
 		
 		//slide in front of the boiler
 		super.horizontal(.75, 32, true, 5);
@@ -31,5 +31,10 @@ public class AutonLeftFuel extends AutonControlScheme {
 		//move backward 136.62in
 		super.vertical(0.75, 136.62, true, 5);
 		
-	}	
+	}
+	
+	@Override
+	public void moveRecordableAuton() {
+		
+	}
 }
