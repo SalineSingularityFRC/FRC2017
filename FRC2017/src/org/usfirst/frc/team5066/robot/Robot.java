@@ -4,6 +4,7 @@ import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.OneController;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.RangeFinder;
 import org.usfirst.frc.team5066.library.SingularityDrive;
@@ -86,23 +87,10 @@ public class Robot extends IterativeRobot {
     Recorder recorder;
     int currentRecordingIndex;
 	
-	/*
+	
 	//Create a variable to hold a reference to a SendableChooser object.
 	Command autonomousCommand;
 	SendableChooser autoChooser;
-	
-	
-	AutonomousMode autonMode;
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
-	public static UsbCamera camera;
-	
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private double centerY = 0.0;
-	
-	private final Object imgLock = new Object();
-	*/
 	
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
@@ -116,7 +104,7 @@ public class Robot extends IterativeRobot {
 	
 	public static UsbCamera camera;
 	
-
+	
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
 	
@@ -128,9 +116,9 @@ public class Robot extends IterativeRobot {
 	
 	
 	Ultrasonic redLeft;
-	final int inputLeft = 0, outputLeft = 1;
-	//Ultrasonic redRight;
-	//final int inputRight = 2, outputRight = 3;
+	final int inputLeft = 4, outputLeft = 5;
+	Ultrasonic redRight;
+	final int inputRight = 1, outputRight = 2;
 	final int autonModeUltraDist = 48;
 	
 	/*
@@ -140,8 +128,9 @@ public class Robot extends IterativeRobot {
 	 * on the voltage Regulator Module
 	 */
 	RangeFinder silverLeft;
-	final int ultraPort = 0;
-	
+	final int silverLeftPort = 0;
+	RangeFinder silverRight;
+	final int silverRightPort = 0;
 	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
@@ -204,29 +193,32 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("My Auto", new Left());
 		SmartDashboard.putData("Auto choices", autoChooser);
 		*/
-		/*
+		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
 		}
 		catch (Exception e) {
 			
-			setDefaultProperties();
-			
 			properties = new SingularityProperties();
-			DriverStation.reportError("error in properties", true); 
+			DriverStation.reportError("error finding properties files", true); 
 			
 					    
 		} finally {
 			
+
+			setDefaultProperties();
 			
 			loadProperties();
 			
+
+		    silverLeft = new RangeFinder(silverLeftPort);
+		    //silverRight = new RangeFinder(silverRightPort);
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
-			shooter = new LowGoalShooter(shootMotor);
+			shooter = new LowGoalShooter(shootMotor, drive, silverLeft);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
-			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+			
 			autonScheme = new AutonMiddle(drive, shooter, intake);
 			//led = new DigitalOutput(2);
 			
@@ -235,6 +227,9 @@ public class Robot extends IterativeRobot {
 			//TODO not sure what this will be*/
 			camera = CameraServer.getInstance().startAutomaticCapture();
 		    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		    
+		    //currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+		    currentScheme = new OneController(XBOX_PORT);
 		    
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
@@ -249,50 +244,23 @@ public class Robot extends IterativeRobot {
 		    
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
-		    redLeft.setAutomaticMode(true);
+		    //redLeft.setAutomaticMode(true);
 		    
-		    //redRight = new Ultrasonic(inputRight, outputRight);
+		    redRight = new Ultrasonic(inputRight, outputRight);
 		    //redRight.setAutomaticMode(true);
 		    
-		    silverLeft = new RangeFinder(ultraPort);
 		    
 		    xbox = new XboxController(XBOX_PORT);
 		    
-		    
-		        /*
+		     
 		    //drive = new RobotDrive(1, 2);
-			camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(324, 240);
-			
-			/* Already created in Middle.java
-			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
-		        if (!pipeline.filterContoursOutput().isEmpty()) {
-		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-			            
-		            synchronized (imgLock) {
-		            	centerX = r.x + r.width +r.width*0.76;
-						//centerY = (r.height / 2 );
-						          
-		            }
-		        }
-			});
-			visionThread.start();
-		*/
-		//}
+			// }
+
+			// js = new Joystick(XBOX_PORT);			
+
+		//autonMode = AutonMode.ENCODER;
 		
-		
-		/*
-		 * js = new Joystick(XBOX_PORT);
-		 * 
-		 * 
-		 */ 
-		 //intake = new SingularityIntake(frontMotor);
-		  //shooter = new LowGoalShooter(shootMotor);
-		  //climber = new SingularityClimber(climbMotor);
-		
-		autonMode = AutonMode.ENCODER;
-		
-		
+		}
 	}
 
 		
@@ -409,13 +377,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-		if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
+		if (redLeft.getRangeInches() > autonModeUltraDist || redRight.getRangeInches() > autonModeUltraDist) {
 			SmartDashboard.putString("DB/String 0", "Turn: " + turn);
 			//drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
 		}
 		
 		else {
-			if (redLeft.getRangeInches() < 4 /*|| redRight.getRangeInches() < 4*/) {
+			if (redLeft.getRangeInches() < 4 || redRight.getRangeInches() < 4) {
 				SmartDashboard.putString("DB/String 0", "We are not moving");
 				//drive.hDriveStraightConstant(0.0, 0.0);
 			}
@@ -526,7 +494,7 @@ public class Robot extends IterativeRobot {
 			speedControllerType = properties.getInt("speedControllerType");
 			
 			climbPlanetary = properties.getInt("climbPlanetary");
-			climbWorm = properties.getInt("ClimbWorm");
+			climbWorm = properties.getInt("climbWorm");
 			
 			frontMotor = properties.getInt("frontMotor");
 			shootMotor = properties.getInt("shootMotor");
@@ -537,7 +505,7 @@ public class Robot extends IterativeRobot {
 		
 		} catch(SingularityPropertyNotFoundException e){
 			DriverStation.reportError("The property \"" + e.getPropertyName()
-				+ "was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
+				+ " was not found --> CODE SPLINTERED(CRASHED)!!!!!! \n _POSSIBLE CAUSES:\n - Property missing in file and defaults"
 				+ "\n - Typo in property name in code or file/n - using a different properties file than the one that actually contains the property you are looking for",
 				false);
 			e.printStackTrace();
