@@ -8,6 +8,7 @@ package org.usfirst.frc.team5066.manymouse;
  */
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -19,7 +20,14 @@ public class ClientManyMouse {
 	private Socket socket;
 	private DataOutputStream os;
 	private BufferedReader is;
-
+	
+	Scanner sc;
+	
+	public ClientManyMouse(){
+		
+		this.open();		
+	}
+	
 	public ClientManyMouse(String host) {
 
 		this.HOST = host;
@@ -50,6 +58,9 @@ public class ClientManyMouse {
 				String responseLine = "";
 				if ((responseLine = is.readLine()) != null) {
 					// System.out.println("loop");
+					
+					//Extract useful data
+					
 					DriverStation.reportWarning("Server: " + responseLine, false);
 				}
 
