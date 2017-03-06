@@ -129,10 +129,10 @@ public class Robot extends IterativeRobot {
 	
 	Ultrasonic redLeft;
 	final int inputLeft = 0, outputLeft = 1;
-	//Ultrasonic redRight;
-	//final int inputRight = 2, outputRight = 3;
+	Ultrasonic redRight;
+	final int inputRight = 2, outputRight = 3;
 	final int autonModeUltraDist = 48;
-	
+	final double ultraRotate = 0.1;
 	/*
 	 * For the nice silver ultrasonics,
 	 * plug the main port into analog, which is the port no.
@@ -140,7 +140,9 @@ public class Robot extends IterativeRobot {
 	 * on the voltage Regulator Module
 	 */
 	RangeFinder silverLeft;
-	final int ultraPort = 0;
+	final int ultraPortLeft = 0;
+	RangeFinder silverRight;
+	final int ultraPortRight = 1;
 	
 	
 	//Holds the current control scheme
@@ -204,7 +206,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("My Auto", new Left());
 		SmartDashboard.putData("Auto choices", autoChooser);
 		*/
-		/*
+		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
 		}
@@ -223,16 +225,16 @@ public class Robot extends IterativeRobot {
 			
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
-			shooter = new LowGoalShooter(shootMotor);
+			shooter = new LowGoalShooter(shootMotor, drive, silverLeft, silverRight);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
-			autonScheme = new AutonMiddle(drive, shooter, intake);
-			//led = new DigitalOutput(2);
+			
+			//autonScheme = new AutonMiddle(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			//TODO not sure what this will be*/
+			//TODO not sure what this will be
 			camera = CameraServer.getInstance().startAutomaticCapture();
 		    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		    
@@ -251,20 +253,22 @@ public class Robot extends IterativeRobot {
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
 		    
-		    //redRight = new Ultrasonic(inputRight, outputRight);
-		    //redRight.setAutomaticMode(true);
+		    redRight = new Ultrasonic(inputRight, outputRight);
+		    redRight.setAutomaticMode(true);
 		    
-		    silverLeft = new RangeFinder(ultraPort);
+		    silverLeft = new RangeFinder(ultraPortLeft);
+		    silverRight = new RangeFinder(ultraPortRight);
 		    
 		    xbox = new XboxController(XBOX_PORT);
 		    
+		    autonMode = autonMode.RECORDABLE;
 		    
-		        /*
+		    
 		    //drive = new RobotDrive(1, 2);
 			camera = CameraServer.getInstance().startAutomaticCapture();
 			camera.setResolution(324, 240);
 			
-			/* Already created in Middle.java
+			//Already created in Middle.java
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -277,22 +281,23 @@ public class Robot extends IterativeRobot {
 		        }
 			});
 			visionThread.start();
-		*/
-		//}
+		    
+		   
 		
 		
-		/*
-		 * js = new Joystick(XBOX_PORT);
-		 * 
-		 * 
-		 */ 
-		 //intake = new SingularityIntake(frontMotor);
-		  //shooter = new LowGoalShooter(shootMotor);
-		  //climber = new SingularityClimber(climbMotor);
+		    /*
+		     * js = new Joystick(XBOX_PORT);
+		     * 
+		     * 
+		     */ 
+		    //intake = new SingularityIntake(frontMotor);
+		    //shooter = new LowGoalShooter(shootMotor);
+		    //climber = new SingularityClimber(climbMotor);
 		
-		autonMode = AutonMode.ENCODER;
+		    autonMode = AutonMode.ENCODER;
 		
 		
+		}
 	}
 
 		
@@ -323,7 +328,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		/*
-		//++encoderHasRun = false;
+		//encoderHasRun = false;
 		
 		//When the autonomous period starts the SendableChooser object is polled to get
 		//the selected command and that command is scheduled.
@@ -363,7 +368,7 @@ public class Robot extends IterativeRobot {
 	    //drive = new RobotDrive(1, 2);
 		
 		// Chooses the first recording
-        currentRecordingIndex = 0;
+        currentRecordingIndex = autonScheme.getRecordableURL();
  
         // Recordable autonomous
         if (play) {
@@ -377,7 +382,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		
+		/*
 		if (autonMode == autonMode.ENCODER && !preAutonHasRun) {
 			autonScheme.moveEncoderAuton();
 			preAutonHasRun = true;
@@ -388,7 +393,7 @@ public class Robot extends IterativeRobot {
                     && currentRecordingIndex < playbackURLs.length - 1) {
                 reader.close();
                 // This will choose the next recording
-                reader = initializeReader(playbackURLs[++currentRecordingIndex]);
+                //reader = initializeReader(playbackURLs[++currentRecordingIndex]);
             }
  
             JSONObject current = reader.getDataAtTime(System.currentTimeMillis() - initialTime);
@@ -397,79 +402,85 @@ public class Robot extends IterativeRobot {
             shooter.setSpeed((Double) current.get("shooter") > 0.6);
 		}
 		
-		//reset encoders to 0
-		drive.resetAll();
-		
-		double centerX;
-		synchronized (imgLock) {
-			centerX = this.centerX;
-			centerY = this.centerY;
-		}
-		double turn = centerX - (IMG_WIDTH / 2);
-		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
-		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-		if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
-			SmartDashboard.putString("DB/String 0", "Turn: " + turn);
-			//drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
-		}
-		
-		else {
-			if (redLeft.getRangeInches() < 4 /*|| redRight.getRangeInches() < 4*/) {
-				SmartDashboard.putString("DB/String 0", "We are not moving");
-				//drive.hDriveStraightConstant(0.0, 0.0);
-			}
-			else if(centerY < 80){
-				SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
-				//drive.hDriveStraightEncoder(-0.4, 0.0);
-			}
-			/*
-			else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
-				SmartDashboard.putString("DB/String 0", "Strafe: moving left");
-				//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+		else {*/
+			//reset encoders to 0
+			drive.resetAll();
+			
+			double centerX;
+			synchronized (imgLock) {
+				centerX = this.centerX;
+				centerY = this.centerY;
 			}
 			
-			else if (centerX > (IMG_WIDTH/2) + strafeXValue) {
-				SmartDashboard.putString("DB/String 0", "Strafe: moving right");
-				//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+			double turn = centerX - (IMG_WIDTH / 2);
+			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
+			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
+			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
+			
+			if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
+				SmartDashboard.putString("DB/String 0", "Turn: " + turn);
+				drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
 			}
 			
 			else {
-				SmartDashboard.putString("DB/String 0", "moving forward");
-				//drive.hDriveStraightEncoder(-0.4, 0.0);
+				if (redLeft.getRangeInches() < 4/* || redRight.getRangeInches() < 4*/) {
+					SmartDashboard.putString("DB/String 0", "We are not moving");
+					SmartDashboard.putString("DB/String 4", "null");
+					drive.hDriveStraightConstant(0.0, 0.0, 0.0);
+				}
+				else if(centerY < 80){
+					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
+					SmartDashboard.putString("DB/String 4", "null");
+					drive.hDriveStraightConstant(-0.4, 0.0, 0.0);
+				}
+				/*
+				else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
+					SmartDashboard.putString("DB/String 0", "Strafe: moving left");
+					//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+				}
+				
+				else if (centerX > (IMG_WIDTH/2) + strafeXValue) {
+					SmartDashboard.putString("DB/String 0", "Strafe: moving right");
+					//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+				}
+				
+				else {
+					SmartDashboard.putString("DB/String 0", "moving forward");
+					//drive.hDriveStraightEncoder(-0.4, 0.0);
+				}
+				 */
+				else {
+					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
+					SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
+					drive.hDriveStraightConstant(-0.4, turn * 0.005, (redLeft.getRangeInches() /* - redRight.getRangeInches())  ultraRotate */));
+				}
 			}
-			*/
-			else {
-				SmartDashboard.putString("DB/String 0", "Going forward, strafing");
-				//drive.hDriveStraightEncoder(-0.4, turn * 0.005);
+			
+			//RobotBuilder will generate code automatically that 
+			//runs the scheduler every driver station update period (about every 20ms). 
+			//This will cause the selected autonomous command to run
+			
+			
+			//Scheduler.getInstance().run();
+			
+			
+			
+			/*switch (autoSelected) {
+				case customAuto:
+				// Put custom auto code here
+				break;
+			case defaultAuto:
+			default:
+				// Put default auto code here
+				break;
 			}
-		}
-		
-		//RobotBuilder will generate code automatically that 
-		//runs the scheduler every driver station update period (about every 20ms). 
-		//This will cause the selected autonomous command to run
-		
-		
-		//Scheduler.getInstance().run();
-		
-		
-		
-		/*switch (autoSelected) {
-		case customAuto:
-			// Put custom auto code here
-			break;
-		case defaultAuto:
-		default:
-			// Put default auto code here
-			break;
-		}
-		
-		
-		
-		autonMode.run(centerX, centerY);
-		*/
-		}
-
+			
+			
+			
+			autonMode.run(centerX, centerY);
+			 */
+		//}
+	}
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -552,7 +563,7 @@ public class Robot extends IterativeRobot {
 		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 		
 		//drive:
-		properties.addDefaultProp("leftRearMotor", 2);
+		properties.addDefaultProp("leftRearMotor", );
 		properties.addDefaultProp("leftFrontMotor", 6);
 		properties.addDefaultProp("rightFrontMotor", 3);
 		properties.addDefaultProp("rightRearMotor", 4);
@@ -560,14 +571,14 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("leftMiddleMotor", 7);
 		
 		//climber:
-		properties.addDefaultProp("climbPlanetary", 5);
-		properties.addDefaultProp("climbWorm", 14);
+		properties.addDefaultProp("climbPlanetary", 8);//8 is backwards for one motor
+		properties.addDefaultProp("climbWorm", 2);
 		
 		//intake:
-		properties.addDefaultProp("frontMotor", 9);
+		properties.addDefaultProp("frontMotor", 5);
 		
 		//low goal:
-		properties.addDefaultProp("shootMotor", 8);
+		properties.addDefaultProp("shootMotor", 9);
 		
 		//CANTalon = 0 or Talon = 1
 		speedControllerType = SingularityDrive.CANTALON_DRIVE;
@@ -578,12 +589,6 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("fastSpeedConstant", 1.0);
 		
 		properties.addDefaultProp("autonMode", "backwards");
-		
-		/*
-		 *high goal:
-		 *highMotor = INSERTPORT;
-		 */
-
 		
 	}
 	

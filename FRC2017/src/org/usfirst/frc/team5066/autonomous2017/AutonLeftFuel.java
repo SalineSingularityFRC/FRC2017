@@ -32,7 +32,7 @@ public class AutonLeftFuel extends AutonControlScheme {
 	}
 	
 	@Override
-	public String getRecordableURL() {
-		return "NoURLFound";
+	public int getRecordableURL() {
+		return 1;
 	}
 }

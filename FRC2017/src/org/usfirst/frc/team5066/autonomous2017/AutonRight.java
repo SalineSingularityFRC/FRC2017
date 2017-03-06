@@ -29,7 +29,7 @@ public class AutonRight extends AutonControlScheme {
 	}
 	
 	@Override
-	public String getRecordableURL() {
-		return "NoURLFound";
+	public int getRecordableURL() {
+		return 3;
 	}
 }

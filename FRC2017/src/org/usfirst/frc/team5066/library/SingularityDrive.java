@@ -314,15 +314,15 @@ public class SingularityDrive {
 		m_leftMiddleMotor.set(horizontal / strafeMax);
 	}
 	
-	public void hDriveStraightConstant(double vertical, double horizontal) {
+	public void hDriveStraightConstant(double vertical, double horizontal, double rotation) {
 		
 		double vertMax = Math.max(1,  Math.abs(vertical));
 		double strafeMax = Math.max(1, Math.abs(horizontal));
 		
-		m_frontLeftMotor.set((-vertical * DRIVESTRAIGHT) / vertMax);
-		m_rearLeftMotor.set((-vertical * DRIVESTRAIGHT) / vertMax);
-		m_frontRightMotor.set(vertical / (vertMax * DRIVESTRAIGHT));
-		m_rearRightMotor.set(vertical / (vertMax * DRIVESTRAIGHT));
+		m_frontLeftMotor.set((-vertical * DRIVESTRAIGHT + rotation) / vertMax);
+		m_rearLeftMotor.set((-vertical * DRIVESTRAIGHT + rotation) / vertMax);
+		m_frontRightMotor.set((vertical + rotation) / (vertMax * DRIVESTRAIGHT));
+		m_rearRightMotor.set((vertical + rotation) / (vertMax * DRIVESTRAIGHT));
 		m_rightMiddleMotor.set(-horizontal / strafeMax);
 		m_leftMiddleMotor.set(horizontal / strafeMax);
 	}
