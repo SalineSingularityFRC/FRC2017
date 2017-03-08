@@ -63,10 +63,11 @@ public class SingularityDrive {
 	 *            Channel for rear right motor
 	 */
 	public SingularityDrive(int frontLeftMotor, int rearLeftMotor, int frontRightMotor, int rearRightMotor,int midRightMotor,
-			int midLeftMotor) {
+			int midLeftMotor, double driveStraight) {
 		this(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor, midRightMotor,
 				midLeftMotor, DEFAULT_TALON_TYPE,
-				DEFAULT_SLOW_SPEED_CONSTANT, DEFAULT_NORMAL_SPEED_CONSTANT, DEFAULT_FAST_SPEED_CONSTANT);
+				DEFAULT_SLOW_SPEED_CONSTANT, DEFAULT_NORMAL_SPEED_CONSTANT, DEFAULT_FAST_SPEED_CONSTANT,
+				driveStraight);
 	}
 
 	/**
