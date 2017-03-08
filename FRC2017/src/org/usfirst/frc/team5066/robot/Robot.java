@@ -4,6 +4,7 @@ import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.OneController;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
@@ -176,7 +177,7 @@ public class Robot extends IterativeRobot {
 			shooter = new LowGoalShooter(shootMotor);
 			climber = new SingularityClimber(climbMotor);
 			intake = new SingularityIntake(frontMotor);
-			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+			currentScheme = new OneController(XBOX_PORT);
 			autonScheme = new AutonMiddle(drive, shooter, intake);
 			//led = new DigitalOutput(2);
 			

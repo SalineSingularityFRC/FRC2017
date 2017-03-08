@@ -260,7 +260,7 @@ public class SingularityDrive {
 		m_frontRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rearRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rightMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
-		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+		m_leftMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
 		
 		//for testing purposes only
 		/*SmartDashboard.putString("DB/String 0", "Front Left Motor " + m_frontLeftMotor.get());
