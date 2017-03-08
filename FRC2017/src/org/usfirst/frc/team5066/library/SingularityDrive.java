@@ -46,7 +46,7 @@ public class SingularityDrive {
 
 	private int talonType;
 	
-	private static final double DRIVESTRAIGHT = 1.1;
+	private static double driveStraight;
 
 
 	/**
@@ -108,7 +108,7 @@ public class SingularityDrive {
 	 */
 	
 	public SingularityDrive(int frontLeftMotor, int rearLeftMotor, int frontRightMotor, int rearRightMotor, int leftMiddleMotor, int rightMiddleMotor,
-			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant) {
+			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant, double driveStraight) {
 
 		if (talonType == CANTALON_DRIVE) {
 			m_frontLeftMotor = new CANTalon(frontLeftMotor);
@@ -134,6 +134,7 @@ public class SingularityDrive {
 		this.slowSpeedConstant = slowSpeedConstant;
 		this.normalSpeedConstant = normalSpeedConstant;
 		this.fastSpeedConstant = fastSpeedConstant;
+		this.driveStraight = driveStraight;
 	}
 	
 	
@@ -319,10 +320,10 @@ public class SingularityDrive {
 		double vertMax = Math.max(1,  Math.abs(vertical));
 		double strafeMax = Math.max(1, Math.abs(horizontal));
 		
-		m_frontLeftMotor.set((-vertical * DRIVESTRAIGHT + rotation) / vertMax);
-		m_rearLeftMotor.set((-vertical * DRIVESTRAIGHT + rotation) / vertMax);
-		m_frontRightMotor.set((vertical + rotation) / (vertMax * DRIVESTRAIGHT));
-		m_rearRightMotor.set((vertical + rotation) / (vertMax * DRIVESTRAIGHT));
+		m_frontLeftMotor.set((-vertical * driveStraight + rotation) / vertMax);
+		m_rearLeftMotor.set((-vertical * driveStraight + rotation) / vertMax);
+		m_frontRightMotor.set((vertical + rotation) / (vertMax * driveStraight));
+		m_rearRightMotor.set((vertical + rotation) / (vertMax * driveStraight));
 		m_rightMiddleMotor.set(-horizontal / strafeMax);
 		m_leftMiddleMotor.set(horizontal / strafeMax);
 	}

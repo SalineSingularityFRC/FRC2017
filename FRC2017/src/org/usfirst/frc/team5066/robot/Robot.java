@@ -67,6 +67,12 @@ import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends IterativeRobot {
 	
+	//AUTON CONSTANTS
+	public static final double vertSpeedFast = 0.6, vertSpeedSlow = 0.4, 
+			turnMultiplier = 0.005, ultraRotate = 0.1, driveStraight = 1.1;
+	
+	
+	
 	XboxController xbox;
 	
 	AutonMode autonMode;
@@ -132,7 +138,6 @@ public class Robot extends IterativeRobot {
 	Ultrasonic redRight;
 	final int inputRight = 2, outputRight = 3;
 	final int autonModeUltraDist = 48;
-	final double ultraRotate = 0.1;
 	/*
 	 * For the nice silver ultrasonics,
 	 * plug the main port into analog, which is the port no.
@@ -141,8 +146,6 @@ public class Robot extends IterativeRobot {
 	 */
 	RangeFinder silverLeft;
 	final int ultraPortLeft = 0;
-	RangeFinder silverRight;
-	final int ultraPortRight = 1;
 	
 	
 	//Holds the current control scheme
@@ -222,10 +225,11 @@ public class Robot extends IterativeRobot {
 			
 			
 			loadProperties();
+			silverLeft = new RangeFinder(ultraPortLeft);
 			
-			
-			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0);
-			shooter = new LowGoalShooter(shootMotor, drive, silverLeft, silverRight);
+			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
+					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
+			shooter = new LowGoalShooter(shootMotor, drive, silverLeft);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
@@ -256,8 +260,6 @@ public class Robot extends IterativeRobot {
 		    redRight = new Ultrasonic(inputRight, outputRight);
 		    redRight.setAutomaticMode(true);
 		    
-		    silverLeft = new RangeFinder(ultraPortLeft);
-		    silverRight = new RangeFinder(ultraPortRight);
 		    
 		    xbox = new XboxController(XBOX_PORT);
 		    
@@ -281,20 +283,8 @@ public class Robot extends IterativeRobot {
 		        }
 			});
 			visionThread.start();
-		    
-		   
 		
-		
-		    /*
-		     * js = new Joystick(XBOX_PORT);
-		     * 
-		     * 
-		     */ 
-		    //intake = new SingularityIntake(frontMotor);
-		    //shooter = new LowGoalShooter(shootMotor);
-		    //climber = new SingularityClimber(climbMotor);
-		
-		    autonMode = AutonMode.ENCODER;
+		    autonMode = AutonMode.RECORDABLE;
 		
 		
 		}
@@ -367,7 +357,7 @@ public class Robot extends IterativeRobot {
 	        
 	    //drive = new RobotDrive(1, 2);
 		
-		// Chooses the first recording
+		// Chooses the right recording
         currentRecordingIndex = autonScheme.getRecordableURL();
  
         // Recordable autonomous
@@ -419,7 +409,7 @@ public class Robot extends IterativeRobot {
 			
 			if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
 				SmartDashboard.putString("DB/String 0", "Turn: " + turn);
-				drive.hDrive(-0.6, 0.0, turn * 0.005, true, SpeedMode.NORMAL);
+				drive.hDrive(-vertSpeedFast, 0.0, turn * turnMultiplier, true, SpeedMode.NORMAL);
 			}
 			
 			else {
@@ -431,7 +421,7 @@ public class Robot extends IterativeRobot {
 				else if(centerY < 80){
 					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
 					SmartDashboard.putString("DB/String 4", "null");
-					drive.hDriveStraightConstant(-0.4, 0.0, 0.0);
+					drive.hDriveStraightConstant(-vertSpeedSlow, 0.0, 0.0);
 				}
 				/*
 				else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
@@ -452,7 +442,7 @@ public class Robot extends IterativeRobot {
 				else {
 					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
 					SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
-					drive.hDriveStraightConstant(-0.4, turn * 0.005, (redLeft.getRangeInches() /* - redRight.getRangeInches())  ultraRotate */));
+					drive.hDriveStraightConstant(-vertSpeedSlow, turn * turnMultiplier, (redLeft.getRangeInches() /* - redRight.getRangeInches()*/) * ultraRotate);
 				}
 			}
 			
@@ -461,25 +451,7 @@ public class Robot extends IterativeRobot {
 			//This will cause the selected autonomous command to run
 			
 			
-			//Scheduler.getInstance().run();
-			
-			
-			
-			/*switch (autoSelected) {
-				case customAuto:
-				// Put custom auto code here
-				break;
-			case defaultAuto:
-			default:
-				// Put default auto code here
-				break;
-			}
-			
-			
-			
-			autonMode.run(centerX, centerY);
-			 */
-		//}
+			////Scheduler.getInstance().run();
 	}
 	/**
 	 * This function is called periodically during operator control
@@ -563,16 +535,16 @@ public class Robot extends IterativeRobot {
 		//Holds the integer port id's for for the motors.The values are assigned when properties are loaded.
 		
 		//drive:
-		properties.addDefaultProp("leftRearMotor", );
+		properties.addDefaultProp("leftRearMotor", 2);
 		properties.addDefaultProp("leftFrontMotor", 6);
-		properties.addDefaultProp("rightFrontMotor", 3);
+		properties.addDefaultProp("rightFrontMotor", 13);
 		properties.addDefaultProp("rightRearMotor", 4);
 		properties.addDefaultProp("rightMiddleMotor", 10);
 		properties.addDefaultProp("leftMiddleMotor", 7);
 		
 		//climber:
 		properties.addDefaultProp("climbPlanetary", 8);//8 is backwards for one motor
-		properties.addDefaultProp("climbWorm", 2);
+		properties.addDefaultProp("climbWorm", 12);
 		
 		//intake:
 		properties.addDefaultProp("frontMotor", 5);
