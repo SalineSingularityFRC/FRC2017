@@ -1,4 +1,4 @@
-package org.usfirst.frc.team5066.controller2017.controlSchemes;
+ package org.usfirst.frc.team5066.controller2017.controlSchemes;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.XboxController;

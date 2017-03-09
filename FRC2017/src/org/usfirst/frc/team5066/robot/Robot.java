@@ -69,8 +69,9 @@ import edu.wpi.first.wpilibj.Relay;
 public class Robot extends IterativeRobot {
 	
 	//AUTON CONSTANTS
-	public static final double vertSpeedFast = 0.6, vertSpeedSlow = 0.4, 
-			turnMultiplier = 0.005, ultraRotate = 0.1, driveStraight = 1.1;
+	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.31, 
+			turnMultiplier = 0.040, ultraRotate = 0.1, driveStraight = 1.03,
+			stopDist = 20;
 	
 	
 	
@@ -110,7 +111,7 @@ public class Robot extends IterativeRobot {
 	private final Object imgLock = new Object();
 	
 	public static UsbCamera camera;
-	
+	public static UsbCamera climbCamera;
 
 	final String defaultAuto = "Default";
 	final String customAuto = "My Auto";
@@ -122,9 +123,9 @@ public class Robot extends IterativeRobot {
 	
 	
 	Ultrasonic redLeft;
-	final int inputLeft = 1, outputLeft = 0;
+	final int inputLeft = 4, outputLeft = 3;
 	Ultrasonic redRight;
-	final int inputRight = 2, outputRight = 3;
+	final int inputRight = 1, outputRight = 2;
 	final int autonModeUltraDist = 48;
 	/*
 	 * For the nice silver ultrasonics,
@@ -221,8 +222,10 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			//TODO not sure what this will be
-			camera = CameraServer.getInstance().startAutomaticCapture();
-		    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			climbCamera = CameraServer.getInstance().startAutomaticCapture();
+		    climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		    
+		    
 		    /*
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
@@ -248,7 +251,7 @@ public class Robot extends IterativeRobot {
 		    autonMode = autonMode.RECORDABLE;
 		    
 			camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(324, 240);
+			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			
 			//Already created in Middle.java
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
@@ -370,10 +373,10 @@ public class Robot extends IterativeRobot {
             shooter.setSpeed((Double) current.get("shooter") > 0.6);
 		}
 		
-		else {*/
+		else {
 			//reset encoders to 0
 			drive.resetAll();
-			
+			*/
 			double centerX;
 			synchronized (imgLock) {
 				centerX = this.centerX;
@@ -386,27 +389,30 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
-			if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
+			//if (redLeft.getRangeInches() > autonModeUltraDist/* || redRight.getRangeInches() > autonModeUltraDist) {
 				//FOR TESTING
-				SmartDashboard.putString("DB/String 0", "Turn: " + turn);
-				drive.hDrive(-vertSpeedFast, 0.0, turn * turnMultiplier, true, SpeedMode.NORMAL);
-			}
+				//SmartDashboard.putString("DB/String 0", "Turn: " + turn);
+				//drive.hDrive(-vertSpeedFast, 0.0, turn * turnMultiplier, true, SpeedMode.NORMAL);
+			//}
+			//SmartDashboard.putString("DB/String 5", "Distance: " + redRight.getRangeInches());
+			//else {
 			
-			else {
-				if (redLeft.getRangeInches() < 4/* || redRight.getRangeInches() < 4*/) {
+			/* || redRight.getRangeInches() < 4*/
+			
+				if (redLeft.getRangeInches() < stopDist && redLeft.getRangeInches() > 1) {
 					//FOR TESTING
 					SmartDashboard.putString("DB/String 0", "We are not moving");
 					SmartDashboard.putString("DB/String 4", "null");
 					
 					drive.hDriveStraightConstant(0.0, 0.0, 0.0);
 				}
-				else if(centerY < 80){
+				/*else if(centerY < 80){
 					//FOR TESTING
 					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
 					SmartDashboard.putString("DB/String 4", "null");
 					
 					drive.hDriveStraightConstant(-vertSpeedSlow, 0.0, 0.0);
-				}
+				}*/
 				/*
 				else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
 					SmartDashboard.putString("DB/String 0", "Strafe: moving left");
@@ -425,10 +431,10 @@ public class Robot extends IterativeRobot {
 				 */
 				else {
 					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
-					SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
-					drive.hDriveStraightConstant(-vertSpeedSlow, turn * turnMultiplier, (redLeft.getRangeInches() /* - redRight.getRangeInches()*/) * ultraRotate);
+					//SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
+					drive.hDriveStraightConstant(vertSpeedSlow, turn * turnMultiplier, 0.0);//(redLeft.getRangeInches() - redRight.getRangeInches()) * ultraRotate);
 				}
-			}
+			//}
 			
 			//RobotBuilder will generate code automatically that 
 			//runs the scheduler every driver station update period (about every 20ms). 

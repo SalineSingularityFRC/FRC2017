@@ -40,7 +40,7 @@ public class LowGoalShooter{
 	public void setSpeed(boolean shoot){
 		
 		if(shoot){
-			
+			/*
 			moveFromUltra();
 			
 			//If we haven't already reversed while shooting this attempt,
@@ -49,11 +49,11 @@ public class LowGoalShooter{
 				timer.reset();
 				hasReversed = true;
 				while (timer.get() < reverseTime) {
-					lowShooter.set(reverseSpeed);
+					lowShooter.set(-reverseSpeed);
 					moveFromUltra();
 				}
 			}
-			
+			*/
 			lowShooter.set(shootSpeed);
 			
 		}

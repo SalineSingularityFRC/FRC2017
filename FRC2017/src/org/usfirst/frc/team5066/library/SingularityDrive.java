@@ -250,7 +250,7 @@ public class SingularityDrive {
 		m_frontRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rearRightMotor.set(this.velocityMultiplier * ((vertical + rotation) / mainWheelMaximum));
 		m_rightMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
-		m_leftMiddleMotor.set(this.velocityMultiplier * (horizontal / hWheelMaximum));
+		m_leftMiddleMotor.set(this.velocityMultiplier * (-horizontal / hWheelMaximum));
 		
 		//for testing purposes only
 		/*SmartDashboard.putString("DB/String 0", "Front Left Motor " + m_frontLeftMotor.get());
@@ -303,15 +303,15 @@ public class SingularityDrive {
 	 * @param speed This is the speed to move at.
 	 * Note: speed is not changed by squaredInputs or velocityMultiplier
 	 */
-	public void hDriveStraightEncoder(double vertical, double horizontal) {
+	public void hDriveStraightEncoder(double vertical, double horizontal, double rotation) {
 		
 		double vertMax = Math.max(1,  Math.abs(vertical));
 		double strafeMax = Math.max(1,  Math.abs(horizontal));
 		
-		m_frontLeftMotor.set(-vertical / (vertMax * leftOverRight()));
-		m_rearLeftMotor.set(-vertical / (vertMax * leftOverRight()));
-		m_frontRightMotor.set((vertical * leftOverRight()) / vertMax);
-		m_rearRightMotor.set((vertical * leftOverRight()) / vertMax);
+		m_frontLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
+		m_rearLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
+		m_frontRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
+		m_rearRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
 		m_rightMiddleMotor.set(-horizontal / strafeMax);
 		m_leftMiddleMotor.set(horizontal / strafeMax);
 	}
