@@ -97,18 +97,7 @@ public class Robot extends IterativeRobot {
 	//Create a variable to hold a reference to a SendableChooser object.
 	Command autonomousCommand;
 	SendableChooser autoChooser;
-	
-	
 	AutonomousMode autonMode;
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
-	public static UsbCamera camera;
-	
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private double centerY = 0.0;
-	
-	private final Object imgLock = new Object();
 	*/
 	
 	private static final int IMG_WIDTH = 320;
@@ -117,7 +106,6 @@ public class Robot extends IterativeRobot {
 	private VisionThread visionThread;
 	private double centerX = 0.0;
 	private double centerY = 0.0;
-	//private RobotDrive drive;
 	
 	private final Object imgLock = new Object();
 	
@@ -129,7 +117,6 @@ public class Robot extends IterativeRobot {
 	
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
-	//private DigitalOutput led;
 	
 	final int strafeXValue = 10;
 	
@@ -204,12 +191,6 @@ public class Robot extends IterativeRobot {
 		//There can be any number of commands, and the one added as a default (addDefault), 
 		//becomes the one that is initially selected. Notice that each command is included in an addDefault() 
 		//or addObject() method call on the SendableChooser instance.
-		/*
-		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default Auto", new Middle());
-		autoChooser.addObject("My Auto", new Left());
-		SmartDashboard.putData("Auto choices", autoChooser);
-		*/
 		
 		try {
 			properties = new SingularityProperties("/home/lvuser/robot.properties");
@@ -266,13 +247,10 @@ public class Robot extends IterativeRobot {
 		    
 		    autonMode = autonMode.RECORDABLE;
 		    
-		    
-		    //drive = new RobotDrive(1, 2);
 			camera = CameraServer.getInstance().startAutomaticCapture();
 			camera.setResolution(324, 240);
 			
 			//Already created in Middle.java
-			
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -319,6 +297,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		
+		// Chooses the right recording
+        currentRecordingIndex = autonScheme.getRecordableURL();
+ 
+        // Recordable autonomous
+        if (play) {
+            reader = initializeReader(playbackURLs[currentRecordingIndex]);
+        }
+
 		/*
 		//encoderHasRun = false;
 		
@@ -356,17 +343,6 @@ public class Robot extends IterativeRobot {
 		System.out.println("Auto selected: " + autoSelected);
 		*/
 		
-	        
-	    //drive = new RobotDrive(1, 2);
-		
-		// Chooses the right recording
-        currentRecordingIndex = autonScheme.getRecordableURL();
- 
-        // Recordable autonomous
-        if (play) {
-            reader = initializeReader(playbackURLs[currentRecordingIndex]);
-        }
-
 	}
 
 	/**
@@ -411,19 +387,24 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
 			if (redLeft.getRangeInches() > autonModeUltraDist /*|| redRight.getRangeInches() > autonModeUltraDist*/) {
+				//FOR TESTING
 				SmartDashboard.putString("DB/String 0", "Turn: " + turn);
 				drive.hDrive(-vertSpeedFast, 0.0, turn * turnMultiplier, true, SpeedMode.NORMAL);
 			}
 			
 			else {
 				if (redLeft.getRangeInches() < 4/* || redRight.getRangeInches() < 4*/) {
+					//FOR TESTING
 					SmartDashboard.putString("DB/String 0", "We are not moving");
 					SmartDashboard.putString("DB/String 4", "null");
+					
 					drive.hDriveStraightConstant(0.0, 0.0, 0.0);
 				}
 				else if(centerY < 80){
+					//FOR TESTING
 					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
 					SmartDashboard.putString("DB/String 4", "null");
+					
 					drive.hDriveStraightConstant(-vertSpeedSlow, 0.0, 0.0);
 				}
 				/*
@@ -452,9 +433,7 @@ public class Robot extends IterativeRobot {
 			//RobotBuilder will generate code automatically that 
 			//runs the scheduler every driver station update period (about every 20ms). 
 			//This will cause the selected autonomous command to run
-			
-			
-			////Scheduler.getInstance().run();
+			//Scheduler.getInstance().run();
 	}
 	/**
 	 * This function is called periodically during operator control
