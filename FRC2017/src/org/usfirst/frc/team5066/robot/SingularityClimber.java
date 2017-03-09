@@ -18,7 +18,7 @@ public class SingularityClimber {
 		//Checks for illegal value (and deports them. But now we have a wall,
 		//so this won't be a problem anymore;))
 		speed /= Math.max(1, Math.abs(speed));
-		planetaryTalon.set(speed);
+		planetaryTalon.set(-speed);
 		wormTalon.set(speed);
 		
 		//SmartDashboard.putNumber("Get climber motor position", talon.getPosition());

@@ -4,6 +4,7 @@ import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
+import org.usfirst.frc.team5066.controller2017.controlSchemes.OneController;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
 import org.usfirst.frc.team5066.library.RangeFinder;
 import org.usfirst.frc.team5066.library.SingularityDrive;
@@ -134,7 +135,7 @@ public class Robot extends IterativeRobot {
 	
 	
 	Ultrasonic redLeft;
-	final int inputLeft = 0, outputLeft = 1;
+	final int inputLeft = 1, outputLeft = 0;
 	Ultrasonic redRight;
 	final int inputRight = 2, outputRight = 3;
 	final int autonModeUltraDist = 48;
@@ -232,16 +233,16 @@ public class Robot extends IterativeRobot {
 			shooter = new LowGoalShooter(shootMotor, drive, silverLeft);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
-			currentScheme = new BasicDrive(XBOX_PORT, BIG_JOYSTICK_PORT);
+			currentScheme = new OneController(XBOX_PORT);
 			
-			//autonScheme = new AutonMiddle(drive, shooter, intake);
+			autonScheme = new AutonMiddle(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			//TODO not sure what this will be
 			camera = CameraServer.getInstance().startAutomaticCapture();
 		    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		    
+		    /*
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -252,13 +253,13 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
-		    
+		    */
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
 		    
-		    redRight = new Ultrasonic(inputRight, outputRight);
-		    redRight.setAutomaticMode(true);
+		    //redRight = new Ultrasonic(inputRight, outputRight);
+		    //redRight.setAutomaticMode(true);
 		    
 		    
 		    xbox = new XboxController(XBOX_PORT);
@@ -271,13 +272,14 @@ public class Robot extends IterativeRobot {
 			camera.setResolution(324, 240);
 			
 			//Already created in Middle.java
+			
 			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 			            
 		            synchronized (imgLock) {
 		            	centerX = r.x + r.width +r.width*0.76;
-						//centerY = (r.height / 2 );
+						centerY = (r.height / 2 );
 						          
 		            }
 		        }
@@ -403,6 +405,7 @@ public class Robot extends IterativeRobot {
 			}
 			
 			double turn = centerX - (IMG_WIDTH / 2);
+			//FOR TESTING
 			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
@@ -509,7 +512,7 @@ public class Robot extends IterativeRobot {
 			speedControllerType = properties.getInt("speedControllerType");
 			
 			climbPlanetary = properties.getInt("climbPlanetary");
-			climbWorm = properties.getInt("ClimbWorm");
+			climbWorm = properties.getInt("climbWorm");
 			
 			frontMotor = properties.getInt("frontMotor");
 			shootMotor = properties.getInt("shootMotor");
