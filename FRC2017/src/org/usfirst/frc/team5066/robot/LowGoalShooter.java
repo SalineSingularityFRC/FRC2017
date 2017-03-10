@@ -65,6 +65,12 @@ public class LowGoalShooter{
 		}
 	}
 	
+	public void setSpeed(double speed) {
+		if (speed > 0.4) lowShooter.set(shootSpeed);
+		else if (speed < -0.4) lowShooter.set(-reverseSpeed);
+		else lowShooter.set(0.0);
+	}
+	
 	public double getSpeed(){
 		return lowShooter.get();
 	}

@@ -24,27 +24,27 @@ public class OneController implements ControlScheme {
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
 		//set speedMode
-		if(xbox.getLB()) {
+		/*if(xbox.getLB()) {
 			speedMode = SpeedMode.SLOW;
 		} else if(xbox.getRB()) {
 			speedMode = SpeedMode.FAST;
 		} else {
 			speedMode = SpeedMode.NORMAL;
 		}
-		
+		*/
 		sd.hDrive(xbox.getLS_Y(), xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
 
 	}
 
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
-		lGS.setSpeed(xbox.getTriggerRight() > 0.6);
+		lGS.setSpeed(xbox.getTriggerRight() - xbox.getTriggerLeft());
 	}
 
 	@Override
 	public void controlClimber(SingularityClimber climber) {
-		double climb = xbox.getRS_Y();
-		if (Math.abs(climb) > 0.25) climber.setSpeed(climb);
+		if (xbox.getRB()) climber.setSpeed(1.0);
+		else if (xbox.getLB()) climber.setSpeed(-0.5);
 		else climber.setSpeed(0.0);
 	}
 
@@ -52,10 +52,12 @@ public class OneController implements ControlScheme {
 	public void controlIntake(SingularityIntake intake) {
 		
 		if (xbox.getYButton() && !prevY) on = on ? false : true;
-		if (xbox.getTriggerRight() > 0.6) intake.setSpeed(1.0);
-		else if (xbox.getXButton()) intake.setSpeed(-1.0);
+		if (xbox.getXButton()) intake.setSpeed(-1.0);
 		else if (!on) intake.setSpeed(0.0);
 		else intake.setSpeed(1.0);
+		
+		if (xbox.getYButton()) prevY = true;
+		else prevY = false;
 		
 		SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
 	}

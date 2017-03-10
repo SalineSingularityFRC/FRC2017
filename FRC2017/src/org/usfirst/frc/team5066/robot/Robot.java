@@ -70,7 +70,7 @@ public class Robot extends IterativeRobot {
 	
 	//AUTON CONSTANTS
 	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.31, 
-			turnMultiplier = 0.040, ultraRotate = 0.1, driveStraight = 1.03,
+			turnMultiplier = 0.010, ultraRotate = 0.1, driveStraight = 1.03,
 			stopDist = 20;
 	
 	
@@ -222,8 +222,8 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			//TODO not sure what this will be
-			climbCamera = CameraServer.getInstance().startAutomaticCapture();
-		    climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			//climbCamera = CameraServer.getInstance().startAutomaticCapture();
+		    //climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		    
 		    
 		    /*
@@ -250,25 +250,23 @@ public class Robot extends IterativeRobot {
 		    
 		    autonMode = autonMode.RECORDABLE;
 		    
-			camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			//camera = CameraServer.getInstance().startAutomaticCapture();
+			//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			
-			//Already created in Middle.java
-			visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
-		        if (!pipeline.filterContoursOutput().isEmpty()) {
-		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-			            
-		            synchronized (imgLock) {
-		            	centerX = r.x + r.width +r.width*0.76;
-						centerY = (r.height / 2 );
+			//Already created in Middle.java   
+			//visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
+		      //  if (!pipeline.filterContoursOutput().isEmpty()) {
+		        //    Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+			      //      
+		           // synchronized (imgLock) {
+		           // 	centerX = r.x + r.width +r.width*0.76;
+				//		centerY = (r.height / 2 );
 						          
-		            }
-		        }
-			});
-			visionThread.start();
-		
-		    autonMode = AutonMode.RECORDABLE;
-		
+		          //  }
+		        //}
+			//});
+			//visionThread.start();
+				
 		
 		}
 	}
@@ -301,6 +299,17 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		
+		
+		if (play) {
+			try {
+				reader = new Reader(recordingURL);
+				initialTime = System.currentTimeMillis();
+			}
+			catch (Exception e) {
+				reader = null;
+				e.printStackTrace();
+			}
+		}
 		// Chooses the right recording
         currentRecordingIndex = autonScheme.getRecordableURL();
  
@@ -460,7 +469,7 @@ public class Robot extends IterativeRobot {
             // This initializes the recorder. The former parameter is the keys,
             // and the latter is the defaults to use.
             recorder = new Recorder(new String[] {"vertical", "rotation", "horizontal", "intake", "shooter"}, 
-            		new Object[] {0.0, 0.0, 0.0, 0.0}, recordingURL);
+            		new Object[] {0.0, 0.0, 0.0, 0.0, 0.0}, recordingURL);
         }
 	}
 	/**
@@ -549,6 +558,9 @@ public class Robot extends IterativeRobot {
 		properties.addDefaultProp("fastSpeedConstant", 1.0);
 		
 		properties.addDefaultProp("autonMode", "backwards");
+		
+		//properties.addDefaultProp("record", "false");
+		//properties.addDefaultProp("play", "true");
 		
 	}
 	
