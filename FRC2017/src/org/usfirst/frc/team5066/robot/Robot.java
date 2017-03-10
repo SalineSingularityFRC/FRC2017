@@ -222,11 +222,14 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			//TODO not sure what this will be
-			//climbCamera = CameraServer.getInstance().startAutomaticCapture();
-		    //climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			climbCamera = CameraServer.getInstance().startAutomaticCapture();
+		    climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		    
+		    camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			
 		    
 		    
-		    /*
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -237,7 +240,7 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
-		    */
+		    
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
@@ -250,23 +253,7 @@ public class Robot extends IterativeRobot {
 		    
 		    autonMode = autonMode.RECORDABLE;
 		    
-			//camera = CameraServer.getInstance().startAutomaticCapture();
-			//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			
-			//Already created in Middle.java   
-			//visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
-		      //  if (!pipeline.filterContoursOutput().isEmpty()) {
-		        //    Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-			      //      
-		           // synchronized (imgLock) {
-		           // 	centerX = r.x + r.width +r.width*0.76;
-				//		centerY = (r.height / 2 );
-						          
-		          //  }
-		        //}
-			//});
-			//visionThread.start();
-				
 		
 		}
 	}

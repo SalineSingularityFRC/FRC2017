@@ -23,15 +23,7 @@ public class OneController implements ControlScheme {
 	
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
-		//set speedMode
-		/*if(xbox.getLB()) {
-			speedMode = SpeedMode.SLOW;
-		} else if(xbox.getRB()) {
-			speedMode = SpeedMode.FAST;
-		} else {
-			speedMode = SpeedMode.NORMAL;
-		}
-		*/
+		speedMode = SpeedMode.NORMAL;
 		sd.hDrive(xbox.getLS_Y(), xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
 
 	}
