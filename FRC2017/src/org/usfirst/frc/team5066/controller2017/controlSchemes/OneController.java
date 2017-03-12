@@ -19,12 +19,13 @@ public class OneController implements ControlScheme {
 	
 	public OneController(int xboxPort) {
 		xbox = new XboxController(xboxPort);
+		on = false;
 	}
 	
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
-		speedMode = SpeedMode.NORMAL;
-		sd.hDrive(xbox.getLS_Y(), xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
+		speedMode = SpeedMode.FAST;
+		sd.hDrive(-xbox.getLS_Y(), -xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
 
 	}
 
@@ -36,7 +37,6 @@ public class OneController implements ControlScheme {
 	@Override
 	public void controlClimber(SingularityClimber climber) {
 		if (xbox.getRB()) climber.setSpeed(1.0);
-		else if (xbox.getLB()) climber.setSpeed(-0.5);
 		else climber.setSpeed(0.0);
 	}
 

@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -69,11 +70,11 @@ import edu.wpi.first.wpilibj.Relay;
 public class Robot extends IterativeRobot {
 	
 	//AUTON CONSTANTS
-	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.31, 
+	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.4, 
 			turnMultiplier = 0.010, ultraRotate = 0.1, driveStraight = 1.03,
 			stopDist = 20;
 	
-	
+	double autoSpeed;
 	
 	XboxController xbox;
 	
@@ -270,6 +271,24 @@ public class Robot extends IterativeRobot {
             reader = null;
         }
     }	
+	
+	public void disabledPeriodic() {
+		
+		double centerX;
+		synchronized (imgLock) {
+			centerX = this.centerX;
+			centerY = this.centerY;
+		}
+		
+		double turn = centerX - (IMG_WIDTH / 2);
+		//FOR TESTING
+		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
+		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
+		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
+		
+		SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
+		//SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
+	}
 
 
 	/**
@@ -287,7 +306,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		
 		
-		if (play) {
+		/*if (play) {
 			try {
 				reader = new Reader(recordingURL);
 				initialTime = System.currentTimeMillis();
@@ -297,13 +316,16 @@ public class Robot extends IterativeRobot {
 				e.printStackTrace();
 			}
 		}
+		
+		*/
+		
 		// Chooses the right recording
-        currentRecordingIndex = autonScheme.getRecordableURL();
- 
-        // Recordable autonomous
-        if (play) {
-            reader = initializeReader(playbackURLs[currentRecordingIndex]);
-        }
+   //     currentRecordingIndex = autonScheme.getRecordableURL();
+   //
+   //     // Recordable autonomous
+   //     if (play) {
+   //         reader = initializeReader(playbackURLs[currentRecordingIndex]);
+ //       }
 
 		/*
 		//encoderHasRun = false;
@@ -342,6 +364,16 @@ public class Robot extends IterativeRobot {
 		System.out.println("Auto selected: " + autoSelected);
 		*/
 		
+		drive.hDrive(0.5, 0.0, 0.0, false, SpeedMode.NORMAL);
+		Timer.delay(4);
+		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
+		
+		/*
+		drive.resetAll();
+		drive.hDriveStraightEncoder(-0.5, 0.0, 0.0);
+		Timer.delay(4);
+		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+		*/
 	}
 
 	/**
@@ -349,6 +381,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		
+		
 		/*
 		if (autonMode == autonMode.ENCODER && !preAutonHasRun) {
 			autonScheme.moveEncoderAuton();
@@ -359,7 +393,7 @@ public class Robot extends IterativeRobot {
 			if (reader.isDone(System.currentTimeMillis() - initialTime)
                     && currentRecordingIndex < playbackURLs.length - 1) {
                 reader.close();
-                // This will choose the next recording
+                // This will choose the next re		`cording
                 //reader = initializeReader(playbackURLs[++currentRecordingIndex]);
             }
  
@@ -373,6 +407,9 @@ public class Robot extends IterativeRobot {
 			//reset encoders to 0
 			drive.resetAll();
 			*/
+		
+		
+		/*
 			double centerX;
 			synchronized (imgLock) {
 				centerX = this.centerX;
@@ -385,15 +422,43 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
+			if (Math.abs(turn) < 20) autoSpeed = 0.50;
+			else autoSpeed = 0.4;
+			
 			//if (redLeft.getRangeInches() > autonModeUltraDist/* || redRight.getRangeInches() > autonModeUltraDist) {
 				//FOR TESTING
 				//SmartDashboard.putString("DB/String 0", "Turn: " + turn);
-				//drive.hDrive(-vertSpeedFast, 0.0, turn * turnMultiplier, true, SpeedMode.NORMAL);
+			/*if(centerY < 55.0) {
+				SmartDashboard.putString("DB/String 5", "Final Descent");
+				drive.hDrive(0.4, 0.0, 0.0 + 0.10, false, SpeedMode.FAST);
+				Timer.delay(1);
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				
+				
+			}
+			*/
+			/*
+			if (redLeft.getRangeInches() < 30) {
+				SmartDashboard.putString("DB/String 5", "Final Descent");
+				drive.hDrive(0.25, 0.0, 0.0, false, SpeedMode.FAST);
+				Timer.delay(2);
+				drive.hDrive(0.0, 0.0, -0.3, false, SpeedMode.FAST);
+				Timer.delay(0.5);
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+			}
+		
+			
+				
+			else drive.hDrive(autoSpeed, 0.0, turn * 0.005, false, SpeedMode.NORMAL);
+				
+			SmartDashboard.putString("DB/String 6", "ultra: " + redLeft.getRangeInches());
+				
+				
 			//}
 			//SmartDashboard.putString("DB/String 5", "Distance: " + redRight.getRangeInches());
 			//else {
 			
-			/* || redRight.getRangeInches() < 4*/
+			/* || redRight.getRangeInches() < 4
 			
 				if (redLeft.getRangeInches() < stopDist && redLeft.getRangeInches() > 1) {
 					//FOR TESTING
@@ -424,19 +489,24 @@ public class Robot extends IterativeRobot {
 					SmartDashboard.putString("DB/String 0", "moving forward");
 					//drive.hDriveStraightEncoder(-0.4, 0.0);
 				}
-				 */
+				 
 				else {
 					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
 					//SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
 					drive.hDriveStraightConstant(vertSpeedSlow, turn * turnMultiplier, 0.0);//(redLeft.getRangeInches() - redRight.getRangeInches()) * ultraRotate);
 				}
-			//}
+			//}*/
 			
 			//RobotBuilder will generate code automatically that 
 			//runs the scheduler every driver station update period (about every 20ms). 
 			//This will cause the selected autonomous command to run
 			//Scheduler.getInstance().run();
 	}
+	/*
+	public void teleopInit() {
+		
+	}
+	*/
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -447,6 +517,10 @@ public class Robot extends IterativeRobot {
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
+		
+		SmartDashboard.putString("DB/String 6", "Left Ultra: " + redLeft.getRangeInches());
+		//SmartDashboard.putString("DB/String 6", "Right Ultra: " + redRight.getRangeInches());
+		
 		
 	}
 	

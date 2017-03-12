@@ -18,7 +18,7 @@ public class LowGoalShooter{
 	 * shootDistVolts is the optimal voltage for the ultrasonic before shooting
 	 */
 	
-	private static final double shootSpeed = 0.7, reverseSpeed = -0.4,
+	private static final double shootSpeed = 0.58, reverseSpeed = -0.4,
 			maxMoveSpeed = 0.4, reverseTime = 0.4, shootDistVolts = 4.60;
 	
 	private CANTalon lowShooter;

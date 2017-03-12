@@ -3,6 +3,7 @@ package org.usfirst.frc.team5066.library;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -47,6 +48,10 @@ public class SingularityDrive {
 	private int talonType;
 	
 	private static double driveStraight;
+	
+	private static double prevStrafe;
+	private static final double strafeTime = 0.05;
+	Timer timer;
 
 
 	/**
@@ -136,6 +141,7 @@ public class SingularityDrive {
 		this.normalSpeedConstant = normalSpeedConstant;
 		this.fastSpeedConstant = fastSpeedConstant;
 		this.driveStraight = driveStraight;
+		timer = new Timer();
 	}
 	
 	
@@ -244,6 +250,15 @@ public class SingularityDrive {
 		vertical = threshold(vertical);
 		horizontal = threshold(horizontal);
 		rotation = threshold(rotation);
+		/*
+		if (timer.get() - )
+		
+		
+		
+		
+		prevStrafe = horizontal;
+		*/
+		
 		
 		m_frontLeftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
 		m_rearLeftMotor.set(this.velocityMultiplier * ((-vertical + rotation) / mainWheelMaximum));
@@ -305,7 +320,7 @@ public class SingularityDrive {
 	 */
 	public void hDriveStraightEncoder(double vertical, double horizontal, double rotation) {
 		
-		double vertMax = Math.max(1,  Math.abs(vertical));
+		double vertMax = Math.max(1,  Math.abs(vertical) + Math.abs(rotation));
 		double strafeMax = Math.max(1,  Math.abs(horizontal));
 		
 		m_frontLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
