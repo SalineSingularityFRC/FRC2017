@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.UsbCamera;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.opencv.core.Rect;
@@ -45,6 +47,8 @@ import org.usfirst.frc.team5066.controller2017.Pipeline;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 
 import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -53,6 +57,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
@@ -122,7 +127,12 @@ public class Robot extends IterativeRobot {
 	
 	final int strafeXValue = 10;
 	
+	//For the gyro
+	public ADXRS450_Gyro gyro;
+	double origAngle;
+	double rotateAngle = 0.05;
 	
+	//For the cheap red ultrasonics
 	Ultrasonic redLeft;
 	final int inputLeft = 4, outputLeft = 3;
 	Ultrasonic redRight;
@@ -137,6 +147,11 @@ public class Robot extends IterativeRobot {
 	RangeFinder silverLeft;
 	final int ultraPortLeft = 0;
 	
+	//Arrays for Auton
+	int[] autonSteps;
+	int index;
+	
+	Timer timer;
 	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
@@ -212,6 +227,8 @@ public class Robot extends IterativeRobot {
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
 			encoderShooter = true;
+			gyro = new ADXRS450_Gyro();
+			
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
@@ -306,7 +323,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		index = 0;
+		autonSteps = autonScheme.getSteps();
+		origAngle = gyro.getAngle();
 		
+		timer = new Timer();
 		
 		/*if (play) {
 			try {
@@ -364,13 +385,13 @@ public class Robot extends IterativeRobot {
 		 autoSelected = SmartDashboard.getString("Auto Selector",
 		 defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		*/
 		
+		//IF ALL ELSE FAILS USE THIS
 		drive.hDrive(0.5, 0.0, 0.0, false, SpeedMode.NORMAL);
 		Timer.delay(4);
 		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
 		
-		/*
+		//@TODO This doesn't work
 		drive.resetAll();
 		drive.hDriveStraightEncoder(-0.5, 0.0, 0.0);
 		Timer.delay(4);
@@ -384,7 +405,75 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		
+		switch(autonSteps[index]) {
+		/*
+		 * This will be the last case in every auton scheme.
+		 * Stops the motors.
+		 */
+		case 0:
+			drive.hDrive(0, 0, 0, false, SpeedMode.NORMAL);
+			
+		/*
+		 * This will drive the robot straight using the gyro
+		 * Will move on when the ultrasonics read a distance < approx. 25in
+		 */
+		case 1:
+			drive.hDriveTank(-0.5 + rotateAngle * (origAngle - gyro.getAngle()), -0.5, 0.0, false, SpeedMode.FAST);
+			Timer.delay(0.002);
+			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 25) {
+				timer.start();
+				if (timer.get() > 0.2)
+				 index++;
+			}
+			else timer.reset();
 		
+		/*
+		 * This case starts the vision code and lines up the robot with the peg
+		 * Will move on when the ultrasonics read a distance < approx. 15in
+		 */
+		case 2:
+			double centerX;
+			synchronized (imgLock) {
+				centerX = this.centerX;
+				centerY = this.centerY;
+			}
+			
+			double turn = centerX - (IMG_WIDTH / 2);
+			//FOR TESTING
+			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
+			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
+			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
+			
+			if (Math.abs(turn) < 20) autoSpeed = -0.40;
+			else autoSpeed = -0.3;
+			
+			drive.hDrive(autoSpeed, turn * 0.005, (redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
+					false, SpeedMode.FAST);
+			
+			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 15) {
+				timer.start();
+				if (timer.get() > 0.2)
+				 index++;
+			}
+			else timer.reset();
+		
+		/*
+		 * This case drives the robot backwards for 0.8 seconds at 30% power.
+		 * For inserting gear on to peg after case 2 has run.
+		 */
+		case 3:
+			drive.hDrive(-0.3, 0.0, 0.0, false, SpeedMode.FAST);
+			Timer.delay(0.8);
+			index++;
+			
+		/*
+		 * This is only for driving forward to get past the base line.
+		 */
+		case 4:
+			drive.hDrive(-0.5, 0.0, 0.0, false, SpeedMode.FAST);
+			Timer.delay(4);
+			index++;
+		}
 		/*
 		if (autonMode == autonMode.ENCODER && !preAutonHasRun) {
 			autonScheme.moveEncoderAuton();

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team5066.autonomous2017;
 
+import java.util.ArrayList;
+
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import edu.wpi.first.wpilibj.Encoder;
@@ -28,5 +30,11 @@ public class AutonMiddle extends AutonControlScheme {
 	@Override
 	public int getRecordableURL() {
 		return 2;
+	}
+	
+	@Override
+	public double[] getSteps(){
+		double[] middle = {1, 2, 0};
+		return middle;
 	}
 }

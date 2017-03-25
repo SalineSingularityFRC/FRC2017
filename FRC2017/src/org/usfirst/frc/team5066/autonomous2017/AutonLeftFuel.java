@@ -35,4 +35,9 @@ public class AutonLeftFuel extends AutonControlScheme {
 	public int getRecordableURL() {
 		return 1;
 	}
+	
+	@Override
+	public int[] getSteps(){
+		int[] leftFuel = {1, 
+	}
 }

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team5066.controller2017;
 
+import java.util.ArrayList;
+
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
@@ -175,4 +177,11 @@ public abstract class AutonControlScheme {
 		intake.setSpeed(0.0);
 		shooter.setSpeed(false);
 	}
+	
+	/**
+	 * 
+	 * @return The first row of the array refers to the case number in autonPeriodic,
+	 * the second row is for the time the motors will drive for, 0 if not needed for the case.
+	 */
+	public abstract double[] getSteps();
 }
