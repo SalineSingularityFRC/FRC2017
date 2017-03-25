@@ -129,6 +129,7 @@ public class Robot extends IterativeRobot {
 	
 	//For the gyro
 	public ADXRS450_Gyro gyro;
+	boolean needAngle;
 	double origAngle;
 	double rotateAngle = 0.05;
 	
@@ -152,6 +153,8 @@ public class Robot extends IterativeRobot {
 	int index;
 	
 	Timer timer;
+	boolean timerHasStarted;
+	double strafeSpeed;
 	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
@@ -232,7 +235,7 @@ public class Robot extends IterativeRobot {
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
-			shooter = new LowGoalShooter(shootMotor, encoderShooter);
+			shooter = new LowGoalShooter(shootMotor, false);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
@@ -265,15 +268,13 @@ public class Robot extends IterativeRobot {
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
 		    
-		    //redRight = new Ultrasonic(inputRight, outputRight);
-		    //redRight.setAutomaticMode(true);
+		    redRight = new Ultrasonic(inputRight, outputRight);
+		    redRight.setAutomaticMode(true);
 		    
 		    
 		    xbox = new XboxController(XBOX_PORT);
 		    
 		    autonMode = autonMode.RECORDABLE;
-		    
-			
 		
 		}
 	}
@@ -306,7 +307,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 		
 		SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
-		//SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
+		SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
 	}
 
 
@@ -325,9 +326,12 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		index = 0;
 		autonSteps = autonScheme.getSteps();
-		origAngle = gyro.getAngle();
+		needAngle = true;
 		
 		timer = new Timer();
+		timerHasStarted = false;
+		
+		camera.setExposureManual(1);
 		
 		/*if (play) {
 			try {
@@ -418,12 +422,17 @@ public class Robot extends IterativeRobot {
 		 * Will move on when the ultrasonics read a distance < approx. 25in
 		 */
 		case 1:
+			if (needAngle) {
+				origAngle = gyro.getAngle();
+				needAngle = false;
+			}
 			drive.hDriveTank(-0.5 + rotateAngle * (origAngle - gyro.getAngle()), -0.5, 0.0, false, SpeedMode.FAST);
-			Timer.delay(0.002);
-			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 25) {
-				timer.start();
-				if (timer.get() > 0.2)
-				 index++;
+			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 40) {
+				if (!timerHasStarted) {
+					timer.start();
+				}
+				else if (timer.get() > 0.2)
+					index++;
 			}
 			else timer.reset();
 		
@@ -450,10 +459,12 @@ public class Robot extends IterativeRobot {
 			drive.hDrive(autoSpeed, turn * 0.005, (redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
 					false, SpeedMode.FAST);
 			
-			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 15) {
-				timer.start();
-				if (timer.get() > 0.2)
-				 index++;
+			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 14) {
+				if (!timerHasStarted) {
+					timer.start();
+				}
+				else if (timer.get() > 0.2)
+					index++;
 			}
 			else timer.reset();
 		
@@ -463,8 +474,14 @@ public class Robot extends IterativeRobot {
 		 */
 		case 3:
 			drive.hDrive(-0.3, 0.0, 0.0, false, SpeedMode.FAST);
-			Timer.delay(0.8);
-			index++;
+			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 6) {
+				if (!timerHasStarted) {
+					timer.start();
+				}
+				else if (timer.get() > 0.2)
+					index++;
+			}
+			else timer.reset();
 			
 		/*
 		 * This is only for driving forward to get past the base line.
@@ -473,7 +490,38 @@ public class Robot extends IterativeRobot {
 			drive.hDrive(-0.5, 0.0, 0.0, false, SpeedMode.FAST);
 			Timer.delay(4);
 			index++;
+			
+		/*
+		 * Strafe across the boiler
+		 */
+		case 5:
+			
+			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
+				strafeSpeed = 0.5;
+			}
+			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
+				strafeSpeed = -0.5;
+			}
+			
+			else strafeSpeed = 0.0;
+			
+			drive.hDrive(0.0, strafeSpeed, 0.0, false, SpeedMode.FAST);
+			Timer.delay(0.6);
+			index++;
+			
+		/*
+		 * Shoot the balls into the boiler
+		 */
+		case 6:
+			
+			shooter.setSpeed(true);
+			Timer.delay(0.4);
+			shooter.setSpeed(false);
+			
+			
+			
 		}
+		
 		/*
 		if (autonMode == autonMode.ENCODER && !preAutonHasRun) {
 			autonScheme.moveEncoderAuton();
@@ -593,11 +641,11 @@ public class Robot extends IterativeRobot {
 			//This will cause the selected autonomous command to run
 			//Scheduler.getInstance().run();
 	}
-	/*
+	
 	public void teleopInit() {
-		
+		camera.setExposureManual(50);
 	}
-	*/
+	
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -611,6 +659,8 @@ public class Robot extends IterativeRobot {
 		
 		SmartDashboard.putString("DB/String 6", "Left Ultra: " + redLeft.getRangeInches());
 		//SmartDashboard.putString("DB/String 6", "Right Ultra: " + redRight.getRangeInches());
+		
+		
 		
 		
 	}

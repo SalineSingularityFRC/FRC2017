@@ -21,12 +21,14 @@ public class LowGoalShooter{
 	private static final double shootSpeed = 0.58, reverseSpeed = -0.4,
 			maxMoveSpeed = 0.4, reverseTime = 0.4, shootDistVolts = 4.60;
 	
-	private static final double encoderSpeed = 1;
+	private static final double encoderSpeed = 5;
 	
 	private CANTalon lowShooter;
 	private SingularityDrive sd;
 	RangeFinder rf;
 	Timer timer;
+	
+	boolean encoder;
 	
 	boolean hasReversed;
 	
@@ -35,6 +37,7 @@ public class LowGoalShooter{
 		lowShooter = new CANTalon(shootPort);
 		if (encoder) {
 			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+			this.encoder = encoder;
 		}
 		
 		this.sd = sd;
@@ -48,15 +51,7 @@ public class LowGoalShooter{
 		lowShooter = new CANTalon(shootPort);
 		if (encoder) {
 			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
-		}
-	}
-	
-	public void setSpeedEncoder(boolean shoot) {
-		if (shoot) {
-			lowShooter.set(encoderSpeed);
-		}
-		else {
-			lowShooter.set(0);
+			this.encoder = encoder;
 		}
 	}
 	
@@ -77,8 +72,12 @@ public class LowGoalShooter{
 				}
 			}
 			*/
-			lowShooter.set(shootSpeed);
-			
+			if (encoder) {
+				lowShooter.set(encoderSpeed);
+			}
+			else {
+				lowShooter.set(shootSpeed);
+			}
 		}
 		
 		//If not shooting, dont't. Set hasReversed false for next time we shoot

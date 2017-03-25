@@ -31,7 +31,7 @@ public class OneController implements ControlScheme {
 
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
-		lGS.setSpeed(xbox.getTriggerRight() - xbox.getTriggerLeft());
+		lGS.setSpeed(xbox.getTriggerRight() > 0.3);
 	}
 
 	@Override
@@ -43,7 +43,10 @@ public class OneController implements ControlScheme {
 	@Override
 	public void controlIntake(SingularityIntake intake) {
 		
-		if (xbox.getYButton() && !prevY) on = on ? false : true;
+		if (xbox.getYButton() && !prevY) {
+			if (!on) on = true;
+			else on = false;
+		}
 		if (xbox.getXButton()) intake.setSpeed(-1.0);
 		else if (!on) intake.setSpeed(0.0);
 		else intake.setSpeed(1.0);

@@ -38,6 +38,7 @@ public class AutonLeftFuel extends AutonControlScheme {
 	
 	@Override
 	public int[] getSteps(){
-		int[] leftFuel = {1, 
+		int[] steps = {5, 6, 1, 2, 3, 0};
+		return steps;
 	}
 }

@@ -32,4 +32,10 @@ public class AutonRight extends AutonControlScheme {
 	public int getRecordableURL() {
 		return 3;
 	}
+
+	@Override
+	public int[] getSteps() {
+		int[] steps = {5, 1, 2, 3, 0};
+		return steps;
+	}
 }

@@ -25,10 +25,9 @@ public class AutonDriveStraight extends AutonControlScheme{
 	}
 
 	@Override
-	public double[][] setSteps() {
-		double[][] driveStraight = {{4, 0},
-									{0, 0}};
-		return driveStraight;
+	public int[] getSteps() {
+		int[] steps = {4, 0};
+		return steps;
 	}
 
 }

@@ -25,10 +25,9 @@ public class AutonTestVision extends AutonControlScheme {
 	}
 
 	@Override
-	public double[][] setSteps() {
-		double[][] AutonVision = {{2, 3, 0}, 
-								  {0, 0, 0}};
-		return AutonVision;
+	public int[] getSteps() {
+		int[] steps = {2, 3, 0};
+		return steps;
 	}
 
 }

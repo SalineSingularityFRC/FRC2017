@@ -33,8 +33,8 @@ public class AutonMiddle extends AutonControlScheme {
 	}
 	
 	@Override
-	public double[] getSteps(){
-		double[] middle = {1, 2, 0};
-		return middle;
+	public int[] getSteps(){
+		int[] steps = {1, 2, 3, 0};
+		return steps;
 	}
 }

@@ -183,5 +183,5 @@ public abstract class AutonControlScheme {
 	 * @return The first row of the array refers to the case number in autonPeriodic,
 	 * the second row is for the time the motors will drive for, 0 if not needed for the case.
 	 */
-	public abstract double[] getSteps();
+	public abstract int[] getSteps();
 }
