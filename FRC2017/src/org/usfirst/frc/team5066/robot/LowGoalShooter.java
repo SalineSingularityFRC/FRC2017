@@ -21,6 +21,8 @@ public class LowGoalShooter{
 	private static final double shootSpeed = 0.58, reverseSpeed = -0.4,
 			maxMoveSpeed = 0.4, reverseTime = 0.4, shootDistVolts = 4.60;
 	
+	private static final double encoderSpeed = 1;
+	
 	private CANTalon lowShooter;
 	private SingularityDrive sd;
 	RangeFinder rf;
@@ -28,13 +30,34 @@ public class LowGoalShooter{
 	
 	boolean hasReversed;
 	
-	public LowGoalShooter(int shootPort, SingularityDrive sd, RangeFinder rf){
+	
+	public LowGoalShooter(int shootPort, SingularityDrive sd, RangeFinder rf, boolean encoder){
 		lowShooter = new CANTalon(shootPort);
+		if (encoder) {
+			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+		}
+		
 		this.sd = sd;
 		this.rf = rf;
 		
 		hasReversed = false;
 		timer = new Timer();
+	}
+	
+	public LowGoalShooter(int shootPort, boolean encoder) {
+		lowShooter = new CANTalon(shootPort);
+		if (encoder) {
+			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+		}
+	}
+	
+	public void setSpeedEncoder(boolean shoot) {
+		if (shoot) {
+			lowShooter.set(encoderSpeed);
+		}
+		else {
+			lowShooter.set(0);
+		}
 	}
 	
 	public void setSpeed(boolean shoot){

@@ -160,7 +160,7 @@ public class Robot extends IterativeRobot {
 	int speedControllerType;
 	
 	//Encoders
-	
+	boolean encoderShooter;
 	
 	//Speed constants
 	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
@@ -211,9 +211,11 @@ public class Robot extends IterativeRobot {
 			loadProperties();
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
+			encoderShooter = true;
+			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
-			shooter = new LowGoalShooter(shootMotor, drive, silverLeft);
+			shooter = new LowGoalShooter(shootMotor, encoderShooter);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
