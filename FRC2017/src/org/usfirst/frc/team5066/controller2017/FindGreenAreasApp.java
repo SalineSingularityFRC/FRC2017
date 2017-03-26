@@ -18,7 +18,7 @@ public class FindGreenAreasApp {
 	
 	public FindGreenAreasApp() {
 		this.window = makeWindow("GRIP", IMG_WIDTH, IMG_HEIGHT);
-		this.listener = (this.window!=null) ? (processor -> { window.imshow(processor.rgbThresholdOutput());}) : null;
+		this.listener = (this.window!=null) ? (processor -> { window.imshow(processor.hslThresholdOutput());}) : null;
 		this.gripRunner = new GripRunner<>(
 				makeCamera(0, IMG_WIDTH, IMG_HEIGHT, -1.0), 
 				new FindGreenAreas(), 

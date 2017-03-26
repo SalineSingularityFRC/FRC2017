@@ -36,7 +36,7 @@ public class OneController implements ControlScheme {
 
 	@Override
 	public void controlClimber(SingularityClimber climber) {
-		if (xbox.getRB()) climber.setSpeed(1.0);
+		if (xbox.getRB()) climber.setSpeed(0.4);
 		else climber.setSpeed(0.0);
 	}
 

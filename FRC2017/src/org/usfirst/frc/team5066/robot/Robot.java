@@ -38,7 +38,7 @@ import org.usfirst.frc.team5066.autonomous2017.AutonMiddle;
 import org.usfirst.frc.team5066.autonomous2017.AutonMode;
 import org.usfirst.frc.team5066.autonomous2017.AutonRight;
 import org.usfirst.frc.team5066.autonomous2017.AutonRightFuel;
-
+import org.usfirst.frc.team5066.autonomous2017.AutonTestVision;
 import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.autonomous2017.Middle;
@@ -111,8 +111,8 @@ public class Robot extends IterativeRobot {
 	private static final int IMG_HEIGHT = 240;
 	
 	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private double centerY = 0.0;
+	private double centerX = 160.0;
+	private double centerY = 160.0;
 	
 	private final Object imgLock = new Object();
 	
@@ -137,7 +137,7 @@ public class Robot extends IterativeRobot {
 	Ultrasonic redLeft;
 	final int inputLeft = 4, outputLeft = 3;
 	Ultrasonic redRight;
-	final int inputRight = 1, outputRight = 2;
+	final int inputRight = 9, outputRight = 8;
 	final int autonModeUltraDist = 48;
 	/*
 	 * For the nice silver ultrasonics,
@@ -235,12 +235,12 @@ public class Robot extends IterativeRobot {
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
-			shooter = new LowGoalShooter(shootMotor, false);
+			shooter = new LowGoalShooter(shootMotor, true);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
 			
-			autonScheme = new AutonMiddle(drive, shooter, intake);
+			autonScheme = new AutonTestVision(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -250,12 +250,13 @@ public class Robot extends IterativeRobot {
 		    
 		    camera = CameraServer.getInstance().startAutomaticCapture();
 			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			camera.setExposureManual(1);
+		    
 			
-		    
-		    
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
-		            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+		            DriverStation.reportWarning("We got into visionthread", false);
+		        	Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 		            synchronized (imgLock) {
 		                centerX = r.x + (r.width / 2);
 		                centerY = r.y + (r.height / 2 );
@@ -263,13 +264,14 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
-		    
+		    camera.setExposureManual(1);
+		    //climbCamera.setExposureManual(1);
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
 		    
-		    redRight = new Ultrasonic(inputRight, outputRight);
-		    redRight.setAutomaticMode(true);
+		    //redRight = new Ultrasonic(inputRight, outputRight);
+		    //redRight.setAutomaticMode(true);
 		    
 		    
 		    xbox = new XboxController(XBOX_PORT);
@@ -306,8 +308,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 		
-		SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
+		/*SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
 		SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
+		*/
 	}
 
 
@@ -408,7 +411,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		
+		//autonSteps = autonScheme.getSteps();
+		System.out.println(autonSteps + ", " + index);
+		DriverStation.reportWarning("Current step" + autonSteps[index], false);
+		//.putString("DB/String 0", "Current step" + autonSteps[index]);
 		switch(autonSteps[index]) {
 		/*
 		 * This will be the last case in every auton scheme.
@@ -416,7 +422,7 @@ public class Robot extends IterativeRobot {
 		 */
 		case 0:
 			drive.hDrive(0, 0, 0, false, SpeedMode.NORMAL);
-			
+			break;
 		/*
 		 * This will drive the robot straight using the gyro
 		 * Will move on when the ultrasonics read a distance < approx. 25in
@@ -426,8 +432,8 @@ public class Robot extends IterativeRobot {
 				origAngle = gyro.getAngle();
 				needAngle = false;
 			}
-			drive.hDriveTank(-0.5 + rotateAngle * (origAngle - gyro.getAngle()), -0.5, 0.0, false, SpeedMode.FAST);
-			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 40) {
+			drive.hDriveTank(0.5 + rotateAngle * (origAngle - gyro.getAngle()), 0.5, 0.0, false, SpeedMode.FAST);
+			if ((redLeft.getRangeInches()) < 40){//+ redRight.getRangeInches()) / 2 < 40) {
 				if (!timerHasStarted) {
 					timer.start();
 				}
@@ -435,7 +441,7 @@ public class Robot extends IterativeRobot {
 					index++;
 			}
 			else timer.reset();
-		
+		break;
 		/*
 		 * This case starts the vision code and lines up the robot with the peg
 		 * Will move on when the ultrasonics read a distance < approx. 15in
@@ -453,13 +459,18 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
-			if (Math.abs(turn) < 20) autoSpeed = -0.40;
-			else autoSpeed = -0.3;
+			if (Math.abs(turn) < 20) autoSpeed = 0.40;
+			else autoSpeed = 0.30;
 			
-			drive.hDrive(autoSpeed, turn * 0.005, (redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
+			if(centerX == 0){
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				break;
+			}
+			
+			drive.hDrive(autoSpeed, turn * 0.005, -0.1,//(redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
 					false, SpeedMode.FAST);
 			
-			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 14) {
+			if ((redLeft.getRangeInches()) > 14){ //+ redRight.getRangeInches()) / 2 < 14) {
 				if (!timerHasStarted) {
 					timer.start();
 				}
@@ -467,14 +478,16 @@ public class Robot extends IterativeRobot {
 					index++;
 			}
 			else timer.reset();
-		
+			
+			SmartDashboard.putString("DB/String 0", "");
+		break;
 		/*
 		 * This case drives the robot backwards for 0.8 seconds at 30% power.
 		 * For inserting gear on to peg after case 2 has run.
 		 */
 		case 3:
-			drive.hDrive(-0.3, 0.0, 0.0, false, SpeedMode.FAST);
-			if ((redLeft.getRangeInches() + redRight.getRangeInches()) / 2 < 6) {
+			drive.hDrive(0.3, 0.0, 0.0, false, SpeedMode.FAST);
+			if ((redLeft.getRangeInches()) < 6){// + redRight.getRangeInches()) / 2 < 6) {
 				if (!timerHasStarted) {
 					timer.start();
 				}
@@ -482,15 +495,15 @@ public class Robot extends IterativeRobot {
 					index++;
 			}
 			else timer.reset();
-			
+			break;
 		/*
 		 * This is only for driving forward to get past the base line.
 		 */
 		case 4:
-			drive.hDrive(-0.5, 0.0, 0.0, false, SpeedMode.FAST);
+			drive.hDrive(0.5, 0.0, 0.0, false, SpeedMode.FAST);
 			Timer.delay(4);
 			index++;
-			
+			break;
 		/*
 		 * Strafe across the boiler
 		 */
@@ -508,7 +521,7 @@ public class Robot extends IterativeRobot {
 			drive.hDrive(0.0, strafeSpeed, 0.0, false, SpeedMode.FAST);
 			Timer.delay(0.6);
 			index++;
-			
+			break;
 		/*
 		 * Shoot the balls into the boiler
 		 */
@@ -517,9 +530,13 @@ public class Robot extends IterativeRobot {
 			shooter.setSpeed(true);
 			Timer.delay(0.4);
 			shooter.setSpeed(false);
-			
-			
-			
+			break;
+		default:
+			drive.hDrive(0.4, 0.0, 0.1, true, SpeedMode.FAST);
+			Timer.delay(4);
+			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			SmartDashboard.putString("DB/String 0", "no auton found");
+			break;
 		}
 		
 		/*
