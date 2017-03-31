@@ -244,7 +244,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
 			
-			autonScheme = new AutonFuelForward(drive, shooter, intake);
+			autonScheme = new AutonLeftFuel(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -548,7 +548,7 @@ public class Robot extends IterativeRobot {
 			else strafeSpeed = 0.0;
 			
 			drive.hDrive(0.0, strafeSpeed, 0.0, false, SpeedMode.FAST);
-			Timer.delay(0.6);
+			Timer.delay(0.4);
 			index++;
 			break;
 		/*
