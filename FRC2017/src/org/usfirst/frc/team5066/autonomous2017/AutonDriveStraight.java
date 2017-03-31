@@ -26,7 +26,7 @@ public class AutonDriveStraight extends AutonControlScheme{
 
 	@Override
 	public int[] getSteps() {
-		int[] steps = {1, 0};
+		int[] steps = {4, 0};
 		return steps;
 	}
 

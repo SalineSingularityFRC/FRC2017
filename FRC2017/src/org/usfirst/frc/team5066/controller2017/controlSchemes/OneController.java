@@ -31,12 +31,12 @@ public class OneController implements ControlScheme {
 
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
-		lGS.setSpeed(xbox.getTriggerRight() > 0.3);
+		lGS.setSpeed(xbox.getTriggerRight() > 0.6);
 	}
 
 	@Override
 	public void controlClimber(SingularityClimber climber) {
-		if (xbox.getRB()) climber.setSpeed(0.4);
+		if (xbox.getRB()) climber.setSpeed(1.0);
 		else climber.setSpeed(0.0);
 	}
 

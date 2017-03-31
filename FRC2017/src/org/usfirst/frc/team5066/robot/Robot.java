@@ -32,6 +32,7 @@ import org.json.simple.JSONObject;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team5066.autonomous2017.AutonDriveStraight;
+import org.usfirst.frc.team5066.autonomous2017.AutonFuelForward;
 import org.usfirst.frc.team5066.autonomous2017.AutonLeft;
 import org.usfirst.frc.team5066.autonomous2017.AutonLeftFuel;
 import org.usfirst.frc.team5066.autonomous2017.AutonMiddle;
@@ -80,6 +81,8 @@ public class Robot extends IterativeRobot {
 			stopDist = 20;
 	
 	double autoSpeed;
+	
+	
 	
 	XboxController xbox;
 	
@@ -154,6 +157,7 @@ public class Robot extends IterativeRobot {
 	
 	Timer timer;
 	boolean timerHasStarted;
+	Timer timer2;
 	double strafeSpeed;
 	
 	//Holds the current control scheme
@@ -240,7 +244,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
 			
-			autonScheme = new AutonTestVision(drive, shooter, intake);
+			autonScheme = new AutonFuelForward(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -252,7 +256,7 @@ public class Robot extends IterativeRobot {
 			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			//camera.setExposureManual(1);
 		    
-			
+			/*UNCOMMENT thie after competition!
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		        	Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -263,6 +267,7 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
+		    */
 		    //camera.setExposureManual(1);
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
@@ -275,6 +280,8 @@ public class Robot extends IterativeRobot {
 		    xbox = new XboxController(XBOX_PORT);
 		    
 		    autonMode = autonMode.RECORDABLE;
+		    
+		    timer2 = new Timer();
 		
 		}
 	}
@@ -331,7 +338,10 @@ public class Robot extends IterativeRobot {
 		needAngle = true;
 		
 		timer = new Timer();
+		timer.start();
 		timerHasStarted = false;
+		
+		origAngle = gyro.getAngle();
 		
 		//gyro.calibrate();
 		
@@ -432,7 +442,17 @@ public class Robot extends IterativeRobot {
 				origAngle = gyro.getAngle();
 				needAngle = false;
 			}*/
-			drive.hDrive(0.3, 0.0, -rotateAngle * (gyro.getAngle()), false, SpeedMode.FAST);
+			timer2.start();
+			int i = 4;
+			while (i > 0) {
+				drive.hDrive(0.8 / i, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+				if (timer2.get() > 0.2) {
+					i--;
+					timer2.start();
+				}
+			}
+				
+			/*
 			if ((redLeft.getRangeInches()) < 40){//+ redRight.getRangeInches()) / 2 < 40) {
 				if (!timerHasStarted) {
 					timer.start();
@@ -442,18 +462,22 @@ public class Robot extends IterativeRobot {
 					index++;
 			}
 			else timer.reset();
+			
+			*/
+			if (timer.get() > 4) index++;
+			
 		break;
 		/*
 		 * This case starts the vision code and lines up the robot with the peg
 		 * Will move on when the ultrasonics read a distance < approx. 15in
 		 */
 		case 2:
+			/*Uncomment this after competition
 			double centerX;
 			synchronized (imgLock) {
 				centerX = this.centerX;
 				centerY = this.centerY;
 			}
-			
 			double turn = centerX - (IMG_WIDTH / 2);
 			//FOR TESTING
 			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
@@ -533,9 +557,14 @@ public class Robot extends IterativeRobot {
 		case 6:
 			
 			shooter.setSpeed(true);
-			Timer.delay(0.4);
+			Timer.delay(1.0);
+			intake.setSpeed(1.0);
+			Timer.delay(5.0);
 			shooter.setSpeed(false);
+			intake.setSpeed(0.0);
+			index++;
 			break;
+			
 		default:
 			drive.hDrive(0.4, 0.0, 0.1, true, SpeedMode.FAST);
 			Timer.delay(4);
