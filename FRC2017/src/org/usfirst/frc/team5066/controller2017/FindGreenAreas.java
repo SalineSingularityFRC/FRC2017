@@ -50,9 +50,9 @@ public class FindGreenAreas implements VisionPipeline {
 
 		// Step HSL_Threshold0:
 		Mat hslThresholdInput = resizeImageOutput;
-		double[] hslThresholdHue = {56, 100};
-		double[] hslThresholdSaturation = {95, 255.0};
-		double[] hslThresholdLuminance = {48, 218.0};
+		double[] hslThresholdHue = {68, 102};
+		double[] hslThresholdSaturation = {48, 255.0};
+		double[] hslThresholdLuminance = {48, 255.0};
 		hslThreshold(hslThresholdInput, hslThresholdHue, hslThresholdSaturation, hslThresholdLuminance, hslThresholdOutput);
 
 		// Step Find_Contours0:

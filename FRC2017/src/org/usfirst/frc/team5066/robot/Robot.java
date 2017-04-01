@@ -256,7 +256,7 @@ public class Robot extends IterativeRobot {
 			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			//camera.setExposureManual(1);
 		    
-			/*UNCOMMENT thie after competition!
+			
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		        	Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -267,7 +267,7 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
-		    */
+		    
 		    //camera.setExposureManual(1);
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
@@ -442,6 +442,17 @@ public class Robot extends IterativeRobot {
 				origAngle = gyro.getAngle();
 				needAngle = false;
 			}*/
+			
+			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			
+			if (timer.get() > 3.2) {
+				drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+				Timer.delay(3);
+				index++;
+			}
+			
+			/*
+			
 			timer2.start();
 			int i = 4;
 			while (i > 0) {
@@ -451,6 +462,7 @@ public class Robot extends IterativeRobot {
 					timer2.start();
 				}
 			}
+			*/
 				
 			/*
 			if ((redLeft.getRangeInches()) < 40){//+ redRight.getRangeInches()) / 2 < 40) {
@@ -464,7 +476,7 @@ public class Robot extends IterativeRobot {
 			else timer.reset();
 			
 			*/
-			if (timer.get() > 4) index++;
+			
 			
 		break;
 		/*
@@ -472,7 +484,7 @@ public class Robot extends IterativeRobot {
 		 * Will move on when the ultrasonics read a distance < approx. 15in
 		 */
 		case 2:
-			/*Uncomment this after competition
+			
 			double centerX;
 			synchronized (imgLock) {
 				centerX = this.centerX;
@@ -539,16 +551,17 @@ public class Robot extends IterativeRobot {
 		case 5:
 			
 			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
-				strafeSpeed = 0.5;
+				strafeSpeed = 0.7;
 			}
 			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
-				strafeSpeed = -0.5;
+				strafeSpeed = -0.7;
 			}
 			
 			else strafeSpeed = 0.0;
 			
 			drive.hDrive(0.0, strafeSpeed, 0.0, false, SpeedMode.FAST);
-			Timer.delay(0.4);
+			Timer.delay(0.5);
+			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
 			index++;
 			break;
 		/*
@@ -564,6 +577,17 @@ public class Robot extends IterativeRobot {
 			intake.setSpeed(0.0);
 			index++;
 			break;
+			
+		case 7:
+			
+			drive.hDrive(0.0, 0.6, 0.0, false, SpeedMode.FAST);
+			Timer.delay(0.2);
+			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			Timer.delay(3);
+			drive.hDrive(0.0, -0.6, 0.0, false, SpeedMode.FAST);
+			Timer.delay(0.35);
+			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			index++;
 			
 		default:
 			drive.hDrive(0.4, 0.0, 0.1, true, SpeedMode.FAST);

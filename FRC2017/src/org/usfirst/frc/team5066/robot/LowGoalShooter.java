@@ -85,6 +85,8 @@ public class LowGoalShooter{
 			lowShooter.set(0.0);
 			hasReversed = false;
 		}
+		
+		SmartDashboard.putString("DB/String 4", "Encoder: " + lowShooter.getSpeed());
 	}
 	
 	public void setSpeed(double speed) {
