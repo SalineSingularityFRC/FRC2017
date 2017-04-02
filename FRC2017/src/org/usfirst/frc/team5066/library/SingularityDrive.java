@@ -318,17 +318,44 @@ public class SingularityDrive {
 	 * @param speed This is the speed to move at.
 	 * Note: speed is not changed by squaredInputs or velocityMultiplier
 	 */
-	public void hDriveStraightEncoder(double vertical, double horizontal, double rotation) {
+	public void hDriveStraightEncoder(double vertical, double horizontal, double rotation, double distance) {
 		
-		double vertMax = Math.max(1,  Math.abs(vertical) + Math.abs(rotation));
-		double strafeMax = Math.max(1,  Math.abs(horizontal));
+		this.resetAll();
 		
-		m_frontLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
-		m_rearLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
-		m_frontRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
-		m_rearRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
-		m_rightMiddleMotor.set(-horizontal / strafeMax);
-		m_leftMiddleMotor.set(-horizontal / strafeMax);
+		while(true) {
+			
+			double vertMax = Math.max(1,  Math.abs(vertical) + Math.abs(rotation));
+			double strafeMax = Math.max(1,  Math.abs(horizontal));
+			
+			m_frontLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
+			m_rearLeftMotor.set((-vertical + rotation) / (vertMax * leftOverRight()));
+			m_frontRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
+			m_rearRightMotor.set((vertical * leftOverRight() + rotation) / vertMax);
+			m_rightMiddleMotor.set(-horizontal / strafeMax);
+			m_leftMiddleMotor.set(-horizontal / strafeMax);
+			
+			if (Math.abs((this.getRightPosition() + this.getLeftPosition())) / 2 > distance) return;
+		}
+	}
+	
+public void hDriveStrafeEncoder(double horizontal, double distance) {
+		
+		this.resetAll();
+		
+		while(true) {
+			
+			
+			double strafeMax = Math.max(1,  Math.abs(horizontal));
+			
+			m_frontLeftMotor.set(0.0);
+			m_rearLeftMotor.set(0.0);
+			m_frontRightMotor.set(0.0);
+			m_rearRightMotor.set(0.0);
+			m_rightMiddleMotor.set(-horizontal / strafeMax);
+			m_leftMiddleMotor.set(-horizontal / strafeMax);
+			
+			if (Math.abs(this.getMiddlePosition()) > distance) return;
+		}
 	}
 	
 	public void hDriveStraightConstant(double vertical, double horizontal, double rotation) {

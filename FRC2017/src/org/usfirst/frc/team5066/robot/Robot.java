@@ -32,7 +32,7 @@ import org.json.simple.JSONObject;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team5066.autonomous2017.AutonDriveStraight;
-import org.usfirst.frc.team5066.autonomous2017.AutonFuelForward;
+//import org.usfirst.frc.team5066.autonomous2017.AutonFuelForward;
 import org.usfirst.frc.team5066.autonomous2017.AutonLeft;
 import org.usfirst.frc.team5066.autonomous2017.AutonLeftFuel;
 import org.usfirst.frc.team5066.autonomous2017.AutonMiddle;
@@ -132,6 +132,7 @@ public class Robot extends IterativeRobot {
 	
 	//For the gyro
 	public ADXRS450_Gyro gyro;
+	boolean gyroStarted;
 	boolean needAngle;
 	double origAngle;
 	double rotateAngle = 0.05;
@@ -342,6 +343,7 @@ public class Robot extends IterativeRobot {
 		timerHasStarted = false;
 		
 		origAngle = gyro.getAngle();
+		gyroStarted = false;
 		
 		//gyro.calibrate();
 		
@@ -424,7 +426,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		//autonSteps = autonScheme.getSteps();
 		//DriverStation.reportWarning("Current step" + autonSteps[index], false);
-		//.putString("DB/String 0", "Current step" + autonSteps[index]);
+		SmartDashboard.putString("DB/String 0", "Current step " + autonSteps[index]);
 		switch(autonSteps[index]) {
 		/*
 		 * This will be the last case in every auton scheme.
@@ -512,9 +514,10 @@ public class Robot extends IterativeRobot {
 					timer.start();
 					timerHasStarted = true;
 				}
-				else if (timer.get() > 0.1)
-					
+				else if (timer.get() > 0.1) {
+					timerHasStarted = false;
 					index++;
+				}
 			}
 			//else timer.reset();
 			
@@ -532,8 +535,10 @@ public class Robot extends IterativeRobot {
 					timer.start();
 					timerHasStarted = true;
 				}
-				else if (timer.get() > 0.1)
+				else if (timer.get() > 0.1) {
+					timerHasStarted = false;
 					index++;
+				}
 			}
 			//else timer.reset();
 			break;
@@ -559,9 +564,7 @@ public class Robot extends IterativeRobot {
 			
 			else strafeSpeed = 0.0;
 			
-			drive.hDrive(0.0, strafeSpeed, 0.0, false, SpeedMode.FAST);
-			Timer.delay(0.5);
-			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			drive.hDrive(0.0, strafeSpeed, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			index++;
 			break;
 		/*
@@ -570,12 +573,11 @@ public class Robot extends IterativeRobot {
 		case 6:
 			
 			shooter.setSpeed(true);
-			Timer.delay(1.0);
+			Timer.delay(0.5);
 			intake.setSpeed(1.0);
-			Timer.delay(5.0);
+			Timer.delay(3.0);
 			shooter.setSpeed(false);
 			intake.setSpeed(0.0);
-			index++;
 			break;
 			
 		case 7:
@@ -588,6 +590,138 @@ public class Robot extends IterativeRobot {
 			Timer.delay(0.35);
 			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
 			index++;
+		
+		/*
+		 * For use with case 1. Adjusts robot before driving toward peg
+		 */
+		case 8:
+			
+			double cenX;
+			synchronized (imgLock) {
+				cenX = this.centerX;
+				centerY = this.centerY;
+			}
+			double t = cenX - (IMG_WIDTH / 2);
+			//FOR TESTING
+			SmartDashboard.putString("DB/String 1", "Center X: " + cenX);
+			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
+			SmartDashboard.putString("DB/String 3", "Turn: " + t);
+			
+			//The plus two probably only works for blue boiler. This might have to be minus for red.
+			drive.hDrive(0.0, 0.0, 0.25, false, SpeedMode.FAST);
+			
+			if (Math.abs(30.0 - t) < 10.0) {
+				index++;
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				Timer.delay(0.5);
+			}
+			
+			/*
+			if (Math.abs(27 - t) < 5) {
+				if (!timerHasStarted) {
+					timer.start();
+					timerHasStarted = true;
+				}
+				
+				if (timer.get() > 0.8) {
+					index++;
+					timerHasStarted = false;
+				}
+			}
+			else {
+				timer.reset();
+				timerHasStarted = false;
+			}
+			*/
+			
+			break;
+			
+		case 9:
+			
+			if (!gyroStarted) {
+				origAngle = gyro.getAngle();
+				gyroStarted = true;
+			}
+			
+			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			if (!timerHasStarted) {
+				timer = new Timer();
+				timer.start();
+				timerHasStarted = true;
+			}
+			
+			if (timer.get() > 0.80) {
+				
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				Timer.delay(0.5);
+				
+				index++;
+				timerHasStarted = false;
+				
+			}
+			break;
+			
+		case 10:
+			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			if (!timerHasStarted) {
+				timer.start();
+				timerHasStarted = true;
+			}
+			
+			if (timer.get() > 3.5) {
+				index++;
+				timerHasStarted = false;
+			}
+			break;
+			
+		case 11:
+			
+			drive.hDriveStraightEncoder(0.5, 0.0, 0.0, 1000);
+			break;
+			
+		case 12:
+			
+			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
+				strafeSpeed = 0.7;
+			}
+			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
+				strafeSpeed = -0.7;
+			}
+			
+			else strafeSpeed = 0.0;
+			
+			drive.hDrive(0.0, strafeSpeed, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			Timer.delay(1.3);
+			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			index++;
+			break;
+			
+		case 13:
+			if (!gyroStarted) {
+				origAngle = gyro.getAngle();
+				gyroStarted = true;
+			}
+			
+			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			if (!timerHasStarted) {
+				timer = new Timer();
+				timer.start();
+				timerHasStarted = true;
+			}
+			
+			if (timer.get() > 3.5) {
+				
+				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				Timer.delay(0.5);
+				
+				index++;
+				timerHasStarted = false;
+				gyroStarted = false;
+				
+			}
+			break;
+			
+			
 			
 		default:
 			drive.hDrive(0.4, 0.0, 0.1, true, SpeedMode.FAST);
