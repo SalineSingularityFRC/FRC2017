@@ -20,6 +20,7 @@ import org.usfirst.frc.team5066.controller2017.GripRunner;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.UsbCamera;
@@ -116,8 +117,12 @@ public class Robot extends IterativeRobot {
 	private VisionThread visionThread;
 	private double centerX = 160.0;
 	private double centerY = 160.0;
+	private double turn;
 	
 	private final Object imgLock = new Object();
+	
+	ArrayList<Double> turnList;
+	
 	
 	public static UsbCamera camera;
 	public static UsbCamera climbCamera;
@@ -184,6 +189,10 @@ public class Robot extends IterativeRobot {
 	
 	//Encoders
 	boolean encoderShooter;
+	
+	
+	PowerDistributionPanel pdp;
+	
 	
 	//Speed constants
 	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
@@ -269,6 +278,11 @@ public class Robot extends IterativeRobot {
 		    });
 		    visionThread.start();
 		    
+		    turnList = new ArrayList<>();
+		    for (int i = 0; i < 4; i++) {
+		    	turnList.add(0.0);
+		    }
+		    
 		    //camera.setExposureManual(1);
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
@@ -283,6 +297,8 @@ public class Robot extends IterativeRobot {
 		    autonMode = autonMode.RECORDABLE;
 		    
 		    timer2 = new Timer();
+		    
+		    pdp = new PowerDistributionPanel();
 		
 		}
 	}
@@ -492,7 +508,7 @@ public class Robot extends IterativeRobot {
 				centerX = this.centerX;
 				centerY = this.centerY;
 			}
-			double turn = centerX - (IMG_WIDTH / 2);
+			turn = centerX - (IMG_WIDTH / 2);
 			//FOR TESTING
 			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
@@ -601,16 +617,27 @@ public class Robot extends IterativeRobot {
 				cenX = this.centerX;
 				centerY = this.centerY;
 			}
-			double t = cenX - (IMG_WIDTH / 2);
+			turn = cenX - (IMG_WIDTH / 2);
+			
+			turnList.remove(0);
+			turnList.add(turn);
+			
+			turn = 0.0;
+			for (int i = 0; i < turnList.size(); i++) {
+				turn += turnList.get(i);
+			}
+			turn /= turnList.size();
+			
+			
 			//FOR TESTING
 			SmartDashboard.putString("DB/String 1", "Center X: " + cenX);
 			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-			SmartDashboard.putString("DB/String 3", "Turn: " + t);
+			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
 			//The plus two probably only works for blue boiler. This might have to be minus for red.
-			drive.hDrive(0.0, 0.0, 0.25, false, SpeedMode.FAST);
+			drive.hDrive(0.0, 0.0, turn - 30.0, false, SpeedMode.FAST);
 			
-			if (Math.abs(30.0 - t) < 10.0) {
+			if (Math.abs(turn - 30.0) < 10.0) {
 				index++;
 				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(0.5);
@@ -869,7 +896,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 6", "Left Ultra: " + redLeft.getRangeInches());
 		//SmartDashboard.putString("DB/String 6", "Right Ultra: " + redRight.getRangeInches());
 		
-		
+		//This appears to be how to view the voltage on a particular motor.
+		//NOT TESTED
+		pdp.getCurrent(leftFrontMotor);
 		
 		
 	}
@@ -888,6 +917,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		/*
 		if (recorder != null) {
             // xbox and js are two input controllers. These methods just return
             // joystick values (in the form of doubles)
@@ -901,6 +931,16 @@ public class Robot extends IterativeRobot {
  
             recorder.appendData(input);
         }
+        
+        */
+		
+		currentScheme.drive(drive, true);
+		currentScheme.controlShooter(shooter);
+		currentScheme.controlClimber(climber);
+		currentScheme.controlIntake(intake);
+		
+		
+		
 	}
 	
 	private void loadProperties() {
