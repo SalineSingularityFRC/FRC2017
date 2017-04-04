@@ -254,7 +254,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
 			
-			autonScheme = new AutonLeftFuel(drive, shooter, intake);
+			autonScheme = new AutonDriveStraight(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -266,7 +266,7 @@ public class Robot extends IterativeRobot {
 			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			//camera.setExposureManual(1);
 		    
-			
+			/*
 		    visionThread = new VisionThread(camera, new FindGreenAreas(), pipeline -> {
 		        if (!pipeline.filterContoursOutput().isEmpty()) {
 		        	Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
@@ -277,7 +277,7 @@ public class Robot extends IterativeRobot {
 		        }
 		    });
 		    visionThread.start();
-		    
+		    */
 		    turnList = new ArrayList<>();
 		    for (int i = 0; i < 4; i++) {
 		    	turnList.add(0.0);

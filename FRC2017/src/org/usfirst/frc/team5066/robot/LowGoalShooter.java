@@ -20,10 +20,10 @@ public class LowGoalShooter{
 	 */
 	
 	private static final double voltSpeed = 0.35, voltReverseSpeed = -0.4;
-	private static final double encoderSpeed = 950.0, encoderReverseSpeed = -400.0;
+	private static final double encoderSpeed = 800.0, encoderReverseSpeed = -400.0;
 	
 	private static final double voltAutonSpeed = 0.35;
-	private static final double encoderAutonSpeed = 900.0;
+	private static final double encoderAutonSpeed = 800.0;
 	
 	private static double speed, reverseSpeed;
 	private static double autonSpeed;
@@ -68,9 +68,9 @@ public class LowGoalShooter{
 			lowShooter.setProfile(0);
 			lowShooter.setF(0.1097);
 			
-			lowShooter.setP(0.22);
-			lowShooter.setI(0.0);
-			lowShooter.setD(0.0);
+			lowShooter.setP(0.1);
+			lowShooter.setI(0.001);
+			lowShooter.setD(0.1);
 			
 			
 			speed = encoderSpeed;
