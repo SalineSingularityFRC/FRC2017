@@ -39,7 +39,7 @@ public void drive(SingularityDrive sd, boolean squaredInputs) {
 }
 
 public void controlShooter(LowGoalShooter lGS){
-	lGS.setSpeed(logitech.getTrigger());
+	lGS.setSpeed(logitech.getTrigger(), false);
 }
 
 public void controlClimber(SingularityClimber climber){

@@ -31,7 +31,7 @@ public class OneController implements ControlScheme {
 
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
-		lGS.setSpeed(xbox.getTriggerRight() > 0.6);
+		lGS.setSpeed(xbox.getTriggerRight() > 0.6, false);
 	}
 
 	@Override

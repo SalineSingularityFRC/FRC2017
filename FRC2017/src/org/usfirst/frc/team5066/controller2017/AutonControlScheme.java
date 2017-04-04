@@ -172,10 +172,10 @@ public abstract class AutonControlScheme {
 	
 	public static void shoot(int time) {
 		intake.setSpeed(0.6);
-		shooter.setSpeed(true);
+		shooter.setSpeed(true, true);
 		Timer.delay(time);
 		intake.setSpeed(0.0);
-		shooter.setSpeed(false);
+		shooter.setSpeed(false, true);
 	}
 	
 	/**

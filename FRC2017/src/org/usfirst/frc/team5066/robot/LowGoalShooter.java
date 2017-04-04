@@ -19,10 +19,18 @@ public class LowGoalShooter{
 	 * shootDistVolts is the optimal voltage for the ultrasonic before shooting
 	 */
 	
-	private static final double shootSpeed = 0.35, reverseSpeed = -0.4,
-			maxMoveSpeed = 0.38, reverseTime = 0.4, shootDistVolts = 4.60;
+	private static final double voltSpeed = 0.35, voltReverseSpeed = -0.4;
+	private static final double encoderSpeed = 950.0, encoderReverseSpeed = -400.0;
 	
-	private static final double encoderSpeed = 1000;
+	private static final double voltAutonSpeed = 0.35;
+	private static final double encoderAutonSpeed = 900.0;
+	
+	private static double speed, reverseSpeed;
+	private static double autonSpeed;
+			
+	private static final double maxMoveSpeed = 0.38, reverseTime = 0.4, shootDistVolts = 4.60;
+	
+	
 	
 	private CANTalon lowShooter;
 	private SingularityDrive sd;
@@ -35,12 +43,28 @@ public class LowGoalShooter{
 	
 	
 	public LowGoalShooter(int shootPort, SingularityDrive sd, RangeFinder rf, boolean encoder){
+
+
+		this(shootPort, encoder);
+		
+		this.sd = sd;
+		this.rf = rf;
+	}
+	
+	public LowGoalShooter(int shootPort, boolean encoder) {
+		
 		lowShooter = new CANTalon(shootPort);
 		if (encoder) {
 			//lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+			
 			lowShooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+			lowShooter.reverseSensor(false);
+			
 			lowShooter.configNominalOutputVoltage(+0.0f, -0.0f);
 			lowShooter.configPeakOutputVoltage(+12.0f, -12.0f);
+			
+			lowShooter.setAllowableClosedLoopErr(0);
+			
 			lowShooter.setProfile(0);
 			lowShooter.setF(0.1097);
 			
@@ -48,20 +72,18 @@ public class LowGoalShooter{
 			lowShooter.setI(0.0);
 			lowShooter.setD(0.0);
 			
+			
+			speed = encoderSpeed;
+			reverseSpeed = encoderReverseSpeed;
+			
+			autonSpeed = encoderAutonSpeed;
+			
 		}
-		this.encoder = encoder;
-		
-		this.sd = sd;
-		this.rf = rf;
-		
-		hasReversed = false;
-		timer = new Timer();
-	}
-	
-	public LowGoalShooter(int shootPort, boolean encoder) {
-		lowShooter = new CANTalon(shootPort);
-		if (encoder) {
-			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+		else {
+			speed = voltSpeed;
+			reverseSpeed = voltReverseSpeed;
+			
+			autonSpeed = voltAutonSpeed;
 		}
 		this.encoder = encoder;
 		
@@ -70,36 +92,42 @@ public class LowGoalShooter{
 		timer = new Timer();
 	}
 	
-	public void setSpeed(boolean shoot){
+	public void setSpeed(boolean shoot, boolean auton){
 		
 		if(shoot){
+			
+			if (encoder) {
+				lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+			}
+			else {
+				lowShooter.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			}
 			
 			//moveFromUltra();
 			
 			//If we haven't already reversed while shooting this attempt,
 			//reverse the shooter for a brief time while still adjusting position
-			/*if (!hasReversed) {
+			if (!hasReversed) {
 				timer.reset();
 				timer.start();
 				hasReversed = true;
 				
-				lowShooter.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 				
 				while (timer.get() < reverseTime) {
 					lowShooter.set(reverseSpeed);
-					//moveFromUltra();
 				}
 			}
-			*/
-			if (encoder) {
-				lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
-				lowShooter.set(encoderSpeed);
+			
+			if (!auton) {
+				lowShooter.set(speed);
 			}
 			else {
-				lowShooter.set(shootSpeed);
-				SmartDashboard.putString("DB/String 5", "encoder: " + lowShooter.getEncVelocity());
-				SmartDashboard.putString("DB/String 4", "speed: " + lowShooter.getSpeed());
+				lowShooter.set(autonSpeed);
 			}
+				
+			SmartDashboard.putString("DB/String 5", "encoder: " + lowShooter.getEncVelocity());
+			SmartDashboard.putString("DB/String 4", "speed: " + lowShooter.getSpeed());
+			
 		}
 		
 		//If not shooting, dont't. Set hasReversed false for next time we shoot
@@ -111,8 +139,10 @@ public class LowGoalShooter{
 		//SmartDashboard.putString("DB/String 4", "Encoder: " + lowShooter.getSpeed());
 	}
 	
+	
+	
 	public void setSpeed(double speed) {
-		if (speed > 0.4) lowShooter.set(shootSpeed);
+		if (speed > 0.4) lowShooter.set(speed);
 		else if (speed < -0.4) lowShooter.set(-reverseSpeed);
 		else lowShooter.set(0.0);
 	}

@@ -249,7 +249,7 @@ public class Robot extends IterativeRobot {
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
-			shooter = new LowGoalShooter(shootMotor, true);
+			shooter = new LowGoalShooter(shootMotor, encoderShooter);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
@@ -588,11 +588,11 @@ public class Robot extends IterativeRobot {
 		 */
 		case 6:
 			
-			shooter.setSpeed(true);
+			shooter.setSpeed(true, true);
 			Timer.delay(0.5);
 			intake.setSpeed(1.0);
 			Timer.delay(3.0);
-			shooter.setSpeed(false);
+			shooter.setSpeed(false, true);
 			intake.setSpeed(0.0);
 			break;
 			
@@ -622,6 +622,7 @@ public class Robot extends IterativeRobot {
 			turnList.remove(0);
 			turnList.add(turn);
 			
+			//make turn the average of the last four turn's (before they were averaged)
 			turn = 0.0;
 			for (int i = 0; i < turnList.size(); i++) {
 				turn += turnList.get(i);

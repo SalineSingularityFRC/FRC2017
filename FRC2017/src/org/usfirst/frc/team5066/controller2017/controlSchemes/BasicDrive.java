@@ -54,7 +54,7 @@ public class BasicDrive implements ControlScheme {
 	
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
-		lGS.setSpeed(logitech.getTrigger());
+		lGS.setSpeed(logitech.getTrigger(), false);
 	}
 	
 	@Override
