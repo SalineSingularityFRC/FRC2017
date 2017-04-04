@@ -249,7 +249,7 @@ public class Robot extends IterativeRobot {
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
 					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
-			shooter = new LowGoalShooter(shootMotor, false);
+			shooter = new LowGoalShooter(shootMotor, true);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT);
@@ -898,7 +898,7 @@ public class Robot extends IterativeRobot {
 		
 		//This appears to be how to view the voltage on a particular motor.
 		//NOT TESTED
-		pdp.getCurrent(leftFrontMotor);
+		//pdp.getCurrent(leftFrontMotor);
 		
 		
 	}

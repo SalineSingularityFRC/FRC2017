@@ -5,6 +5,7 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,8 +19,8 @@ public class LowGoalShooter{
 	 * shootDistVolts is the optimal voltage for the ultrasonic before shooting
 	 */
 	
-	private static final double shootSpeed = 1.00, reverseSpeed = -0.4,
-			maxMoveSpeed = 0.4, reverseTime = 0.4, shootDistVolts = 4.60;
+	private static final double shootSpeed = 0.35, reverseSpeed = -0.4,
+			maxMoveSpeed = 0.38, reverseTime = 0.4, shootDistVolts = 4.60;
 	
 	private static final double encoderSpeed = 1000;
 	
@@ -36,7 +37,17 @@ public class LowGoalShooter{
 	public LowGoalShooter(int shootPort, SingularityDrive sd, RangeFinder rf, boolean encoder){
 		lowShooter = new CANTalon(shootPort);
 		if (encoder) {
-			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+			//lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
+			lowShooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+			lowShooter.configNominalOutputVoltage(+0.0f, -0.0f);
+			lowShooter.configPeakOutputVoltage(+12.0f, -12.0f);
+			lowShooter.setProfile(0);
+			lowShooter.setF(0.1097);
+			
+			lowShooter.setP(0.22);
+			lowShooter.setI(0.0);
+			lowShooter.setD(0.0);
+			
 		}
 		this.encoder = encoder;
 		
@@ -67,20 +78,27 @@ public class LowGoalShooter{
 			
 			//If we haven't already reversed while shooting this attempt,
 			//reverse the shooter for a brief time while still adjusting position
-			if (!hasReversed) {
+			/*if (!hasReversed) {
 				timer.reset();
+				timer.start();
 				hasReversed = true;
+				
+				lowShooter.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+				
 				while (timer.get() < reverseTime) {
-					lowShooter.set(-reverseSpeed);
-					moveFromUltra();
+					lowShooter.set(reverseSpeed);
+					//moveFromUltra();
 				}
 			}
-			
+			*/
 			if (encoder) {
+				lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
 				lowShooter.set(encoderSpeed);
 			}
 			else {
 				lowShooter.set(shootSpeed);
+				SmartDashboard.putString("DB/String 5", "encoder: " + lowShooter.getEncVelocity());
+				SmartDashboard.putString("DB/String 4", "speed: " + lowShooter.getSpeed());
 			}
 		}
 		
@@ -90,7 +108,7 @@ public class LowGoalShooter{
 			hasReversed = false;
 		}
 		
-		SmartDashboard.putString("DB/String 4", "Encoder: " + lowShooter.getSpeed());
+		//SmartDashboard.putString("DB/String 4", "Encoder: " + lowShooter.getSpeed());
 	}
 	
 	public void setSpeed(double speed) {

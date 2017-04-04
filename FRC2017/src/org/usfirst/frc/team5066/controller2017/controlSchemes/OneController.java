@@ -54,7 +54,7 @@ public class OneController implements ControlScheme {
 		if (xbox.getYButton()) prevY = true;
 		else prevY = false;
 		
-		SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
+		//SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
 	}
 
 }
