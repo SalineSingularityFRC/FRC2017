@@ -8,6 +8,7 @@ import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.robot.SingularityLEDs;
 
 public class ArcadeHDrive implements ControlScheme {
 
@@ -51,6 +52,13 @@ public void controlIntake(SingularityIntake intake){
 	if (!on) intake.setSpeed(0.0);
 	else if (xbox.getXButton()) intake.setSpeed(-1.0);
 	else intake.setSpeed(1.0);
+}
+
+
+@Override
+public void controlLEDs(SingularityLEDs robotLEDs) {
+	// TODO Auto-generated method stub
+	
 }
 
 }

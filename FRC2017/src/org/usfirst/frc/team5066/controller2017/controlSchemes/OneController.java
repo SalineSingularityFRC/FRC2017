@@ -1,12 +1,14 @@
  package org.usfirst.frc.team5066.controller2017.controlSchemes;
 
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
+import org.usfirst.frc.team5066.controller2017.LogitechController;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.robot.SingularityLEDs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,11 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class OneController implements ControlScheme {
 	
 	XboxController xbox;
+	LogitechController logitech;
 	SpeedMode speedMode;
 	boolean on, prevY;
 	
-	public OneController(int xboxPort) {
+	public OneController(int xboxPort, int logitechPort) {
 		xbox = new XboxController(xboxPort);
+		logitech = new LogitechController(logitechPort);
 		on = false;
 	}
 	
@@ -55,6 +59,27 @@ public class OneController implements ControlScheme {
 		else prevY = false;
 		
 		//SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
+	}
+	
+	public void controlLEDs(SingularityLEDs robotLEDs){
+		if(logitech.getStickX() > 0.2 && (!xbox.getYButton() || !xbox.getTrigger())){
+			robotLEDs.turnBlue();
+		}
+		else if(logitech.getStickX() < -0.2 && (!xbox.getYButton() || !xbox.getTrigger())){
+			robotLEDs.turnYellow();
+		}
+		else if(logitech.getTrigger()){
+			robotLEDs.oscillate();
+		}
+		else if (xbox.getRB() && !(logitech.getTrigger())){
+			robotLEDs.oscillate();
+		}
+		else if (xbox.getTrigger()){
+			robotLEDs.flashBlue();
+		}
+		else if(xbox.getYButton()){
+			robotLEDs.flashYellow();
+		}
 	}
 
 }

@@ -123,6 +123,7 @@ public class Robot extends IterativeRobot {
 	
 	ArrayList<Double> turnList;
 	
+	SingularityLEDs robotLEDs;
 	
 	public static UsbCamera camera;
 	public static UsbCamera climbCamera;
@@ -243,6 +244,8 @@ public class Robot extends IterativeRobot {
 			loadProperties();
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
+			robotLEDs = new SingularityLEDs(0, 1, 2);
+			
 			encoderShooter = true;
 			gyro = new ADXRS450_Gyro();
 			gyro.calibrate();
@@ -252,7 +255,7 @@ public class Robot extends IterativeRobot {
 			shooter = new LowGoalShooter(shootMotor, encoderShooter);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
-			currentScheme = new OneController(XBOX_PORT);
+			currentScheme = new OneController(XBOX_PORT, BIG_JOYSTICK_PORT);
 			
 			autonScheme = new AutonDriveStraight(drive, shooter, intake);
 			
@@ -299,6 +302,8 @@ public class Robot extends IterativeRobot {
 		    timer2 = new Timer();
 		    
 		    pdp = new PowerDistributionPanel();
+		    
+		    robotLEDs.turnBlue();
 		
 		}
 	}
@@ -353,6 +358,9 @@ public class Robot extends IterativeRobot {
 		index = 0;
 		autonSteps = autonScheme.getSteps();
 		needAngle = true;
+		
+		//for leds
+		robotLEDs.oscillate();
 		
 		timer = new Timer();
 		timer.start();
@@ -889,6 +897,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
+		
+		currentScheme.controlLEDs(robotLEDs);
 		currentScheme.drive(drive, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
@@ -939,7 +949,7 @@ public class Robot extends IterativeRobot {
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
-		
+		currentScheme.controlLEDs(robotLEDs);
 		
 		
 	}

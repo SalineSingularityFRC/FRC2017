@@ -7,9 +7,7 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 //import org.usfirst.frc.team5066.robot.SingularityConveyer;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
-
-
-
+import org.usfirst.frc.team5066.robot.SingularityLEDs;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -26,6 +24,7 @@ public interface ControlScheme {
 	public void controlShooter(LowGoalShooter lGS);
 	public void controlClimber(SingularityClimber climber);
 	public void controlIntake(SingularityIntake intake);
+	public void controlLEDs(SingularityLEDs robotLEDs);
 
 	
 	//SingularityDrive sd = new SingularityDrive(1,2,3,4);

@@ -9,6 +9,7 @@ import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.robot.SingularityLEDs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -62,6 +63,12 @@ public class TankHDrive implements ControlScheme {
 		if (lS < 0 && rS < 0) 
 			return Math.min(lS, rS);
 		return Math.max(lS,  rS);
+		
+	}
+
+	@Override
+	public void controlLEDs(SingularityLEDs robotLEDs) {
+		// TODO Auto-generated method stub
 		
 	}
 	
