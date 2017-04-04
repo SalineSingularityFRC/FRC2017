@@ -54,6 +54,8 @@ public class LowGoalShooter{
 		}
 		this.encoder = encoder;
 		
+		hasReversed = false;
+
 		timer = new Timer();
 	}
 	
