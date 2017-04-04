@@ -18,7 +18,7 @@ public class LowGoalShooter{
 	 * shootDistVolts is the optimal voltage for the ultrasonic before shooting
 	 */
 	
-	private static final double shootSpeed = 0.50, reverseSpeed = -0.4,
+	private static final double shootSpeed = 1.00, reverseSpeed = -0.4,
 			maxMoveSpeed = 0.4, reverseTime = 0.4, shootDistVolts = 4.60;
 	
 	private static final double encoderSpeed = 1000;
@@ -53,13 +53,15 @@ public class LowGoalShooter{
 			lowShooter.changeControlMode(CANTalon.TalonControlMode.Speed);
 		}
 		this.encoder = encoder;
+		
+		timer = new Timer();
 	}
 	
 	public void setSpeed(boolean shoot){
 		
 		if(shoot){
-			/*
-			moveFromUltra();
+			
+			//moveFromUltra();
 			
 			//If we haven't already reversed while shooting this attempt,
 			//reverse the shooter for a brief time while still adjusting position
@@ -71,7 +73,7 @@ public class LowGoalShooter{
 					moveFromUltra();
 				}
 			}
-			*/
+			
 			if (encoder) {
 				lowShooter.set(encoderSpeed);
 			}
