@@ -123,7 +123,9 @@ public class Robot extends IterativeRobot {
 	
 	ArrayList<Double> turnList;
 	
+	//For the LEDs
 	SingularityLEDs robotLEDs;
+	int portGreen, portRed, portBlue;
 	
 	public static UsbCamera camera;
 	public static UsbCamera climbCamera;
@@ -244,7 +246,7 @@ public class Robot extends IterativeRobot {
 			loadProperties();
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
-			robotLEDs = new SingularityLEDs(0, 1, 2);
+			robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
 			
 			encoderShooter = true;
 			gyro = new ADXRS450_Gyro();

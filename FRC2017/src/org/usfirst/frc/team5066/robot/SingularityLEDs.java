@@ -20,6 +20,10 @@ public class SingularityLEDs {
 		LEDR = new Solenoid(port2);
 		LEDB = new Solenoid(port3);
 		
+		LEDG.set(false);
+		LEDR.set(false);
+		LEDB.set(false);
+		
 		timer = new Timer();
 		hasSwitched = false;
 	}
@@ -31,12 +35,13 @@ public class SingularityLEDs {
 	}
 	
 	public void turnBlue(){
-		resetAll();
 		LEDB.set(true);
+		LEDR.set(false);
+		LEDG.set(false);
 	}
 	
 	public void turnYellow(){
-		resetAll();
+		LEDB.set(false);
 		LEDG.set(true);
 		LEDR.set(true);
 	}
@@ -71,10 +76,10 @@ public class SingularityLEDs {
 			hasSwitched = true;
 		}
 		else if(timer.get() > 0.2){
-			turnBlue();
+			LEDB.set(true);
 		}
 		else if(timer.get() > 0.4){
-			resetAll();
+			LEDB.set(false);
 			timer.reset();
 			hasSwitched = false;
 		}
@@ -86,10 +91,12 @@ public class SingularityLEDs {
 			hasSwitched = true;
 		}
 		else if(timer.get() > 0.2){
-			turnYellow();
+			LEDR.set(true);
+			LEDG.set(true);
 		}
 		else if(timer.get() > 0.4){
-			resetAll();
+			LEDR.set(false);
+			LEDG.set(false);
 			timer.reset();
 			hasSwitched = false;
 		}
