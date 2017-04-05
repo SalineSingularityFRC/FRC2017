@@ -3,5 +3,5 @@
 .classpath
 /FRC2017/.classpath
 .metadata
-/bin/
+bin/
 *.class
