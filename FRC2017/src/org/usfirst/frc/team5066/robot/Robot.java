@@ -338,6 +338,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 		
 		SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
+		SmartDashboard.putNumber("gyro.getAngle(): ", gyro.getAngle());
 		/*
 		SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
 		*/
@@ -453,6 +454,8 @@ public class Robot extends IterativeRobot {
 		//autonSteps = autonScheme.getSteps();
 		//DriverStation.reportWarning("Current step" + autonSteps[index], false);
 		SmartDashboard.putString("DB/String 0", "Current step " + autonSteps[index]);
+		SmartDashboard.putNumber("gyro.getAngle(): ", gyro.getAngle());
+		
 		switch(autonSteps[index]) {
 		/*
 		 * This will be the last case in every auton scheme.
@@ -545,9 +548,9 @@ public class Robot extends IterativeRobot {
 					index++;
 				}
 			}
-			//else timer.reset();
-			
-			SmartDashboard.putString("DB/String 0", "");
+			else {
+				timer.reset();
+			}
 		break;
 		/*
 		 * This case drives the robot backwards for 0.8 seconds at 30% power.
@@ -907,6 +910,8 @@ public class Robot extends IterativeRobot {
 		currentScheme.controlIntake(intake);
 		
 		SmartDashboard.putString("DB/String 6", "Left Ultra: " + redLeft.getRangeInches());
+		SmartDashboard.putNumber("gryo.getAngle(): ", gyro.getAngle());
+		
 		//SmartDashboard.putString("DB/String 6", "Right Ultra: " + redRight.getRangeInches());
 		
 		//This appears to be how to view the voltage on a particular motor.
