@@ -35,7 +35,7 @@ public class AutonRight extends AutonControlScheme {
 
 	@Override
 	public int[] getSteps() {
-		int[] steps = {5, 1, 2, 3, 0};
+		int[] steps = {14, 15, 1, 0};
 		return steps;
 	}
 }

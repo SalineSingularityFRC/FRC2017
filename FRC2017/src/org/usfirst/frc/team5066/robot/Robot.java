@@ -2,10 +2,10 @@ package org.usfirst.frc.team5066.robot;
 
 import org.usfirst.frc.team5066.controller2017.AutonControlScheme;
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
-import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadeHDrive;
+//import org.usfirst.frc.team5066.controller2017.controlSchemes.ArcadearcadeSixWheel;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.OneController;
-import org.usfirst.frc.team5066.controller2017.controlSchemes.TankHDrive;
+//import org.usfirst.frc.team5066.controller2017.controlSchemes.TankarcadeSixWheel;
 import org.usfirst.frc.team5066.library.RangeFinder;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
@@ -76,6 +76,8 @@ import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends IterativeRobot {
 	
+	
+	
 	//AUTON CONSTANTS
 	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.4, 
 			turnMultiplier = 0.010, ultraRotate = 0.1, driveStraight = 1.03,
@@ -83,7 +85,7 @@ public class Robot extends IterativeRobot {
 	
 	double autoSpeed;
 	
-	
+	final boolean dashingRight = true;
 	
 	XboxController xbox;
 	
@@ -167,7 +169,7 @@ public class Robot extends IterativeRobot {
 	Timer timer;
 	boolean timerHasStarted;
 	Timer timer2;
-	double strafeSpeed;
+	double rotationSpeed;
 	
 	//Holds the current control scheme
 	ControlScheme currentScheme;
@@ -246,6 +248,10 @@ public class Robot extends IterativeRobot {
 			loadProperties();
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
+			portGreen = 0;
+			portRed = 1;
+			portBlue = 2;
+			
 			robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
 			
 			encoderShooter = true;
@@ -259,7 +265,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT, BIG_JOYSTICK_PORT);
 			
-			autonScheme = new AutonDriveStraight(drive, shooter, intake);
+			autonScheme = new AutonRight(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -267,8 +273,8 @@ public class Robot extends IterativeRobot {
 			//climbCamera = CameraServer.getInstance().startAutomaticCapture();
 		    //climbCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		    
-		    camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		    //camera = CameraServer.getInstance().startAutomaticCapture();
+			//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			//camera.setExposureManual(1);
 		    
 			/*
@@ -324,7 +330,7 @@ public class Robot extends IterativeRobot {
     }	
 	
 	public void disabledPeriodic() {
-		
+		/*
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
@@ -336,7 +342,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
 		SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
 		SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-		
+		*/
 		SmartDashboard.putString("DB/String 6", "Ultra" + redLeft.getRangeInches());
 		SmartDashboard.putNumber("gyro.getAngle(): ", gyro.getAngle());
 		/*
@@ -434,15 +440,15 @@ public class Robot extends IterativeRobot {
 		System.out.println("Auto selected: " + autoSelected);
 		
 		//IF ALL ELSE FAILS USE THIS
-		drive.hDrive(0.5, 0.0, 0.0, false, SpeedMode.NORMAL);
+		drive.arcadeSixWheel(0.5, 0.0, 0.0, false, SpeedMode.NORMAL);
 		Timer.delay(4);
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
+		drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
 		
 		//@TODO This doesn't work
 		drive.resetAll();
-		drive.hDriveStraightEncoder(-0.5, 0.0, 0.0);
+		drive.arcadeSixWheelStraightEncoder(-0.5, 0.0, 0.0);
 		Timer.delay(4);
-		drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+		drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 		*/
 	}
 
@@ -462,7 +468,7 @@ public class Robot extends IterativeRobot {
 		 * Stops the motors.
 		 */
 		case 0:
-			drive.hDrive(0, 0, 0, false, SpeedMode.NORMAL);
+			drive.arcadeSixWheel(0, 0, false, SpeedMode.NORMAL);
 			break;
 		/*
 		 * This will drive the robot straight using the gyro
@@ -474,20 +480,20 @@ public class Robot extends IterativeRobot {
 				needAngle = false;
 			}*/
 			
-			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			
-			if (timer.get() > 3.2) {
-				drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			if (timer.get() > 4.4) {
+				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 				Timer.delay(3);
 				index++;
 			}
-			
+		
 			/*
 			
 			timer2.start();
 			int i = 4;
 			while (i > 0) {
-				drive.hDrive(0.8 / i, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.8 / i, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 				if (timer2.get() > 0.2) {
 					i--;
 					timer2.start();
@@ -515,7 +521,7 @@ public class Robot extends IterativeRobot {
 		 * Will move on when the ultrasonics read a distance < approx. 15in
 		 */
 		case 2:
-			
+			/*
 			double centerX;
 			synchronized (imgLock) {
 				centerX = this.centerX;
@@ -531,13 +537,13 @@ public class Robot extends IterativeRobot {
 			else autoSpeed = 0.25;
 			
 			if(centerX == 0){
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 				break;
 			}
 			
-			drive.hDrive(autoSpeed, 0.0, turn * 0.002,//(redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
+			drive.arcadeSixWheel(autoSpeed, 0.0, turn * 0.002,//(redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
 					false, SpeedMode.FAST);
-			
+			*/
 			if ((redLeft.getRangeInches()) < 30){ //+ redRight.getRangeInches()) / 2 < 14) {
 				if (!timerHasStarted) {
 					timer.start();
@@ -557,7 +563,7 @@ public class Robot extends IterativeRobot {
 		 * For inserting gear on to peg after case 2 has run.
 		 */
 		case 3:
-			drive.hDrive(0.2, 0.0, 0.0, false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.2, 0.0, false, SpeedMode.FAST);
 			if ((redLeft.getRangeInches()) < 17){// + redRight.getRangeInches()) / 2 < 6) {
 				
 				if (!timerHasStarted) {
@@ -575,7 +581,7 @@ public class Robot extends IterativeRobot {
 		 * This is only for driving forward to get past the base line.
 		 */
 		case 4:
-			drive.hDrive(0.5, 0.0, 0.0, false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.5, 0.0, false, SpeedMode.FAST);
 			Timer.delay(4);
 			index++;
 			break;
@@ -585,16 +591,20 @@ public class Robot extends IterativeRobot {
 		case 5:
 			
 			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
-				strafeSpeed = 0.7;
+				rotationSpeed = 0.7;
 			}
 			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
-				strafeSpeed = -0.7;
+				rotationSpeed = -0.7;
 			}
 			
-			else strafeSpeed = 0.0;
+			else rotationSpeed = 0.0;
 			
-			drive.hDrive(0.0, strafeSpeed, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-			index++;
+			drive.arcadeSixWheel(0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			if (timer.get() > 0.4) {
+				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
+				Timer.delay(0.5);
+				index++;
+			}
 			break;
 		/*
 		 * Shoot the balls into the boiler
@@ -602,29 +612,32 @@ public class Robot extends IterativeRobot {
 		case 6:
 			
 			shooter.setSpeed(true, true);
-			Timer.delay(0.5);
+			Timer.delay(0.3);
 			intake.setSpeed(1.0);
-			Timer.delay(3.0);
+			Timer.delay(8.0);
 			shooter.setSpeed(false, true);
 			intake.setSpeed(0.0);
+			index++;
+			timer.reset();
+			timer.start();
 			break;
 			
 		case 7:
 			
-			drive.hDrive(0.0, 0.6, 0.0, false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 			Timer.delay(0.2);
-			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 			Timer.delay(3);
-			drive.hDrive(0.0, -0.6, 0.0, false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 			Timer.delay(0.35);
-			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 			index++;
 		
 		/*
 		 * For use with case 1. Adjusts robot before driving toward peg
 		 */
 		case 8:
-			
+			/*
 			double cenX;
 			synchronized (imgLock) {
 				cenX = this.centerX;
@@ -649,11 +662,11 @@ public class Robot extends IterativeRobot {
 			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
 			
 			//The plus two probably only works for blue boiler. This might have to be minus for red.
-			drive.hDrive(0.0, 0.0, turn - 30.0, false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, turn - 30.0, false, SpeedMode.FAST);
 			
 			if (Math.abs(turn - 30.0) < 10.0) {
 				index++;
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(0.5);
 			}
 			
@@ -684,7 +697,7 @@ public class Robot extends IterativeRobot {
 				gyroStarted = true;
 			}
 			
-			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer = new Timer();
 				timer.start();
@@ -693,7 +706,7 @@ public class Robot extends IterativeRobot {
 			
 			if (timer.get() > 0.80) {
 				
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(0.5);
 				
 				index++;
@@ -703,7 +716,7 @@ public class Robot extends IterativeRobot {
 			break;
 			
 		case 10:
-			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer.start();
 				timerHasStarted = true;
@@ -717,23 +730,25 @@ public class Robot extends IterativeRobot {
 			
 		case 11:
 			
-			drive.hDriveStraightEncoder(0.5, 0.0, 0.0, 1000);
+			//drive.arcadeSixWheelStraightEncoder(0.5, 0.0, 0.0, 1000);
+			Timer.delay(4);
+			index++;
 			break;
 			
 		case 12:
 			
 			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
-				strafeSpeed = 0.7;
+				rotationSpeed = 0.7;
 			}
 			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
-				strafeSpeed = -0.7;
+				rotationSpeed = -0.7;
 			}
 			
-			else strafeSpeed = 0.0;
+			else rotationSpeed = 0.0;
 			
-			drive.hDrive(0.0, strafeSpeed, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			Timer.delay(1.3);
-			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 			index++;
 			break;
 			
@@ -743,7 +758,7 @@ public class Robot extends IterativeRobot {
 				gyroStarted = true;
 			}
 			
-			drive.hDrive(0.4, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer = new Timer();
 				timer.start();
@@ -752,7 +767,7 @@ public class Robot extends IterativeRobot {
 			
 			if (timer.get() > 3.5) {
 				
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(0.5);
 				
 				index++;
@@ -762,12 +777,108 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 			
+		case 14:
+			
+
+			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			
+			if (timer.get() > 2.3) {
+				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
+				Timer.delay(0.5);
+				index++;
+			}
+			timer.reset();
+		break;
+		
+		case 15:
+			
+			
+			//rotate towards the peg
+			if (autonScheme instanceof AutonLeft) {
+				rotationSpeed = 0.002 * (60 - gyro.getAngle());
+			}
+			else if (autonScheme instanceof AutonRight) {
+				rotationSpeed = 0.002 * (-60 + gyro.getAngle());
+			}
+			
+			
+			drive.arcadeSixWheel(0.0, rotationSpeed, false, SpeedMode.FAST);
+			
+			//Once we have the right orientation, start a timer to account for overrotation
+			if (Math.abs(gyro.getAngle()) > 59) {
+				timer.reset();
+				timer.start();
+			}
+			
+			//Once we've been correcting for a second, Move on to driving straight.
+			if (timer.get() > 1.0) {
+
+				origAngle = gyro.getAngle();
+				index++;
+				timer.reset();
+				timer.start();
+			}
+			
+		break;
+		
+		case 16:
+			
+			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
+			Timer.delay(4.5);
+			
+			timer.reset();
+			timer.start();
+			
+			while (timer.get() < 2.5) {
+				drive.arcadeSixWheel(-0.35, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			}
+			
+			if (dashingRight) {
+				rotationSpeed = 90 - gyro.getAngle() + 0.14;
+			}
+			else {
+				rotationSpeed = -90 + gyro.getAngle() - 0.14;
+			}
+			
+			while(!(gyro.getAngle() > 90) && !(gyro.getAngle() < -90)) {
+				drive.arcadeSixWheel(0.0, 0.004 * rotationSpeed + 0.14, false, SpeedMode.FAST);
+			}
+				
+			
+			origAngle = gyro.getAngle();
+			timer.reset();
+			timer.start();
+			
+			while (timer.get() < 2.0) {
+				drive.arcadeSixWheel(-0.35, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			}
+			
+
+			if (dashingRight) {
+				rotationSpeed = -90 - gyro.getAngle() - 0.14;
+			}
+			else {
+				rotationSpeed = 90 + gyro.getAngle() + 0.14;
+			}
+			
+			while(!(gyro.getAngle() > 90) && !(gyro.getAngle() < -90)) {
+				drive.arcadeSixWheel(0.0, 0.004 * rotationSpeed, false, SpeedMode.FAST);
+			}
+				
+			
+			origAngle = gyro.getAngle();
+			timer.reset();
+			timer.start();
+			
+			
+		break;
+			
 			
 			
 		default:
-			drive.hDrive(0.4, 0.0, 0.1, true, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, 0.1, true, SpeedMode.FAST);
 			Timer.delay(4);
-			drive.hDrive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 			SmartDashboard.putString("DB/String 0", "no auton found");
 			break;
 		}
@@ -787,7 +898,7 @@ public class Robot extends IterativeRobot {
             }
  
             JSONObject current = reader.getDataAtTime(System.currentTimeMillis() - initialTime);
-            drive.hDrive((Double) current.get("vertical"), (Double) current.get("horizontal"), (Double) current.get("rotation"), true, SpeedMode.NORMAL);
+            drive.arcadeSixWheel((Double) current.get("vertical"), (Double) current.get("horizontal"), (Double) current.get("rotation"), true, SpeedMode.NORMAL);
             intake.setSpeed(0.3);
             shooter.setSpeed((Double) current.get("shooter") > 0.6);
 		}
@@ -819,9 +930,9 @@ public class Robot extends IterativeRobot {
 				//SmartDashboard.putString("DB/String 0", "Turn: " + turn);
 			/*if(centerY < 55.0) {
 				SmartDashboard.putString("DB/String 5", "Final Descent");
-				drive.hDrive(0.4, 0.0, 0.0 + 0.10, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.4, 0.0, 0.0 + 0.10, false, SpeedMode.FAST);
 				Timer.delay(1);
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 				
 				
 			}
@@ -829,16 +940,16 @@ public class Robot extends IterativeRobot {
 			/*
 			if (redLeft.getRangeInches() < 30) {
 				SmartDashboard.putString("DB/String 5", "Final Descent");
-				drive.hDrive(0.25, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.25, 0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(2);
-				drive.hDrive(0.0, 0.0, -0.3, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, -0.3, false, SpeedMode.FAST);
 				Timer.delay(0.5);
-				drive.hDrive(0.0, 0.0, 0.0, false, SpeedMode.FAST);
+				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
 			}
 		
 			
 				
-			else drive.hDrive(autoSpeed, 0.0, turn * 0.005, false, SpeedMode.NORMAL);
+			else drive.arcadeSixWheel(autoSpeed, 0.0, turn * 0.005, false, SpeedMode.NORMAL);
 				
 			SmartDashboard.putString("DB/String 6", "ultra: " + redLeft.getRangeInches());
 				
@@ -854,35 +965,35 @@ public class Robot extends IterativeRobot {
 					SmartDashboard.putString("DB/String 0", "We are not moving");
 					SmartDashboard.putString("DB/String 4", "null");
 					
-					drive.hDriveStraightConstant(0.0, 0.0, 0.0);
+					drive.arcadeSixWheelStraightConstant(0.0, 0.0, 0.0);
 				}
 				/*else if(centerY < 80){
 					//FOR TESTING
 					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
 					SmartDashboard.putString("DB/String 4", "null");
 					
-					drive.hDriveStraightConstant(-vertSpeedSlow, 0.0, 0.0);
+					drive.arcadeSixWheelStraightConstant(-vertSpeedSlow, 0.0, 0.0);
 				}*/
 				/*
 				else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
 					SmartDashboard.putString("DB/String 0", "Strafe: moving left");
-					//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+					//drive.arcadeSixWheel(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
 				}
 				
 				else if (centerX > (IMG_WIDTH/2) + strafeXValue) {
 					SmartDashboard.putString("DB/String 0", "Strafe: moving right");
-					//drive.hDrive(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
+					//drive.arcadeSixWheel(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
 				}
 				
 				else {
 					SmartDashboard.putString("DB/String 0", "moving forward");
-					//drive.hDriveStraightEncoder(-0.4, 0.0);
+					//drive.arcadeSixWheelStraightEncoder(-0.4, 0.0);
 				}
 				 
 				else {
 					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
 					//SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
-					drive.hDriveStraightConstant(vertSpeedSlow, turn * turnMultiplier, 0.0);//(redLeft.getRangeInches() - redRight.getRangeInches()) * ultraRotate);
+					drive.arcadeSixWheelStraightConstant(vertSpeedSlow, turn * turnMultiplier, 0.0);//(redLeft.getRangeInches() - redRight.getRangeInches()) * ultraRotate);
 				}
 			//}*/
 			
@@ -894,6 +1005,7 @@ public class Robot extends IterativeRobot {
 	
 	public void teleopInit() {
 		//camera.setExposureManual(50);
+		drive.rampVoltage();
 	}
 	
 	/**
@@ -903,7 +1015,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		
-		currentScheme.controlLEDs(robotLEDs);
+		//currentScheme.controlLEDs(robotLEDs);
 		currentScheme.drive(drive, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
@@ -943,7 +1055,7 @@ public class Robot extends IterativeRobot {
                     0.3, xbox.getTriggerRight()};
  
             // Do stuff to drive with the inputs.
-            drive.hDrive((Double) input[0], (Double) input[2], (Double) input[3], true, SpeedMode.NORMAL);
+            drive.arcadeSixWheel((Double) input[0], (Double) input[2], (Double) input[3], true, SpeedMode.NORMAL);
             intake.setSpeed((Double) input[3]);
             shooter.setSpeed((Double) input[4] > 0.6);
  

@@ -44,6 +44,8 @@ public class SingularityDrive {
 	private final static double DEFAULT_SLOW_SPEED_CONSTANT = 0.4;
 	private final static double DEFAULT_NORMAL_SPEED_CONSTANT = 0.8;
 	private final static double DEFAULT_FAST_SPEED_CONSTANT = 1.0;
+	
+	private final static double RAMP_RATE = 120.0;
 
 	private int talonType;
 	
@@ -201,6 +203,21 @@ public class SingularityDrive {
 			return 0;
 		}
 		return velocity;
+	}
+	
+	public void resetEncoder() {
+		((CANTalon) m_leftMiddleMotor).reset();
+	}
+	
+	public void rampVoltage() {
+		
+		((CANTalon) m_frontRightMotor).setVoltageRampRate(RAMP_RATE);
+		((CANTalon) m_rearRightMotor).setVoltageRampRate(RAMP_RATE);
+		((CANTalon) m_frontLeftMotor).setVoltageRampRate(RAMP_RATE);
+		((CANTalon) m_rearLeftMotor).setVoltageRampRate(RAMP_RATE);
+		((CANTalon) m_rightMiddleMotor).setVoltageRampRate(RAMP_RATE);
+		((CANTalon) m_leftMiddleMotor).setVoltageRampRate(RAMP_RATE);
+		
 	}
 	
 	// reverse drive method for booleans. You have to hold the button to
@@ -422,6 +439,47 @@ public void hDriveStrafeEncoder(double horizontal, double distance) {
 		m_rearLeftMotor.set(this.velocityMultiplier * ((-translationVelocity + rotationVelocity) / maximum));
 		m_frontRightMotor.set(this.velocityMultiplier * ((translationVelocity + rotationVelocity) / maximum));
 		m_rearRightMotor.set(this.velocityMultiplier * ((translationVelocity + rotationVelocity) / maximum));
+	}
+	
+	public void arcadeSixWheel(double translation, double rotation, boolean squaredInputs, SpeedMode speedMode) {
+		double translationVelocity = translation, rotationVelocity = rotation;
+		
+		translationVelocity = threshold(translationVelocity);
+		rotationVelocity = threshold(rotationVelocity);
+		
+		setVelocityMultiplierBasedOnSpeedMode(speedMode);
+		
+		// Do squared inputs if necessary
+		if (squaredInputs) {
+			translationVelocity *= Math.abs(translation);
+			rotationVelocity *= Math.abs(rotation);
+		}
+		
+		// Do reverse drive when necessary. There are methods above for different inputs.
+		/*if (reverse) {
+			translationVelocity = -translationVelocity;
+			rotationVelocity = -rotationVelocity;
+		}
+		*/
+		// Guard against illegal values
+		double maximum = Math.max(1, Math.abs(translationVelocity) + Math.abs(rotationVelocity));
+
+		if (velocityReduceActivated) {
+			maximum *= 1 / reducedVelocity;
+		}
+
+		translationVelocity = threshold(translationVelocity);
+		rotationVelocity = threshold(rotationVelocity);
+
+		// Set the motors
+		m_frontLeftMotor.set(this.velocityMultiplier * ((-translationVelocity + rotationVelocity) / maximum));
+		m_rearLeftMotor.set(this.velocityMultiplier * ((-translationVelocity + rotationVelocity) / maximum));
+		m_leftMiddleMotor.set(this.velocityMultiplier * ((-translationVelocity + rotationVelocity) / maximum));
+		m_rightMiddleMotor.set(this.velocityMultiplier * ((translationVelocity + rotationVelocity) / maximum));
+		m_frontRightMotor.set(this.velocityMultiplier * ((translationVelocity + rotationVelocity) / maximum));
+		m_rearRightMotor.set(this.velocityMultiplier * ((translationVelocity + rotationVelocity) / maximum));
+		SmartDashboard.putNumber("rightEncoder", ((CANTalon) m_rightMiddleMotor).getEncPosition());
+		SmartDashboard.putNumber("leftEncoder", ((CANTalon) m_leftMiddleMotor).getEncPosition());
 	}
 
 	public void arcade(double translation, double rotation, boolean squaredInputs) {

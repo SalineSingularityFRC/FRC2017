@@ -29,7 +29,7 @@ public class OneController implements ControlScheme {
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
 		speedMode = SpeedMode.FAST;
-		sd.hDrive(-xbox.getLS_Y(), -xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
+		sd.arcadeSixWheel(-xbox.getLS_Y(), xbox.getRS_X(), squaredInputs, speedMode);
 
 	}
 
@@ -53,7 +53,7 @@ public class OneController implements ControlScheme {
 		}
 		if (xbox.getXButton()) intake.setSpeed(-1.0);
 		else if (!on) intake.setSpeed(0.0);
-		else intake.setSpeed(1.0);
+		else intake.setSpeed(0.6);
 		
 		if (xbox.getYButton()) prevY = true;
 		else prevY = false;

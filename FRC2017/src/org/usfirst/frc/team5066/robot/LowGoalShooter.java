@@ -19,8 +19,8 @@ public class LowGoalShooter{
 	 * shootDistVolts is the optimal voltage for the ultrasonic before shooting
 	 */
 	
-	private static final double voltSpeed = 0.35, voltReverseSpeed = -0.4;
-	private static final double encoderSpeed = 800.0, encoderReverseSpeed = -400.0;
+	private static final double voltSpeed = 0.35, voltReverseSpeed = -0.8;
+	private static final double encoderSpeed = 800.0, encoderReverseSpeed = -500.0, highSpeed = 1000;
 	
 	private static final double voltAutonSpeed = 0.35;
 	private static final double encoderAutonSpeed = 800.0;
@@ -28,7 +28,7 @@ public class LowGoalShooter{
 	private static double speed, reverseSpeed;
 	private static double autonSpeed;
 			
-	private static final double maxMoveSpeed = 0.38, reverseTime = 0.4, shootDistVolts = 4.60;
+	private static final double maxMoveSpeed = 0.38, reverseTime = 0.4, shootDistVolts = 4.60, highSpeedTime = 0.3;
 	
 	
 	
@@ -68,9 +68,9 @@ public class LowGoalShooter{
 			lowShooter.setProfile(0);
 			lowShooter.setF(0.1097);
 			
-			lowShooter.setP(0.1);
-			lowShooter.setI(0.001);
-			lowShooter.setD(0.1);
+			lowShooter.setP(0.05);
+			lowShooter.setI(0.0);
+			lowShooter.setD(0.05);
 			
 			
 			speed = encoderSpeed;
@@ -116,6 +116,13 @@ public class LowGoalShooter{
 				while (timer.get() < reverseTime) {
 					lowShooter.set(reverseSpeed);
 				}
+				
+				timer.reset();
+				timer.start();
+				while (timer.get() < 0.2) {
+					lowShooter.set(0.0);
+				}
+				
 			}
 			
 			if (!auton) {

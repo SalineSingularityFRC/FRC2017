@@ -1,21 +1,26 @@
 package org.usfirst.frc.team5066.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SingularityLEDs {
 	
+	//PneumaticControlModule pcm;
+	
 	//0 green
 	//1 red
 	//2 blue
-	
+	public Compressor compressor;
 	public Solenoid LEDG, LEDR, LEDB;
 	
 	Timer timer;
 	boolean hasSwitched;
 	
-	public SingularityLEDs(int port1, int port2, int port3){
+	public SingularityLEDs(int port1, int port2, int port3) {
+		
 		LEDG = new Solenoid(port1);
 		LEDR = new Solenoid(port2);
 		LEDB = new Solenoid(port3);
@@ -26,6 +31,7 @@ public class SingularityLEDs {
 		
 		timer = new Timer();
 		hasSwitched = false;
+		
 	}
 	
 	public void resetAll(){
