@@ -18,23 +18,34 @@ public class OneController implements ControlScheme {
 	XboxController xbox;
 	LogitechController logitech;
 	SpeedMode speedMode;
-	boolean on, prevY;
+	boolean on, prevY, lb, prevLB;
 	
 	public OneController(int xboxPort, int logitechPort) {
 		xbox = new XboxController(xboxPort);
 		logitech = new LogitechController(logitechPort);
 		on = false;
+		prevLB = false;
+		
+		speedMode = SpeedMode.FAST;
 	}
 	
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
-		if (xbox.getLB()) {
-			speedMode = SpeedMode.SLOW;
+		if (xbox.getLB()) lb = true;
+		else lb = false;
+		
+		if (lb && !prevLB) {
+			if (speedMode == SpeedMode.FAST) {
+				speedMode = SpeedMode.SLOW;
+			}
+			else {
+				speedMode = SpeedMode.FAST;
+			}
 		}
-		else {
-			speedMode = SpeedMode.FAST;
-		}
+		
 		sd.arcadeSixWheel(-xbox.getLS_Y(), xbox.getRS_X(), squaredInputs, speedMode);
+		
+		prevLB = lb;
 
 	}
 

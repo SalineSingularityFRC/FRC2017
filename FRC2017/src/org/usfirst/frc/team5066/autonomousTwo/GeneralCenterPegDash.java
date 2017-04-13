@@ -4,22 +4,26 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.Timer;
 
 public abstract class GeneralCenterPegDash extends AutonMode{
 	
 	private double angleMultiplier;
 	private boolean directionIsToRight;
+	AHRS gyro;
 	
-	public GeneralCenterPegDash(boolean directionIsToRight) {
+	public GeneralCenterPegDash(boolean directionIsToRight, AHRS gyro) {
 		angleMultiplier = directionIsToRight ? 1.0 : -1.0;
 		this.directionIsToRight = directionIsToRight;
+		this.gyro = gyro;
 	}
 	
 	@Override
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 
-		AutonMode centerMode = new CenterPeg();
+		AutonMode centerMode = new CenterPeg(gyro);
 		centerMode.run(drive, shooter, intake);
 		
 		Timer t = new Timer();

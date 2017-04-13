@@ -144,7 +144,7 @@ public class Robot extends IterativeRobot {
 	
 	final int strafeXValue = 10;
 	
-	AHRS ahrs;
+	public AHRS ahrs;
 	
 	//For the gyro
 	public ADXRS450_Gyro gyro;
@@ -361,6 +361,8 @@ public class Robot extends IterativeRobot {
 		
 		SmartDashboard.putNumber("NEW GYRO ANGLE: ", ahrs.getAngle());
 		
+		drive.displayEncoder();
+		
 	}
 
 
@@ -394,7 +396,7 @@ public class Robot extends IterativeRobot {
 		
 		
 //		\/ \/ \/ \/ \/ \/ \/ \/ \/ NEW AUTON CODE \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
-		autonMode = new CenterPeg();
+		autonMode = new LeftPeg();
 		autonMode.run(drive, shooter, intake);
 //		/\ /\ /\ /\ /\ /\ /\ /\ /\ ============== /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 		
@@ -1057,6 +1059,8 @@ public class Robot extends IterativeRobot {
 		
 		SmartDashboard.putString("DB/String 6", "Left Ultra: " + redLeft.getRangeInches());
 		SmartDashboard.putNumber("gryo.getAngle(): ", gyro.getAngle());
+		
+		drive.displayEncoder();
 		
 		//SmartDashboard.putString("DB/String 6", "Right Ultra: " + redRight.getRangeInches());
 		

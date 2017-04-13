@@ -149,6 +149,8 @@ public class SingularityDrive {
 		this.driveStraight = driveStraight;
 		timer = new Timer();
 		this.gyro = gyro;
+		
+		((CANTalon) m_leftMiddleMotor).setEncPosition(0);
 	}
 	
 	
@@ -250,11 +252,17 @@ public class SingularityDrive {
 	*/
 	
 	private double inchesToEncTic(double inches) {
-		return (inches * 1024.0) / (4 * Math.PI);
+		return (inches * 4096.0) / (4.0 * Math.PI);
 	}
 	
 	private double encTicToInches(double tics) {
-		return (4 * Math.PI * tics) / 1024.0;
+		return (4.0 * Math.PI * tics) / 4096.0;
+	}
+	
+	public void displayEncoder() {
+		SmartDashboard.putNumber("encoder inches", encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition()));
+		SmartDashboard.putNumber("encoder ticks", ((CANTalon) m_leftMiddleMotor).getEncPosition());
+		
 	}
 	
 	/**
@@ -268,26 +276,42 @@ public class SingularityDrive {
 	
 	public void driveStraight(double distance, double speed, double gyroRotationConstant, double maxTime) {
 		double origAngle = gyro.getAngle();
-		timer.reset();
-		timer.start();
+		distance = Math.abs(distance);
+		Timer t = new Timer();
+		t.reset();
+		t.start();
 		
-		/*
-		 * double origPosition = ((CANTalon) m_leftMiddleMotor).getEncPosition();
-		 * copy and paste into while loop:
-		 * ((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition
-		 */
+		
+		 double origPosition = ((CANTalon) m_leftMiddleMotor).getEncPosition();
+		// copy and paste into while loop:
+		 //((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition
+		
 		
 		((CANTalon) m_leftMiddleMotor).setEncPosition(0);
 		
-		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance - (speed * 30))) {
+		Timer.delay(0.2);
+		
+		SmartDashboard.putNumber("Distance - (speed * 30)", distance - speed * 30);
+		
+		
+		while (t.get() < maxTime && Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition)) < distance - (Math.abs(speed) * 30)) {
 			this.arcadeSixWheel(speed, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			SmartDashboard.putNumber("abs value inch distance", Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition())));
+			SmartDashboard.putBoolean("FirstLoop excluding time", Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition())) < distance - (speed * 30));
+			this.displayEncoder();
 		}
 		
-		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance)) {
+		while (t.get() < maxTime && Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition)) < distance) {
+
+			SmartDashboard.putNumber("abs value inch distance", Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition())));
+			SmartDashboard.putBoolean("SecondLoop excluding time", Math.abs(encTicToInches(((CANTalon) m_leftMiddleMotor).getEncPosition())) < distance);
 			this.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}
 		
 		this.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
+		t.reset();
+		
+		Timer.delay(0.2);
 		
 	}
 	
@@ -301,21 +325,25 @@ public class SingularityDrive {
 	
 	public void rotateTo(double degrees, double maxTime) {
 		double origAngle = gyro.getAngle();
-		timer.reset();
-		timer.start();
+		Timer t = new Timer();
+		t.reset();
+		t.start();
 		double currentAngle = 0;
 		
-		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 20) {
+		while (t.get() < maxTime && Math.abs(degrees - currentAngle) > 20) {
 			currentAngle = gyro.getAngle() - origAngle;
-			this.arcadeSixWheel(0.0, 0.4 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
+			this.arcadeSixWheel(0.0, 0.25 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
 		}
 		
-		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 0) {
+		while (t.get() < maxTime && Math.abs(degrees - currentAngle) > 0) {
 			currentAngle = gyro.getAngle() - origAngle;
-			this.arcadeSixWheel(0.0, 0.2 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
+			this.arcadeSixWheel(0.0, 0.20 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
 		}
 		
 		this.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
+		t.reset();
+		
+		Timer.delay(0.2);
 	}
 	
 	
