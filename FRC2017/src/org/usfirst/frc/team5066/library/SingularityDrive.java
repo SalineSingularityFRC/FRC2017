@@ -280,22 +280,22 @@ public class SingularityDrive {
 	/**
 	 * Turn a certain number of degrees base on  the gyro.
 	 * @param degrees
-	 * @param gyroRotationConstant
+	 * @param rotationConstant
 	 * @param maxTime
 	 */
 	
-	public void rotateTo(double degrees, double gyroRotationConstant, double maxTime) {
+	public void rotateTo(double degrees, double rotationConstant, double maxTime) {
 		double origAngle = gyro.getAngle();
 		timer.reset();
 		timer.start();
 		double currentAngle = 0;
 		
-		while (timer.get() < maxTime && Math.abs(currentAngle) < Math.abs(degrees) - 20) {
+		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 20) {
 			currentAngle = gyro.getAngle() - origAngle;
-			this.arcadeSixWheel(0.0, gyroRotationConstant * (degrees - currentAngle), false, SpeedMode.FAST);
+			this.arcadeSixWheel(0.0, rotationConstant * (degrees - currentAngle), false, SpeedMode.FAST);
 		}
 		
-		while (timer.get() < maxTime && Math.abs(currentAngle) < degrees) {
+		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 0) {
 			currentAngle = gyro.getAngle() - origAngle;
 			this.arcadeSixWheel(0.0, 0.2 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
 		}
