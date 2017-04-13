@@ -28,7 +28,12 @@ public class OneController implements ControlScheme {
 	
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
-		speedMode = SpeedMode.FAST;
+		if (xbox.getLB()) {
+			speedMode = SpeedMode.SLOW;
+		}
+		else {
+			speedMode = SpeedMode.FAST;
+		}
 		sd.arcadeSixWheel(-xbox.getLS_Y(), xbox.getRS_X(), squaredInputs, speedMode);
 
 	}

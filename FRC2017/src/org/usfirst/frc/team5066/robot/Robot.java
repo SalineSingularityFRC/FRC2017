@@ -49,12 +49,14 @@ import org.usfirst.frc.team5066.controller2017.Pipeline;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
@@ -139,6 +141,8 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 	
 	final int strafeXValue = 10;
+	
+	AHRS ahrs;
 	
 	//For the gyro
 	public ADXRS450_Gyro gyro;
@@ -255,6 +259,9 @@ public class Robot extends IterativeRobot {
 			robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
 			
 			encoderShooter = true;
+			
+			ahrs = new AHRS(SPI.Port.kMXP);
+			
 			gyro = new ADXRS450_Gyro();
 			gyro.calibrate();
 			
@@ -265,7 +272,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT, BIG_JOYSTICK_PORT);
 			
-			autonScheme = new AutonRight(drive, shooter, intake);
+			autonScheme = new AutonDriveStraight(drive, shooter, intake);
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -348,6 +355,9 @@ public class Robot extends IterativeRobot {
 		/*
 		SmartDashboard.putString("DB/String 7", "Ultra Right: " + redRight.getRangeInches());
 		*/
+		
+		SmartDashboard.putNumber("NEW GYRO ANGLE: ", ahrs.getAngle());
+		
 	}
 
 
@@ -375,7 +385,7 @@ public class Robot extends IterativeRobot {
 		timer.start();
 		timerHasStarted = false;
 		
-		origAngle = gyro.getAngle();
+		origAngle = ahrs.getAngle();
 		gyroStarted = false;
 		
 		//gyro.calibrate();
@@ -870,6 +880,19 @@ public class Robot extends IterativeRobot {
 			timer.reset();
 			timer.start();
 			
+			
+		break;
+		
+		case 17:
+			
+			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - ahrs.getAngle()), false, SpeedMode.FAST);
+			
+			if (timer.get() > 4.4) {
+				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
+				Timer.delay(3);
+				index++;
+			}
+		
 			
 		break;
 			
