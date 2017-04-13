@@ -249,6 +249,14 @@ public class SingularityDrive {
 	}
 	*/
 	
+	private double inchesToEncTic(double inches) {
+		return (inches * 1024.0) / (4 * Math.PI);
+	}
+	
+	private double encTicToInches(double tics) {
+		return (4 * Math.PI * tics) / 1024.0;
+	}
+	
 	/**
 	 * Drive Straight with arcadeSixeWheel(), mostly for auton.
 	 * Use negative speed to drive backwards, distance should always be positive
@@ -279,7 +287,6 @@ public class SingularityDrive {
 			this.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}
 		
-		
 	}
 	
 	/**
@@ -307,9 +314,6 @@ public class SingularityDrive {
 		}
 	}
 	
-	private double inchesToEncTic(double inches) {
-		return (inches * 1024) / (4 * Math.PI);
-	}
 	
 	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		
