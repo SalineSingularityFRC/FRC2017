@@ -271,10 +271,15 @@ public class SingularityDrive {
 		
 		((CANTalon) m_leftMiddleMotor).setEncPosition(0);
 		
-		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance)) {
+		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance - (speed * 30))) {
 			this.arcadeSixWheel(speed, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-			
 		}
+		
+		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance)) {
+			this.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+		}
+		
+		
 	}
 	
 	/**
