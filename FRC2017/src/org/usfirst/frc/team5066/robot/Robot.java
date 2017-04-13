@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
 	boolean needAngle;
 	double origAngle;
 	//CONSTANT for driving straight
-	final double gyroRotationConstant = 0.05;
+	public final double gyroRotationConstant = 0.05;
 	
 	//For the cheap red ultrasonics
 	Ultrasonic redLeft;
