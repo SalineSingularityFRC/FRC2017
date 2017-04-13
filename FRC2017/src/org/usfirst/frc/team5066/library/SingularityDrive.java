@@ -254,7 +254,7 @@ public class SingularityDrive {
 	 * Use negative speed to drive backwards, distance should always be positive
 	 * @param distance distance <b> in inches </b> to travel
 	 * @param speed speed from -1.0 to 1.0
-	 * @param gyroRotationConstant a constant for rotating with the gyro
+	 * @param gyroRotationConstant a constant for rotating with the gyro. 0.05 is a good value
 	 * @param maxTime the maxTime <b> in seconds </b> to run before exiting from the loop and moving on
 	 */
 	
@@ -279,12 +279,13 @@ public class SingularityDrive {
 	
 	/**
 	 * Turn a certain number of degrees base on  the gyro.
-	 * @param degrees
-	 * @param rotationConstant
-	 * @param maxTime
+	 * @param degrees The number of degrees to turn. Negative is for left
+	 * @param rotationConstant The speed to multiply the difference in target degrees 
+	 * and actual degrees by.
+	 * @param maxTime Half maximum amount of time the method can take to run.
 	 */
 	
-	public void rotateTo(double degrees, double rotationConstant, double maxTime) {
+	public void rotateTo(double degrees, double maxTime) {
 		double origAngle = gyro.getAngle();
 		timer.reset();
 		timer.start();
@@ -292,7 +293,7 @@ public class SingularityDrive {
 		
 		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 20) {
 			currentAngle = gyro.getAngle() - origAngle;
-			this.arcadeSixWheel(0.0, rotationConstant * (degrees - currentAngle), false, SpeedMode.FAST);
+			this.arcadeSixWheel(0.0, 0.4 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
 		}
 		
 		while (timer.get() < maxTime && Math.abs(degrees - currentAngle) > 0) {
