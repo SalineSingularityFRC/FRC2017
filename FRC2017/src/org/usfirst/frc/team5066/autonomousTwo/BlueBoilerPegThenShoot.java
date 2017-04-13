@@ -10,11 +10,11 @@ public class BlueBoilerPegThenShoot extends GeneralBoilerPegThenShoot{
 		super(true);
 	}
 
-	@Override
-	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
-		
-		super.run(drive, shooter, intake);
-		
-	}
+//	@Override
+//	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
+//		
+//		super.run(drive, shooter, intake);
+//		
+//	}
 	
 }
