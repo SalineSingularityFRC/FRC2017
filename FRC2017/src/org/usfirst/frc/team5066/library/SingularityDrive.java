@@ -1,6 +1,8 @@
 package org.usfirst.frc.team5066.library;
 
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -54,6 +56,8 @@ public class SingularityDrive {
 	private static double prevStrafe;
 	private static final double strafeTime = 0.05;
 	Timer timer;
+	
+	AHRS gyro;
 
 
 	/**
@@ -70,11 +74,11 @@ public class SingularityDrive {
 	 *            Channel for rear right motor
 	 */
 	public SingularityDrive(int frontLeftMotor, int rearLeftMotor, int frontRightMotor, int rearRightMotor,int midRightMotor,
-			int midLeftMotor, double driveStraight) {
+			int midLeftMotor, double driveStraight, AHRS gyro) {
 		this(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor, midRightMotor,
 				midLeftMotor, DEFAULT_TALON_TYPE,
 				DEFAULT_SLOW_SPEED_CONSTANT, DEFAULT_NORMAL_SPEED_CONSTANT, DEFAULT_FAST_SPEED_CONSTANT,
-				driveStraight);
+				driveStraight, gyro);
 	}
 
 	/**
@@ -116,7 +120,7 @@ public class SingularityDrive {
 	 */
 	
 	public SingularityDrive(int frontLeftMotor, int rearLeftMotor, int frontRightMotor, int rearRightMotor, int leftMiddleMotor, int rightMiddleMotor,
-			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant, double driveStraight) {
+			int talonType, double slowSpeedConstant, double normalSpeedConstant, double fastSpeedConstant, double driveStraight, AHRS gyro) {
 
 		if (talonType == CANTALON_DRIVE) {
 			m_frontLeftMotor = new CANTalon(frontLeftMotor);
@@ -144,6 +148,7 @@ public class SingularityDrive {
 		this.fastSpeedConstant = fastSpeedConstant;
 		this.driveStraight = driveStraight;
 		timer = new Timer();
+		this.gyro = gyro;
 	}
 	
 	
@@ -243,6 +248,62 @@ public class SingularityDrive {
 		else return false;
 	}
 	*/
+	
+	/**
+	 * Drive Straight with arcadeSixeWheel(), mostly for auton.
+	 * Use negative speed to drive backwards, distance should always be positive
+	 * @param distance distance <b> in inches </b> to travel
+	 * @param speed speed from -1.0 to 1.0
+	 * @param gyroRotationConstant a constant for rotating with the gyro
+	 * @param maxTime the maxTime <b> in seconds </b> to run before exiting from the loop and moving on
+	 */
+	
+	public void driveStraight(double distance, double speed, double gyroRotationConstant, double maxTime) {
+		double origAngle = gyro.getAngle();
+		timer.reset();
+		timer.start();
+		
+		/*
+		 * double origPosition = ((CANTalon) m_leftMiddleMotor).getEncPosition();
+		 * copy and paste into while loop:
+		 * ((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition
+		 */
+		
+		((CANTalon) m_leftMiddleMotor).setEncPosition(0);
+		
+		while (timer.get() < maxTime && Math.abs(((CANTalon) m_leftMiddleMotor).getEncPosition()) < inchesToEncTic(distance)) {
+			this.arcadeSixWheel(speed, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			
+		}
+	}
+	
+	/**
+	 * Turn a certain number of degrees base on  the gyro.
+	 * @param degrees
+	 * @param gyroRotationConstant
+	 * @param maxTime
+	 */
+	
+	public void rotateTo(double degrees, double gyroRotationConstant, double maxTime) {
+		double origAngle = gyro.getAngle();
+		timer.reset();
+		timer.start();
+		double currentAngle = 0;
+		
+		while (timer.get() < maxTime && Math.abs(currentAngle) < degrees - 20) {
+			currentAngle = gyro.getAngle() - origAngle;
+			this.arcadeSixWheel(0.0, gyroRotationConstant * (degrees - currentAngle), false, SpeedMode.FAST);
+		}
+		
+		while (timer.get() < maxTime && Math.abs(currentAngle) < degrees) {
+			currentAngle = gyro.getAngle() - origAngle;
+			this.arcadeSixWheel(0.0, 0.2 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
+		}
+	}
+	
+	private double inchesToEncTic(double inches) {
+		return (inches * 1024) / (4 * Math.PI);
+	}
 	
 	public void hDrive(double vertical, double horizontal, double rotation, boolean squaredInputs, SpeedMode speedMode) {
 		

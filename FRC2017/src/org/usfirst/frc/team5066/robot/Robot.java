@@ -149,7 +149,8 @@ public class Robot extends IterativeRobot {
 	boolean gyroStarted;
 	boolean needAngle;
 	double origAngle;
-	double rotateAngle = 0.05;
+	//CONSTANT for driving straight
+	final double gyroRotationConstant = 0.05;
 	
 	//For the cheap red ultrasonics
 	Ultrasonic redLeft;
@@ -266,7 +267,7 @@ public class Robot extends IterativeRobot {
 			gyro.calibrate();
 			
 			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
-					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight);
+					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight, ahrs);
 			shooter = new LowGoalShooter(shootMotor, encoderShooter);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
@@ -490,7 +491,7 @@ public class Robot extends IterativeRobot {
 				needAngle = false;
 			}*/
 			
-			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			
 			if (timer.get() > 4.4) {
 				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
@@ -609,7 +610,7 @@ public class Robot extends IterativeRobot {
 			
 			else rotationSpeed = 0.0;
 			
-			drive.arcadeSixWheel(0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (timer.get() > 0.4) {
 				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 				Timer.delay(0.5);
@@ -707,7 +708,7 @@ public class Robot extends IterativeRobot {
 				gyroStarted = true;
 			}
 			
-			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer = new Timer();
 				timer.start();
@@ -726,7 +727,7 @@ public class Robot extends IterativeRobot {
 			break;
 			
 		case 10:
-			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer.start();
 				timerHasStarted = true;
@@ -756,7 +757,7 @@ public class Robot extends IterativeRobot {
 			
 			else rotationSpeed = 0.0;
 			
-			drive.arcadeSixWheel(0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.0, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			Timer.delay(1.3);
 			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
 			index++;
@@ -768,7 +769,7 @@ public class Robot extends IterativeRobot {
 				gyroStarted = true;
 			}
 			
-			drive.arcadeSixWheel(0.4, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			if (!timerHasStarted) {
 				timer = new Timer();
 				timer.start();
@@ -790,7 +791,7 @@ public class Robot extends IterativeRobot {
 		case 14:
 			
 
-			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			
 			if (timer.get() > 2.3) {
 				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
@@ -840,7 +841,7 @@ public class Robot extends IterativeRobot {
 			timer.start();
 			
 			while (timer.get() < 2.5) {
-				drive.arcadeSixWheel(-0.35, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+				drive.arcadeSixWheel(-0.35, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			}
 			
 			if (dashingRight) {
@@ -860,7 +861,7 @@ public class Robot extends IterativeRobot {
 			timer.start();
 			
 			while (timer.get() < 2.0) {
-				drive.arcadeSixWheel(-0.35, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+				drive.arcadeSixWheel(-0.35, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 			}
 			
 
@@ -885,7 +886,7 @@ public class Robot extends IterativeRobot {
 		
 		case 17:
 			
-			drive.arcadeSixWheel(0.25, rotateAngle * (origAngle - ahrs.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - ahrs.getAngle()), false, SpeedMode.FAST);
 			
 			if (timer.get() > 4.4) {
 				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
