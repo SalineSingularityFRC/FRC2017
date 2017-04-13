@@ -6,7 +6,7 @@ import org.usfirst.frc.team5066.robot.SingularityIntake;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class CenterPegShoot extends AutonMode {
+public class RedCenterPegShoot extends AutonMode {
 
 	@Override
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
