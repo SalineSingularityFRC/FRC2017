@@ -287,6 +287,8 @@ public class SingularityDrive {
 			this.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}
 		
+		this.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
+		
 	}
 	
 	/**
@@ -312,6 +314,8 @@ public class SingularityDrive {
 			currentAngle = gyro.getAngle() - origAngle;
 			this.arcadeSixWheel(0.0, 0.2 * Math.abs(degrees) / degrees, false, SpeedMode.FAST);
 		}
+		
+		this.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
 	}
 	
 	
