@@ -290,7 +290,7 @@ public class SingularityDrive {
 		timer.start();
 		double currentAngle = 0;
 		
-		while (timer.get() < maxTime && Math.abs(currentAngle) < degrees - 20) {
+		while (timer.get() < maxTime && Math.abs(currentAngle) < Math.abs(degrees) - 20) {
 			currentAngle = gyro.getAngle() - origAngle;
 			this.arcadeSixWheel(0.0, gyroRotationConstant * (degrees - currentAngle), false, SpeedMode.FAST);
 		}
