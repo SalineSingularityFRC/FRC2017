@@ -4,10 +4,12 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
+import com.kauailabs.navx.frc.AHRS;
+
 public class BlueBoilerPegThenShoot extends GeneralBoilerPegThenShoot{
 	
-	public BlueBoilerPegThenShoot(){
-		super(true);
+	public BlueBoilerPegThenShoot(AHRS gyro){
+		super(true, gyro);
 	}
 
 //	@Override
