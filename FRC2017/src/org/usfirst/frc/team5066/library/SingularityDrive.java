@@ -287,7 +287,7 @@ public class SingularityDrive {
 		 //((CANTalon) m_leftMiddleMotor).getEncPosition() - origPosition
 		
 		
-		((CANTalon) m_leftMiddleMotor).setEncPosition(0);
+		//((CANTalon) m_leftMiddleMotor).setEncPosition(0);
 		
 		Timer.delay(0.2);
 		
