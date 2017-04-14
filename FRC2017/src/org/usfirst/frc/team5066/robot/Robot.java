@@ -57,6 +57,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
@@ -131,7 +132,11 @@ public class Robot extends IterativeRobot {
 	
 	//For the LEDs
 	SingularityLEDs robotLEDs;
-	int portGreen, portRed, portBlue;
+	Solenoid greenLed, redLed, blueLed;
+	
+	final int portGreen = 0;
+	final int portRed = 1;
+	final int portBlue = 2;
 	
 	public static UsbCamera camera;
 	public static UsbCamera climbCamera;
@@ -255,11 +260,11 @@ public class Robot extends IterativeRobot {
 			loadProperties();
 			silverLeft = new RangeFinder(ultraPortLeft);
 			
-			portGreen = 0;
-			portRed = 1;
-			portBlue = 2;
 			
-			robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
+			//robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
+			greenLed = new Solenoid(portGreen);
+			redLed = new Solenoid(portRed);
+			blueLed = new Solenoid(portBlue);
 			
 			encoderShooter = true;
 			
@@ -321,7 +326,7 @@ public class Robot extends IterativeRobot {
 		    
 		    pdp = new PowerDistributionPanel();
 		    
-		    robotLEDs.turnBlue();
+		    //robotLEDs.turnBlue();
 		
 		}
 	}
@@ -337,6 +342,8 @@ public class Robot extends IterativeRobot {
             reader.close();
             reader = null;
         }
+        
+        blueLed.set(true);
     }	
 	
 	public void disabledPeriodic() {
@@ -1042,6 +1049,10 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		//camera.setExposureManual(50);
 		drive.rampVoltage();
+		
+		blueLed.set(false);
+		redLed.set(true);
+		greenLed.set(true);
 	}
 	
 	/**
@@ -1049,7 +1060,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		
 		
 		//currentScheme.controlLEDs(robotLEDs);
 		currentScheme.drive(drive, true);
