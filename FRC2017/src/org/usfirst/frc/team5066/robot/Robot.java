@@ -150,6 +150,8 @@ public class Robot extends IterativeRobot {
 	final int strafeXValue = 10;
 	
 	public AHRS ahrs;
+	ArrayList<Double> gyroAngle;
+	ArrayList<Double> gyroTime;
 	
 	//For the gyro
 	public ADXRS450_Gyro gyro;
@@ -269,6 +271,9 @@ public class Robot extends IterativeRobot {
 			encoderShooter = true;
 			
 			ahrs = new AHRS(SPI.Port.kMXP);
+			gyroAngle = new ArrayList<>();
+			gyroTime = new ArrayList<>();
+			
 			
 			gyro = new ADXRS450_Gyro();
 			gyro.calibrate();
@@ -343,7 +348,9 @@ public class Robot extends IterativeRobot {
             reader = null;
         }
         
+        
         blueLed.set(true);
+        timer.start();
     }	
 	
 	public void disabledPeriodic() {
@@ -369,6 +376,14 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("NEW GYRO ANGLE: ", ahrs.getAngle());
 		
 		drive.displayEncoder();
+		
+		gyroAngle.add(0, ahrs.getAngle());
+		gyroTime.add(0, timer.get());
+		
+		if (gyroAngle.size() > 5000) {
+			gyroAngle.remove(5000);
+			gyroTime.remove(5000);
+		}
 		
 	}
 
@@ -403,7 +418,7 @@ public class Robot extends IterativeRobot {
 		
 		
 //		\/ \/ \/ \/ \/ \/ \/ \/ \/ NEW AUTON CODE \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
-		autonMode = new LeftPeg();
+		autonMode = new CenterPeg(ahrs);
 		autonMode.run(drive, shooter, intake);
 //		/\ /\ /\ /\ /\ /\ /\ /\ /\ ============== /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 		
