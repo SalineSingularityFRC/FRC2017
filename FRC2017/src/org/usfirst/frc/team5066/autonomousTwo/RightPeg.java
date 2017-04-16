@@ -19,7 +19,7 @@ public class RightPeg extends AutonMode{
 	
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 
-		drive.driveStraight(48.96, 0.6, 0.05, 10);
+		drive.driveStraight(48.96, 0.35, 0.05, 10);
 		drive.rotateTo(-1.0 * 55.0, 8);
 		//drive.driveStraight(83.081, 0.4, 0.05, 10);
 

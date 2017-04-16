@@ -264,9 +264,9 @@ public class Robot extends IterativeRobot {
 			
 			
 			//robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
-			greenLed = new Solenoid(portGreen);
-			redLed = new Solenoid(portRed);
-			blueLed = new Solenoid(portBlue);
+			//greenLed = new Solenoid(portGreen);
+			//redLed = new Solenoid(portRed);
+			//blueLed = new Solenoid(portBlue);
 			
 			encoderShooter = true;
 			
@@ -349,8 +349,8 @@ public class Robot extends IterativeRobot {
         }
         
         
-        blueLed.set(true);
-        timer.start();
+        //blueLed.set(true);
+        //timer.start();
     }	
 	
 	public void disabledPeriodic() {
@@ -376,7 +376,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("NEW GYRO ANGLE: ", ahrs.getAngle());
 		
 		drive.displayEncoder();
-		
+		/*
 		gyroAngle.add(0, ahrs.getAngle());
 		gyroTime.add(0, timer.get());
 		
@@ -384,7 +384,7 @@ public class Robot extends IterativeRobot {
 			gyroAngle.remove(5000);
 			gyroTime.remove(5000);
 		}
-		
+		*/
 	}
 
 
@@ -407,7 +407,7 @@ public class Robot extends IterativeRobot {
 		needAngle = true;
 		
 		//for leds
-		robotLEDs.oscillate();
+		//robotLEDs.oscillate();
 		
 		timer = new Timer();
 		timer.start();
@@ -418,6 +418,7 @@ public class Robot extends IterativeRobot {
 		
 		
 //		\/ \/ \/ \/ \/ \/ \/ \/ \/ NEW AUTON CODE \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
+		//If there is an errror after changing schemes, add "ahrs" to the parentheses, or remove it.
 		autonMode = new CenterPeg(ahrs);
 		autonMode.run(drive, shooter, intake);
 //		/\ /\ /\ /\ /\ /\ /\ /\ /\ ============== /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
@@ -1065,9 +1066,9 @@ public class Robot extends IterativeRobot {
 		//camera.setExposureManual(50);
 		drive.rampVoltage();
 		
-		blueLed.set(false);
-		redLed.set(true);
-		greenLed.set(true);
+		//blueLed.set(false);
+		//redLed.set(true);
+		//greenLed.set(true);
 	}
 	
 	/**
@@ -1131,7 +1132,7 @@ public class Robot extends IterativeRobot {
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
 		currentScheme.controlIntake(intake);
-		currentScheme.controlLEDs(robotLEDs);
+		//currentScheme.controlLEDs(robotLEDs);
 		
 		
 	}

@@ -27,7 +27,7 @@ public class CenterPeg extends AutonMode {
 		timer.reset();
 		timer.start();
 		
-		while (timer.get() < 4.4) {
+		while (timer.get() < 4.0) {
 			
 			drive.arcadeSixWheel(0.25, 0.05 * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}

@@ -23,7 +23,7 @@ public abstract class GeneralBoilerPegThenShoot extends AutonMode {
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		
 		
-		AutonMode sidePegMode = onBlueAlliance ? new LeftPeg() : new RightPeg(gyro);
+		AutonMode sidePegMode = onBlueAlliance ? new LeftPeg(gyro) : new RightPeg(gyro);
 		sidePegMode.run(drive, shooter, intake);
 
 		Timer t = new Timer();
