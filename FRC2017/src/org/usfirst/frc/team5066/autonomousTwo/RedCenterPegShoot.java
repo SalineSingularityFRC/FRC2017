@@ -10,15 +10,13 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class RedCenterPegShoot extends AutonMode {
 	
-	AHRS gyro;
-	
-	public RedCenterPegShoot(AHRS gyro) {
-		this.gyro = gyro;
+	public RedCenterPegShoot(double gyroRotationConstant, AHRS gyro) {
+		super(gyroRotationConstant, gyro);
 	}
 
 	@Override
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
-		AutonMode autonMode = new CenterPeg(gyro);
+		AutonMode autonMode = new CenterPeg(gyroRotationConstant, gyro);
 		autonMode.run(drive, shooter, intake);
 		
 		Timer.delay(4);

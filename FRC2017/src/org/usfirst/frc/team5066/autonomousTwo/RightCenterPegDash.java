@@ -4,8 +4,8 @@ import com.kauailabs.navx.frc.AHRS;
 
 public class RightCenterPegDash extends GeneralCenterPegDash{
 
-	public RightCenterPegDash(AHRS gyro) {
-		super(true, gyro);
+	public RightCenterPegDash(double gyroRotationConstant, AHRS gyro) {
+		super(true, gyroRotationConstant, gyro);
 	}
 
 }

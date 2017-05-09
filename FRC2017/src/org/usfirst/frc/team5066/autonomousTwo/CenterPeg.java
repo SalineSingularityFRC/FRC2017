@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class CenterPeg extends AutonMode {
 	
-	AHRS gyro;
-	
-	public CenterPeg(AHRS gyro) {
-		this.gyro = gyro;
+	public CenterPeg(double gyroRotationConstant, AHRS gyro) {
+		super(gyroRotationConstant, gyro);
 	}
 	
 	@Override
@@ -29,7 +27,7 @@ public class CenterPeg extends AutonMode {
 		
 		while (timer.get() < 4.0) {
 			
-			drive.arcadeSixWheel(0.25, 0.05 * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}
 		
 		drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);

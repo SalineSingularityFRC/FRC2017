@@ -12,18 +12,18 @@ public abstract class GeneralBoilerPegThenShoot extends AutonMode {
 	
 	private double angleMultiplier;
 	private boolean onBlueAlliance;
-	AHRS gyro;
 	
-	public GeneralBoilerPegThenShoot(boolean onBlueAlliance, AHRS gyro) {
+	public GeneralBoilerPegThenShoot(boolean onBlueAlliance, double gyroRotationConstant, AHRS gyro) {
+		super(gyroRotationConstant, gyro);
+		
 		angleMultiplier = onBlueAlliance ? 1.0 : -1.0;
 		this.onBlueAlliance = onBlueAlliance;
-		this.gyro = gyro;
 	}
 	
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		
 		
-		AutonMode sidePegMode = onBlueAlliance ? new LeftPeg(gyro) : new RightPeg(gyro);
+		AutonMode sidePegMode = onBlueAlliance ? new LeftPeg(gyroRotationConstant, gyro) : new RightPeg(gyroRotationConstant, gyro);
 		sidePegMode.run(drive, shooter, intake);
 
 		Timer t = new Timer();

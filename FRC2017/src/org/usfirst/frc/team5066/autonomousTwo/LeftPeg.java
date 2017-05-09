@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class LeftPeg extends AutonMode {
 	
-	AHRS gyro;
-	
-	public LeftPeg(AHRS gyro) {
-		this.gyro = gyro;
+	public LeftPeg(double gyroRotationConstant, AHRS gyro) {
+		super(gyroRotationConstant, gyro);
 	}
 	
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {

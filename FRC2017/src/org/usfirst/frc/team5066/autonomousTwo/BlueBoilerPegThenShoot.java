@@ -8,8 +8,8 @@ import com.kauailabs.navx.frc.AHRS;
 
 public class BlueBoilerPegThenShoot extends GeneralBoilerPegThenShoot{
 	
-	public BlueBoilerPegThenShoot(AHRS gyro){
-		super(true, gyro);
+	public BlueBoilerPegThenShoot(double gyroRotationConstant, AHRS gyro){
+		super(true, gyroRotationConstant, gyro);
 	}
 
 //	@Override

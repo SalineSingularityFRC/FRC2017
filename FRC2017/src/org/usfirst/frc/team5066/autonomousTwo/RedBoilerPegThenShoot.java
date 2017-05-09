@@ -8,9 +8,10 @@ import com.kauailabs.navx.frc.AHRS;
 
 public class RedBoilerPegThenShoot extends GeneralBoilerPegThenShoot{
 	
-	public RedBoilerPegThenShoot(AHRS gyro){
-		super(false, gyro);
+	public RedBoilerPegThenShoot(double gyroRotationConstant, AHRS gyro){
+		super(true, gyroRotationConstant, gyro);
 	}
+	
 
 //	@Override
 //	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {

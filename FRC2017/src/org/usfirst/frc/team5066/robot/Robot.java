@@ -82,18 +82,16 @@ import org.usfirst.frc.team5066.autonomousTwo.*;
 public class Robot extends IterativeRobot {
 	
 	
+	//AUTON CONSTANT
+	public static final double driveStraight = 1.03;
 	
-	//AUTON CONSTANTS
-	public static final double vertSpeedFast = 0.4, vertSpeedSlow = 0.4, 
-			turnMultiplier = 0.010, ultraRotate = 0.1, driveStraight = 1.03,
-			stopDist = 20;
 	
-	double autoSpeed;
-	
+	//A boolean for which direction to move after placing a gear
 	final boolean dashingRight = true;
 	
 	XboxController xbox;
 	
+	//Holds the current mode such as CenterPeg
 	AutonMode autonMode;
 	
 	// Here are the options for using recordable autonomous mode.
@@ -110,14 +108,8 @@ public class Robot extends IterativeRobot {
     Reader reader;
     Recorder recorder;
     int currentRecordingIndex;
-	
-	/*
-	//Create a variable to hold a reference to a SendableChooser object.
-	Command autonomousCommand;
-	SendableChooser autoChooser;
-	AutonomousMode autonMode;
-	*/
-	
+    
+	//Constants for vision
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
 	
@@ -127,8 +119,6 @@ public class Robot extends IterativeRobot {
 	private double turn;
 	
 	private final Object imgLock = new Object();
-	
-	ArrayList<Double> turnList;
 	
 	//For the LEDs
 	SingularityLEDs robotLEDs;
@@ -140,25 +130,15 @@ public class Robot extends IterativeRobot {
 	
 	public static UsbCamera camera;
 	public static UsbCamera climbCamera;
-
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
 	
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
-	
-	final int strafeXValue = 10;
-	
+	//NEW gyro
 	public AHRS ahrs;
-	ArrayList<Double> gyroAngle;
-	ArrayList<Double> gyroTime;
 	
-	//For the gyro
+	//OLD gyro
 	public ADXRS450_Gyro gyro;
-	boolean gyroStarted;
-	boolean needAngle;
-	double origAngle;
+	
 	//CONSTANT for driving straight
+	//We might want to test this further
 	public final double gyroRotationConstant = 0.05;
 	
 	//For the cheap red ultrasonics
@@ -260,7 +240,6 @@ public class Robot extends IterativeRobot {
 			
 			
 			loadProperties();
-			silverLeft = new RangeFinder(ultraPortLeft);
 			
 			
 			//robotLEDs = new SingularityLEDs(portGreen, portRed, portBlue);
@@ -270,9 +249,8 @@ public class Robot extends IterativeRobot {
 			
 			encoderShooter = true;
 			
+			//NEW gyro
 			ahrs = new AHRS(SPI.Port.kMXP);
-			gyroAngle = new ArrayList<>();
-			gyroTime = new ArrayList<>();
 			
 			
 			gyro = new ADXRS450_Gyro();
@@ -309,15 +287,14 @@ public class Robot extends IterativeRobot {
 		    });
 		    visionThread.start();
 		    */
-		    turnList = new ArrayList<>();
-		    for (int i = 0; i < 4; i++) {
-		    	turnList.add(0.0);
-		    }
+		    
 		    
 		    //camera.setExposureManual(1);
 		    
 		    redLeft = new Ultrasonic(inputLeft, outputLeft);
 		    redLeft.setAutomaticMode(true);
+		    
+		    silverLeft = new RangeFinder(ultraPortLeft);
 		    
 		    //redRight = new Ultrasonic(inputRight, outputRight);
 		    //redRight.setAutomaticMode(true);
@@ -376,15 +353,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("NEW GYRO ANGLE: ", ahrs.getAngle());
 		
 		drive.displayEncoder();
-		/*
-		gyroAngle.add(0, ahrs.getAngle());
-		gyroTime.add(0, timer.get());
-		
-		if (gyroAngle.size() > 5000) {
-			gyroAngle.remove(5000);
-			gyroTime.remove(5000);
-		}
-		*/
 	}
 
 
@@ -402,668 +370,33 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		
-		index = 0;
-		autonSteps = autonScheme.getSteps();
-		needAngle = true;
 		
 		//for leds
 		//robotLEDs.oscillate();
 		
-		timer = new Timer();
-		timer.start();
-		timerHasStarted = false;
-		
-		origAngle = ahrs.getAngle();
-		gyroStarted = false;
-		
-		
 //		\/ \/ \/ \/ \/ \/ \/ \/ \/ NEW AUTON CODE \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
-		//If there is an errror after changing schemes, add "ahrs" to the parentheses, or remove it.
-		autonMode = new CenterPeg(ahrs);
+		//If there is an error after changing schemes, add "ahrs" to the parentheses, or remove it.
+		autonMode = new CenterPeg(gyroRotationConstant, ahrs);
 		autonMode.run(drive, shooter, intake);
 //		/\ /\ /\ /\ /\ /\ /\ /\ /\ ============== /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 		
-		//gyro.calibrate();
 		
-		//camera.setExposureManual(1);
-		
-		/*if (play) {
-			try {
-				reader = new Reader(recordingURL);
-				initialTime = System.currentTimeMillis();
-			}
-			catch (Exception e) {
-				reader = null;
-				e.printStackTrace();
-			}
-		}
-		
-		*/
-		
-		// Chooses the right recording
-   //     currentRecordingIndex = autonScheme.getRecordableURL();
-   //
-   //     // Recordable autonomous
-   //     if (play) {
-   //         reader = initializeReader(playbackURLs[currentRecordingIndex]);
- //       }
-
-		/*
-		//encoderHasRun = false;
-		
-		//When the autonomous period starts the SendableChooser object is polled to get
-		//the selected command and that command is scheduled.
-		
-		autonomousCommand = (Command) autoChooser.getSelected();
-		autonomousCommand.start();
-		
-		/*try {
-			autoSelected = props.getString("autonMode");
-		} catch (SingularityPropertyNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		switch(autoSelected){
-		
-		case "forwards":
-			autonMode = new Left();
-			break;
-		
-		case "backwards":
-			autonMode = new Middle();
-			break;
-		default:
-			DriverStation.reportError("A O nothing in the Auto Mode", false);
-		}
-		
-
-		
-		autoSelected = chooser.getSelected();
-		 autoSelected = SmartDashboard.getString("Auto Selector",
-		 defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
-		
-		//IF ALL ELSE FAILS USE THIS
-		drive.arcadeSixWheel(0.5, 0.0, 0.0, false, SpeedMode.NORMAL);
-		Timer.delay(4);
-		drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.NORMAL);
-		
-		//@TODO This doesn't work
-		drive.resetAll();
-		drive.arcadeSixWheelStraightEncoder(-0.5, 0.0, 0.0);
-		Timer.delay(4);
-		drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
-		*/
 	}
 
 	/**
 	 * This function is called periodically during autonomous
 	 */
 	
-//	@Override
-//	public void autonomousPeriodic() {
-//		//autonSteps = autonScheme.getSteps();
-//		//DriverStation.reportWarning("Current step" + autonSteps[index], false);
-//		SmartDashboard.putString("DB/String 0", "Current step " + autonSteps[index]);
-//		SmartDashboard.putNumber("gyro.getAngle(): ", gyro.getAngle());
-//		
-//		switch(autonSteps[index]) {
-//		/*
-//		 * This will be the last case in every auton scheme.
-//		 * Stops the motors.
-//		 */
-//		case 0:
-//			drive.arcadeSixWheel(0, 0, false, SpeedMode.NORMAL);
-//			break;
-//		/*
-//		 * This will drive the robot straight using the gyro
-//		 * Will move on when the ultrasonics read a distance < approx. 25in
-//		 */
-//		case 1:
-//			/*if (needAngle) {
-//				origAngle = gyro.getAngle();
-//				needAngle = false;
-//			}*/
-//			
-//			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			
-//			if (timer.get() > 4.4) {
-//				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//				Timer.delay(3);
-//				index++;
-//			}
-//		
-//			/*
-//			
-//			timer2.start();
-//			int i = 4;
-//			while (i > 0) {
-//				drive.arcadeSixWheel(0.8 / i, 0.0, rotateAngle * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//				if (timer2.get() > 0.2) {
-//					i--;
-//					timer2.start();
-//				}
-//			}
-//			*/
-//				
-//			/*
-//			if ((redLeft.getRangeInches()) < 40){//+ redRight.getRangeInches()) / 2 < 40) {
-//				if (!timerHasStarted) {
-//					timer.start();
-//					timerHasStarted = true;
-//				}
-//				else if (timer.get() > 0.02)
-//					index++;
-//			}
-//			else timer.reset();
-//			
-//			*/
-//			
-//			
-//		break;
-//		/*
-//		 * This case starts the vision code and lines up the robot with the peg
-//		 * Will move on when the ultrasonics read a distance < approx. 15in
-//		 */
-//		case 2:
-//			/*
-//			double centerX;
-//			synchronized (imgLock) {
-//				centerX = this.centerX;
-//				centerY = this.centerY;
-//			}
-//			turn = centerX - (IMG_WIDTH / 2);
-//			//FOR TESTING
-//			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
-//			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-//			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-//			
-//			if (Math.abs(turn) < 20) autoSpeed = 0.30;
-//			else autoSpeed = 0.25;
-//			
-//			if(centerX == 0){
-//				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
-//				break;
-//			}
-//			
-//			drive.arcadeSixWheel(autoSpeed, 0.0, turn * 0.002,//(redRight.getRangeInches() - redLeft.getRangeInches()) * 0.01, 
-//					false, SpeedMode.FAST);
-//			*/
-//			if ((redLeft.getRangeInches()) < 30){ //+ redRight.getRangeInches()) / 2 < 14) {
-//				if (!timerHasStarted) {
-//					timer.start();
-//					timerHasStarted = true;
-//				}
-//				else if (timer.get() > 0.1) {
-//					timerHasStarted = false;
-//					index++;
-//				}
-//			}
-//			else {
-//				timer.reset();
-//			}
-//		break;
-//		/*
-//		 * This case drives the robot backwards for 0.8 seconds at 30% power.
-//		 * For inserting gear on to peg after case 2 has run.
-//		 */
-//		case 3:
-//			drive.arcadeSixWheel(0.2, 0.0, false, SpeedMode.FAST);
-//			if ((redLeft.getRangeInches()) < 17){// + redRight.getRangeInches()) / 2 < 6) {
-//				
-//				if (!timerHasStarted) {
-//					timer.start();
-//					timerHasStarted = true;
-//				}
-//				else if (timer.get() > 0.1) {
-//					timerHasStarted = false;
-//					index++;
-//				}
-//			}
-//			//else timer.reset();
-//			break;
-//		/*
-//		 * This is only for driving forward to get past the base line.
-//		 */
-//		case 4:
-//			drive.arcadeSixWheel(0.5, 0.0, false, SpeedMode.FAST);
-//			Timer.delay(4);
-//			index++;
-//			break;
-//		/*
-//		 * Strafe across the boiler
-//		 */
-//		case 5:
-//			
-//			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
-//				rotationSpeed = 0.7;
-//			}
-//			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
-//				rotationSpeed = -0.7;
-//			}
-//			
-//			else rotationSpeed = 0.0;
-//			
-//			drive.arcadeSixWheel(0.0, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			if (timer.get() > 0.4) {
-//				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//				index++;
-//			}
-//			break;
-//		/*
-//		 * Shoot the balls into the boiler
-//		 */
-//		case 6:
-//			
-//			shooter.setSpeed(true, true);
-//			Timer.delay(0.3);
-//			intake.setSpeed(1.0);
-//			Timer.delay(8.0);
-//			shooter.setSpeed(false, true);
-//			intake.setSpeed(0.0);
-//			index++;
-//			timer.reset();
-//			timer.start();
-//			break;
-//			
-//		case 7:
-//			
-//			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//			Timer.delay(0.2);
-//			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//			Timer.delay(3);
-//			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//			Timer.delay(0.35);
-//			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//			index++;
-//		
-//		/*
-//		 * For use with case 1. Adjusts robot before driving toward peg
-//		 */
-//		case 8:
-//			/*
-//			double cenX;
-//			synchronized (imgLock) {
-//				cenX = this.centerX;
-//				centerY = this.centerY;
-//			}
-//			turn = cenX - (IMG_WIDTH / 2);
-//			
-//			turnList.remove(0);
-//			turnList.add(turn);
-//			
-//			//make turn the average of the last four turn's (before they were averaged)
-//			turn = 0.0;
-//			for (int i = 0; i < turnList.size(); i++) {
-//				turn += turnList.get(i);
-//			}
-//			turn /= turnList.size();
-//			
-//			
-//			//FOR TESTING
-//			SmartDashboard.putString("DB/String 1", "Center X: " + cenX);
-//			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-//			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-//			
-//			//The plus two probably only works for blue boiler. This might have to be minus for red.
-//			drive.arcadeSixWheel(0.0, 0.0, turn - 30.0, false, SpeedMode.FAST);
-//			
-//			if (Math.abs(turn - 30.0) < 10.0) {
-//				index++;
-//				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//			}
-//			
-//			/*
-//			if (Math.abs(27 - t) < 5) {
-//				if (!timerHasStarted) {
-//					timer.start();
-//					timerHasStarted = true;
-//				}
-//				
-//				if (timer.get() > 0.8) {
-//					index++;
-//					timerHasStarted = false;
-//				}
-//			}
-//			else {
-//				timer.reset();
-//				timerHasStarted = false;
-//			}
-//			*/
-//			
-//			break;
-//			
-//		case 9:
-//			
-//			if (!gyroStarted) {
-//				origAngle = gyro.getAngle();
-//				gyroStarted = true;
-//			}
-//			
-//			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			if (!timerHasStarted) {
-//				timer = new Timer();
-//				timer.start();
-//				timerHasStarted = true;
-//			}
-//			
-//			if (timer.get() > 0.80) {
-//				
-//				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//				
-//				index++;
-//				timerHasStarted = false;
-//				
-//			}
-//			break;
-//			
-//		case 10:
-//			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			if (!timerHasStarted) {
-//				timer.start();
-//				timerHasStarted = true;
-//			}
-//			
-//			if (timer.get() > 3.5) {
-//				index++;
-//				timerHasStarted = false;
-//			}
-//			break;
-//			
-//		case 11:
-//			
-//			//drive.arcadeSixWheelStraightEncoder(0.5, 0.0, 0.0, 1000);
-//			Timer.delay(4);
-//			index++;
-//			break;
-//			
-//		case 12:
-//			
-//			if (autonScheme instanceof AutonLeftFuel || autonScheme instanceof AutonLeft) {
-//				rotationSpeed = 0.7;
-//			}
-//			else if (autonScheme instanceof AutonRightFuel || autonScheme instanceof AutonRight) {
-//				rotationSpeed = -0.7;
-//			}
-//			
-//			else rotationSpeed = 0.0;
-//			
-//			drive.arcadeSixWheel(0.0, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			Timer.delay(1.3);
-//			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//			index++;
-//			break;
-//			
-//		case 13:
-//			if (!gyroStarted) {
-//				origAngle = gyro.getAngle();
-//				gyroStarted = true;
-//			}
-//			
-//			drive.arcadeSixWheel(0.4, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			if (!timerHasStarted) {
-//				timer = new Timer();
-//				timer.start();
-//				timerHasStarted = true;
-//			}
-//			
-//			if (timer.get() > 3.5) {
-//				
-//				drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//				
-//				index++;
-//				timerHasStarted = false;
-//				gyroStarted = false;
-//				
-//			}
-//			break;
-//			
-//		case 14:
-//			
-//
-//			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			
-//			if (timer.get() > 2.3) {
-//				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//				index++;
-//			}
-//			timer.reset();
-//		break;
-//		
-//		case 15:
-//			
-//			
-//			//rotate towards the peg
-//			if (autonScheme instanceof AutonLeft) {
-//				rotationSpeed = 0.002 * (60 - gyro.getAngle());
-//			}
-//			else if (autonScheme instanceof AutonRight) {
-//				rotationSpeed = 0.002 * (-60 + gyro.getAngle());
-//			}
-//			
-//			
-//			drive.arcadeSixWheel(0.0, rotationSpeed, false, SpeedMode.FAST);
-//			
-//			//Once we have the right orientation, start a timer to account for overrotation
-//			if (Math.abs(gyro.getAngle()) > 59) {
-//				timer.reset();
-//				timer.start();
-//			}
-//			
-//			//Once we've been correcting for a second, Move on to driving straight.
-//			if (timer.get() > 1.0) {
-//
-//				origAngle = gyro.getAngle();
-//				index++;
-//				timer.reset();
-//				timer.start();
-//			}
-//			
-//		break;
-//		
-//		case 16:
-//			
-//			drive.arcadeSixWheel(0.0, 0.0, false, SpeedMode.FAST);
-//			Timer.delay(4.5);
-//			
-//			timer.reset();
-//			timer.start();
-//			
-//			while (timer.get() < 2.5) {
-//				drive.arcadeSixWheel(-0.35, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			}
-//			
-//			if (dashingRight) {
-//				rotationSpeed = 90 - gyro.getAngle() + 0.14;
-//			}
-//			else {
-//				rotationSpeed = -90 + gyro.getAngle() - 0.14;
-//			}
-//			
-//			while(!(gyro.getAngle() > 90) && !(gyro.getAngle() < -90)) {
-//				drive.arcadeSixWheel(0.0, 0.004 * rotationSpeed + 0.14, false, SpeedMode.FAST);
-//			}
-//				
-//			
-//			origAngle = gyro.getAngle();
-//			timer.reset();
-//			timer.start();
-//			
-//			while (timer.get() < 2.0) {
-//				drive.arcadeSixWheel(-0.35, gyroRotationConstant * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
-//			}
-//			
-//
-//			if (dashingRight) {
-//				rotationSpeed = -90 - gyro.getAngle() - 0.14;
-//			}
-//			else {
-//				rotationSpeed = 90 + gyro.getAngle() + 0.14;
-//			}
-//			
-//			while(!(gyro.getAngle() > 90) && !(gyro.getAngle() < -90)) {
-//				drive.arcadeSixWheel(0.0, 0.004 * rotationSpeed, false, SpeedMode.FAST);
-//			}
-//				
-//			
-//			origAngle = gyro.getAngle();
-//			timer.reset();
-//			timer.start();
-//			
-//			
-//		break;
-//		
-//		case 17:
-//			
-//			drive.arcadeSixWheel(0.25, gyroRotationConstant * (origAngle - ahrs.getAngle()), false, SpeedMode.FAST);
-//			
-//			if (timer.get() > 4.4) {
-//				drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//				Timer.delay(3);
-//				index++;
-//			}
-//		
-//			
-//		break;
-//			
-//			
-//			
-//		default:
-//			drive.arcadeSixWheel(0.4, 0.1, true, SpeedMode.FAST);
-//			Timer.delay(4);
-//			drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
-//			SmartDashboard.putString("DB/String 0", "no auton found");
-//			break;
-//		}
-//		
-//		/*
-//		if (autonMode == autonMode.ENCODER && !preAutonHasRun) {
-//			autonScheme.moveEncoderAuton();
-//			preAutonHasRun = true;
-//		}
-//		
-//		else if (autonMode == autonMode.RECORDABLE && reader != null) {
-//			if (reader.isDone(System.currentTimeMillis() - initialTime)
-//                    && currentRecordingIndex < playbackURLs.length - 1) {
-//                reader.close();
-//                // This will choose the next re		`cording
-//                //reader = initializeReader(playbackURLs[++currentRecordingIndex]);
-//            }
-// 
-//            JSONObject current = reader.getDataAtTime(System.currentTimeMillis() - initialTime);
-//            drive.arcadeSixWheel((Double) current.get("vertical"), (Double) current.get("horizontal"), (Double) current.get("rotation"), true, SpeedMode.NORMAL);
-//            intake.setSpeed(0.3);
-//            shooter.setSpeed((Double) current.get("shooter") > 0.6);
-//		}
-//		
-//		else {
-//			//reset encoders to 0
-//			drive.resetAll();
-//			*/
-//		
-//		
-//		/*
-//			double centerX;
-//			synchronized (imgLock) {
-//				centerX = this.centerX;
-//				centerY = this.centerY;
-//			}
-//			
-//			double turn = centerX - (IMG_WIDTH / 2);
-//			//FOR TESTING
-//			SmartDashboard.putString("DB/String 1", "Center X: " + centerX);
-//			SmartDashboard.putString("DB/String 2", "Center Y: " + centerY);
-//			SmartDashboard.putString("DB/String 3", "Turn: " + turn);
-//			
-//			if (Math.abs(turn) < 20) autoSpeed = 0.50;
-//			else autoSpeed = 0.4;
-//			
-//			//if (redLeft.getRangeInches() > autonModeUltraDist/* || redRight.getRangeInches() > autonModeUltraDist) {
-//				//FOR TESTING
-//				//SmartDashboard.putString("DB/String 0", "Turn: " + turn);
-//			/*if(centerY < 55.0) {
-//				SmartDashboard.putString("DB/String 5", "Final Descent");
-//				drive.arcadeSixWheel(0.4, 0.0, 0.0 + 0.10, false, SpeedMode.FAST);
-//				Timer.delay(1);
-//				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
-//				
-//				
-//			}
-//			*/
-//			/*
-//			if (redLeft.getRangeInches() < 30) {
-//				SmartDashboard.putString("DB/String 5", "Final Descent");
-//				drive.arcadeSixWheel(0.25, 0.0, 0.0, false, SpeedMode.FAST);
-//				Timer.delay(2);
-//				drive.arcadeSixWheel(0.0, 0.0, -0.3, false, SpeedMode.FAST);
-//				Timer.delay(0.5);
-//				drive.arcadeSixWheel(0.0, 0.0, 0.0, false, SpeedMode.FAST);
-//			}
-//		
-//			
-//				
-//			else drive.arcadeSixWheel(autoSpeed, 0.0, turn * 0.005, false, SpeedMode.NORMAL);
-//				
-//			SmartDashboard.putString("DB/String 6", "ultra: " + redLeft.getRangeInches());
-//				
-//				
-//			//}
-//			//SmartDashboard.putString("DB/String 5", "Distance: " + redRight.getRangeInches());
-//			//else {
-//			
-//			/* || redRight.getRangeInches() < 4
-//			
-//				if (redLeft.getRangeInches() < stopDist && redLeft.getRangeInches() > 1) {
-//					//FOR TESTING
-//					SmartDashboard.putString("DB/String 0", "We are not moving");
-//					SmartDashboard.putString("DB/String 4", "null");
-//					
-//					drive.arcadeSixWheelStraightConstant(0.0, 0.0, 0.0);
-//				}
-//				/*else if(centerY < 80){
-//					//FOR TESTING
-//					SmartDashboard.putString("DB/String 0", "WE ARE MOVING FORWARD CUZ \"Y\" NOT");
-//					SmartDashboard.putString("DB/String 4", "null");
-//					
-//					drive.arcadeSixWheelStraightConstant(-vertSpeedSlow, 0.0, 0.0);
-//				}*/
-//				/*
-//				else if (centerX < (IMG_WIDTH/2) - strafeXValue) {
-//					SmartDashboard.putString("DB/String 0", "Strafe: moving left");
-//					//drive.arcadeSixWheel(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
-//				}
-//				
-//				else if (centerX > (IMG_WIDTH/2) + strafeXValue) {
-//					SmartDashboard.putString("DB/String 0", "Strafe: moving right");
-//					//drive.arcadeSixWheel(0.0, turn * 0.005, 0, true, SpeedMode.NORMAL);
-//				}
-//				
-//				else {
-//					SmartDashboard.putString("DB/String 0", "moving forward");
-//					//drive.arcadeSixWheelStraightEncoder(-0.4, 0.0);
-//				}
-//				 
-//				else {
-//					SmartDashboard.putString("DB/String 0", "Going forward, strafing");
-//					//SmartDashboard.putString("DB/String 4", "Turn * 0.005: " + turn * 0.005);
-//					drive.arcadeSixWheelStraightConstant(vertSpeedSlow, turn * turnMultiplier, 0.0);//(redLeft.getRangeInches() - redRight.getRangeInches()) * ultraRotate);
-//				}
-//			//}*/
-//			
-//			//RobotBuilder will generate code automatically that 
-//			//runs the scheduler every driver station update period (about every 20ms). 
-//			//This will cause the selected autonomous command to run
-//			//Scheduler.getInstance().run();
-//	}
+	@Override
+	public void autonomousPeriodic() {
+		
+	}
 	
 	public void teleopInit() {
 		//camera.setExposureManual(50);
+		
+		//Set the ramp rate of drive CANTalons to a constant in Singularity Drive.
+		//The constant is in volts per second (full power is about 12 volts)
 		drive.rampVoltage();
 		
 		//blueLed.set(false);
@@ -1077,7 +410,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
+		//TODO make LEDs work
 		//currentScheme.controlLEDs(robotLEDs);
+		
+		//Drive all subsystems
 		currentScheme.drive(drive, true);
 		currentScheme.controlShooter(shooter);
 		currentScheme.controlClimber(climber);
