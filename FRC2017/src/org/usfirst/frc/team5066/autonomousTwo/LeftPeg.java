@@ -9,12 +9,33 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * 
+ * @author 5066 Singularity
+ * 
+ * An autonmode for pacing a gear on the left peg
+ *
+ */
 public class LeftPeg extends AutonMode {
 	
+	/**
+	 * Constructor for the autonomous scheme abstract class
+	 * @param gyroRotationConstant for the constant for driving straight
+	 * @param gyro for the AHRS
+	 */
 	public LeftPeg(double gyroRotationConstant, AHRS gyro) {
 		super(gyroRotationConstant, gyro);
 	}
 	
+	/**
+	 * place a gear on the left peg
+	 * 
+	 * Use in autonInit
+	 * 
+	 * @param drive the object for the drive train
+	 * @param shooter the object for the shooter
+	 * @param intake the object for the intake
+	 */
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		/*
 		drive.driveStraight(48.96, 0.35, 0.05, 10);

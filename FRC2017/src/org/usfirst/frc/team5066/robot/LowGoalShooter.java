@@ -9,6 +9,14 @@ import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+/**
+ * 
+ * @author 5066 Singularity
+ * 
+ * A class to control a low goal shooter
+ *
+ */
 public class LowGoalShooter{
 	
 	/*
@@ -41,7 +49,14 @@ public class LowGoalShooter{
 	
 	boolean hasReversed;
 	
-	
+	/**
+	 * Constructor for LowGoalShooter
+	 * @param shootPort the CANTalon port for the shooting motor
+	 * @param sd a drive object for adjustment while shooting
+	 * @param rf an ultrasonic object
+	 * @param encoder a boolean for whether to use the encoder or not
+	 * (true means we use PID, false is percent voltage)
+	 */
 	public LowGoalShooter(int shootPort, SingularityDrive sd, RangeFinder rf, boolean encoder){
 
 
@@ -51,6 +66,12 @@ public class LowGoalShooter{
 		this.rf = rf;
 	}
 	
+	/**
+	 * Constructor for LowGoalShooter
+	 * @param shootPort the CANTalon port for the shooting motor
+	 * @param encoder a boolean for whether to use the encoder or not
+	 * (true means we use PID, false is percent voltage)
+	 */
 	public LowGoalShooter(int shootPort, boolean encoder) {
 		
 		lowShooter = new CANTalon(shootPort);
@@ -92,6 +113,11 @@ public class LowGoalShooter{
 		timer = new Timer();
 	}
 	
+	/**
+	 * used to shoot, either based on the encoder or not (see above)
+	 * @param shoot true means we currently want to shoot, false we do not
+	 * @param auton true means we are in auton, false means we are in teleop
+	 */
 	public void setSpeed(boolean shoot, boolean auton){
 		
 		if(shoot){
@@ -147,17 +173,31 @@ public class LowGoalShooter{
 	}
 	
 	
-	
+	/**
+	 * Set the speed based on a double
+	 * @param speed if speed is greater than .4, shoot
+	 * based on percent voltage
+	 */
 	public void setSpeed(double speed) {
 		if (speed > 0.4) lowShooter.set(speed);
 		else if (speed < -0.4) lowShooter.set(-reverseSpeed);
 		else lowShooter.set(0.0);
 	}
 	
+	/**
+	 * 
+	 * @return the current speed, whether it's 
+	 * percent voltage or encoder speed (see above)
+	 */
 	public double getSpeed(){
 		return lowShooter.get();
 	}
 	
+	/**
+	 * Move so that we are a certain distance from the wall
+	 * based on the ultrasonic. (Constant above)
+	 * TODO get this to work.
+	 */
 	private void moveFromUltra() {
 		//Move the robot to be the optimal distance from the wall
 		//We want to do this constantly while shooting

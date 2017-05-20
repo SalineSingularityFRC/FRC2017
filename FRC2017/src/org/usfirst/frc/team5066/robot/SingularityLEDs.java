@@ -6,6 +6,13 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * 
+ * @author 5066 Singularity (primarily Alex Mah)
+ * 
+ * A class for controlling LEDs on the 2017 robot.
+ *
+ */
 public class SingularityLEDs {
 	
 	//PneumaticControlModule pcm;

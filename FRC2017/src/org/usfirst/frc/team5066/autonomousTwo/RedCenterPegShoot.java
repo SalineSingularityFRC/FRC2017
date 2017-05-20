@@ -8,12 +8,36 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * 
+ * @author 5066 Singularity
+ * 
+ * An autonmode for placing a gear on the red center peg
+ * and then shooting into the low goal.
+ *
+ */
 public class RedCenterPegShoot extends AutonMode {
 	
+	/**
+	 * A constructor for the abstract class
+	 * @param gyroRotationConstant a constant for driving straight with the gyro
+	 * @param gyro the large purple gyro
+	 */
 	public RedCenterPegShoot(double gyroRotationConstant, AHRS gyro) {
 		super(gyroRotationConstant, gyro);
 	}
-
+	
+	/**
+	 * place a gear and shoot in the red goal
+	 * 
+	 * 
+	 * 
+	 * Use in autonInit
+	 * 
+	 * @param drive the object for the drive train
+	 * @param shooter the object for the shooter
+	 * @param intake the object for the intake
+	 */
 	@Override
 	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		AutonMode autonMode = new CenterPeg(gyroRotationConstant, gyro);

@@ -20,6 +20,15 @@ public class OneController implements ControlScheme {
 	SpeedMode speedMode;
 	boolean on, prevY, lb, prevLB;
 	
+	/**
+	 * Constructor for OneController
+	 * 
+	 * @param xboxPort the channel for the xbox 
+	 * 		controller (Change in Driver Station)
+	 * @param logitechPort the channel for the logitech
+	 * 		joy stick (Change in Driver Station). Yes, the
+	 * 		logitech is for LEDs
+	 */
 	public OneController(int xboxPort, int logitechPort) {
 		xbox = new XboxController(xboxPort);
 		logitech = new LogitechController(logitechPort);
@@ -29,6 +38,15 @@ public class OneController implements ControlScheme {
 		speedMode = SpeedMode.FAST;
 	}
 	
+	/**
+	 * Updated for a six wheel drive.
+	 * xbox left Y Stick for translation, right X for rotation
+	 * Includes speedMode with toggle for the leftBumper
+	 * 
+	 * @param sd the drive object
+	 * @parem squaredInputs	true means we square joystick
+	 * 			inputs, making precise control a little easier.
+	 */
 	@Override
 	public void drive(SingularityDrive sd, boolean squaredInputs) {
 		if (xbox.getLB()) lb = true;
@@ -48,18 +66,34 @@ public class OneController implements ControlScheme {
 		prevLB = lb;
 
 	}
-
+	
+	/**
+	 * Control the shooter with the xbox right trigger
+	 * 
+	 * @param lGS a lowGoalShooter object
+	 */
 	@Override
 	public void controlShooter(LowGoalShooter lGS) {
 		lGS.setSpeed(xbox.getTriggerRight() > 0.6, false);
 	}
-
+	
+	/**
+	 * control the climber with the xbox right bumper
+	 * 
+	 * @param climber a SingularityClimber object
+	 */
 	@Override
 	public void controlClimber(SingularityClimber climber) {
 		if (xbox.getRB()) climber.setSpeed(1.0);
 		else climber.setSpeed(0.0);
 	}
-
+	
+	/**
+	 * control the intake with toggle (Y button)
+	 * reverse with x button
+	 * 
+	 * @param intake a SingularityIntake object
+	 */
 	@Override
 	public void controlIntake(SingularityIntake intake) {
 		
@@ -77,6 +111,11 @@ public class OneController implements ControlScheme {
 		//SmartDashboard.putString("DB/String 5", "Intake Speed: " + intake.getSpeed());
 	}
 	
+	/**
+	 * TODO get LEDs working
+	 * 
+	 * @param robotLEDs a SingularityLEDs object
+	 */
 	public void controlLEDs(SingularityLEDs robotLEDs){
 		if(logitech.getStickX() > 0.2 && (!xbox.getYButton() || !xbox.getTrigger())){
 			robotLEDs.turnBlue();
