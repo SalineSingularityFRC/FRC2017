@@ -18,7 +18,8 @@ public class OneController implements ControlScheme {
 	XboxController xbox;
 	LogitechController logitech;
 	SpeedMode speedMode;
-	boolean on, prevY, lb, prevLB;
+	boolean on, prevY, lb, prevLB, b, prevB;
+	int reverse;
 	
 	/**
 	 * Constructor for OneController
@@ -34,8 +35,10 @@ public class OneController implements ControlScheme {
 		logitech = new LogitechController(logitechPort);
 		on = false;
 		prevLB = false;
+		prevB = false;
 		
 		speedMode = SpeedMode.FAST;
+		reverse = 1;
 	}
 	
 	/**
@@ -61,9 +64,19 @@ public class OneController implements ControlScheme {
 			}
 		}
 		
-		sd.arcadeSixWheel(-xbox.getLS_Y(), xbox.getRS_X(), squaredInputs, speedMode);
+		if (xbox.getBButton()) b = true;
+		else b = false;
+		
+		if (b && !prevB) {
+			reverse *= -1;
+		}
+		
+		
+		
+		sd.arcadeSixWheel(-xbox.getLS_Y() * reverse, xbox.getRS_X(), squaredInputs, speedMode);
 		
 		prevLB = lb;
+		prevB = b;
 
 	}
 	
