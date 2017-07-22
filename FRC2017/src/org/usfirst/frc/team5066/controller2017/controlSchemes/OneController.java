@@ -19,6 +19,8 @@ public class OneController implements ControlScheme {
 	LogitechController logitech;
 	SpeedMode speedMode;
 	boolean on, prevY, lb, prevLB, b, prevB;
+	
+	//will be 1 or -1, to be multiplied with the drive.
 	int reverse;
 	
 	/**
