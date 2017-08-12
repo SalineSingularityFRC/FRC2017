@@ -3,7 +3,7 @@
 import org.usfirst.frc.team5066.controller2017.ControlScheme;
 import org.usfirst.frc.team5066.controller2017.LogitechController;
 import org.usfirst.frc.team5066.controller2017.XboxController;
-import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
@@ -53,9 +53,8 @@ public class OneController implements ControlScheme {
 	 * 			inputs, making precise control a little easier.
 	 */
 	@Override
-	public void drive(SingularityDrive sd, boolean squaredInputs) {
-		if (xbox.getLB()) lb = true;
-		else lb = false;
+	public void drive(SingDrive sd, boolean squaredInputs) {
+		lb = xbox.getLB();
 		
 		if (lb && !prevLB) {
 			if (speedMode == SpeedMode.FAST) {
@@ -66,8 +65,7 @@ public class OneController implements ControlScheme {
 			}
 		}
 		
-		if (xbox.getBButton()) b = true;
-		else b = false;
+		b = xbox.getBButton();
 		
 		if (b && !prevB) {
 			reverse *= -1;
@@ -75,7 +73,7 @@ public class OneController implements ControlScheme {
 		
 		
 		
-		sd.arcadeSixWheel(-xbox.getLS_Y() * reverse, xbox.getRS_X(), squaredInputs, speedMode);
+		sd.drive(-xbox.getLS_Y() * reverse, 0.0, xbox.getRS_X(), squaredInputs, speedMode);
 		
 		prevLB = lb;
 		prevB = b;

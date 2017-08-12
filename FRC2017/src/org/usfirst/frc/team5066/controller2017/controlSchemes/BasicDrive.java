@@ -11,6 +11,7 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 import org.usfirst.frc.team5066.robot.SingularityLEDs;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -56,7 +57,7 @@ public class BasicDrive implements ControlScheme {
 	 * 			inputs, making precise control a little easier.
 	 */
 	@Override
-	public void drive(SingularityDrive sd, boolean squaredInputs) {
+	public void drive(SingDrive sd, boolean squaredInputs) {
 		
 		
 		//set speedMode
@@ -68,7 +69,7 @@ public class BasicDrive implements ControlScheme {
 			speedMode = SpeedMode.NORMAL;
 		}
 		
-		sd.hDrive(xbox.getLS_Y(), xbox.getLS_X(), xbox.getRS_X(), squaredInputs, speedMode);
+		sd.drive(xbox.getLS_Y(), 0, xbox.getRS_X(), squaredInputs, speedMode);
 	}
 	
 	/**

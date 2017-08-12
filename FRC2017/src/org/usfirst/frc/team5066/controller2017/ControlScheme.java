@@ -1,6 +1,6 @@
 package org.usfirst.frc.team5066.controller2017;
 
-import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 //import org.usfirst.frc.team5066.robot.SingularityArm;
@@ -20,7 +20,7 @@ public interface ControlScheme {
 	
 	//public void controlBallOutput(SingularityBallOutput conveyer);
 	
-	public void drive(SingularityDrive sd, boolean squaredInputs);
+	public void drive(SingDrive sd, boolean squaredInputs);
 	public void controlShooter(LowGoalShooter lGS);
 	public void controlClimber(SingularityClimber climber);
 	public void controlIntake(SingularityIntake intake);

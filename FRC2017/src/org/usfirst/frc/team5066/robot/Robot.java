@@ -7,7 +7,7 @@ import org.usfirst.frc.team5066.controller2017.controlSchemes.BasicDrive;
 import org.usfirst.frc.team5066.controller2017.controlSchemes.OneController;
 //import org.usfirst.frc.team5066.controller2017.controlSchemes.TankarcadeSixWheel;
 import org.usfirst.frc.team5066.library.RangeFinder;
-import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.singularityDrive.*;//import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SingularityProperties;
 import org.usfirst.frc.team5066.library.SingularityPropertyNotFoundException;
 import org.usfirst.frc.team5066.library.SpeedMode;
@@ -183,8 +183,7 @@ public class Robot extends IterativeRobot {
 	//low goal:
 	int shootMotor, feedMotor;
 	
-	//CANTalon, Talon
-	int speedControllerType;
+	// Set CANTalon or Talon in DEFAULT_TALON_TYPE in SingularityDrive
 	
 	//Encoders
 	boolean encoderShooter;
@@ -196,8 +195,8 @@ public class Robot extends IterativeRobot {
 	//Speed constants
 	double slowSpeedConstant, normalSpeedConstant, fastSpeedConstant;
 	
-	private SingularityDrive drive;
-	
+	//private SingularityDrive drive;
+	private SixWheelDrive drive;
 	
 	LowGoalShooter shooter;
 	SingularityClimber climber;
@@ -256,8 +255,12 @@ public class Robot extends IterativeRobot {
 			gyro = new ADXRS450_Gyro();
 			gyro.calibrate();
 			
-			drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
-					leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight, ahrs);
+			//drive = new SingularityDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
+			//		leftMiddleMotor, rightMiddleMotor, speedControllerType, .4, .8, 1.0, driveStraight, ahrs);
+			
+			drive= new SixWheelDrive(leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, 
+					leftMiddleMotor, rightMiddleMotor, driveStraight, ahrs);
+			
 			shooter = new LowGoalShooter(shootMotor, encoderShooter);
 			climber = new SingularityClimber(climbPlanetary, climbWorm);
 			intake = new SingularityIntake(frontMotor);
@@ -483,9 +486,6 @@ public class Robot extends IterativeRobot {
 			leftMiddleMotor = properties.getInt("leftMiddleMotor");
 			rightMiddleMotor = properties.getInt("rightMiddleMotor");
 			
-			//CANTalon or Talon drive?
-			speedControllerType = properties.getInt("speedControllerType");
-			
 			climbPlanetary = properties.getInt("climbPlanetary");
 			climbWorm = properties.getInt("climbWorm");
 			
@@ -530,8 +530,6 @@ public class Robot extends IterativeRobot {
 		//low goal:
 		properties.addDefaultProp("shootMotor", 9);
 		
-		//CANTalon = 0 or Talon = 1
-		speedControllerType = SingularityDrive.CANTALON_DRIVE;
 		
 		//Speed mode
 		properties.addDefaultProp("slowSpeedConstant", 0.4);

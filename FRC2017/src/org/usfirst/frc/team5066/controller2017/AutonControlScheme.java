@@ -3,7 +3,7 @@ package org.usfirst.frc.team5066.controller2017;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
-import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.library.playback.Reader;
 import org.usfirst.frc.team5066.library.playback.Recorder;
@@ -16,7 +16,7 @@ public abstract class AutonControlScheme {
 	
 	public static final double DistancePerRevolution = 12.56;//circumference of wheels
 	
-	private static SingularityDrive drive;
+	private static SingDrive drive;
 	private static LowGoalShooter shooter;
 	private static SingularityIntake intake;
 	
@@ -28,7 +28,7 @@ public abstract class AutonControlScheme {
     Recorder recorder;
     int currentRecordingIndex;
 	
-	public AutonControlScheme(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
+	public AutonControlScheme(SingDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		this.drive = drive;
 		this.shooter = shooter;
 		this.intake = intake;

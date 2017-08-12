@@ -9,6 +9,7 @@ import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityClimber;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 import org.usfirst.frc.team5066.robot.SingularityLEDs;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class ArcadeHDrive implements ControlScheme {
 	 * @parem squaredInputs	true means we square joystick
 	 * 			inputs, making precise control a little easier.
 	 */
-	public void drive(SingularityDrive sd, boolean squaredInputs) {
+	public void drive(SingDrive sd, boolean squaredInputs) {
 		
 		//set speedMode
 		if(xbox.getLB()) {
@@ -61,7 +62,7 @@ public class ArcadeHDrive implements ControlScheme {
 			speedMode = SpeedMode.NORMAL;
 		}
 		
-		sd.hDrive(xbox.getLS_Y(), xbox.getRS_Y(), Math.max(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
+		sd.drive(xbox.getLS_Y(), xbox.getRS_Y(), Math.max(xbox.getLS_X(), xbox.getRS_X()), squaredInputs, speedMode);
 		
 	}
 	

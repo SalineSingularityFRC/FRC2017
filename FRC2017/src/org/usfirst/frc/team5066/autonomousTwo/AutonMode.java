@@ -1,6 +1,6 @@
 package org.usfirst.frc.team5066.autonomousTwo;
 
-import org.usfirst.frc.team5066.library.SingularityDrive;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
 
@@ -44,6 +44,6 @@ public abstract class AutonMode {
 	 * @param shooter a shooter object for shooting objects
 	 * @param intake an intake object for shooting objects
 	 */
-	public abstract void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake);
+	public abstract void run(SingDrive drive, LowGoalShooter shooter, SingularityIntake intake);
 	
 }

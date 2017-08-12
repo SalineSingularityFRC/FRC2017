@@ -138,7 +138,7 @@ public class SingularityDrive {
 			m_leftMiddleMotor = new Talon(leftMiddleMotor);
 			m_rightMiddleMotor = new Talon(rightMiddleMotor);
 		} else {
-			SmartDashboard.putNumber("INVALID VALUE FOR TALON TYPE.      value=", talonType);
+			SmartDashboard.putNumber("INVALID VALUE FOR TALON TYPE.b\tvalue=", talonType);
 		}
 
 		this.velocityMultiplier = normalSpeedConstant;
