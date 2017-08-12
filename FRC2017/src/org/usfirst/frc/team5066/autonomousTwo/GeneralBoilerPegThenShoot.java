@@ -3,6 +3,7 @@ package org.usfirst.frc.team5066.autonomousTwo;
 import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -42,7 +43,7 @@ public abstract class GeneralBoilerPegThenShoot extends AutonMode {
 	 * @param shooter the object for the shooter
 	 * @param intake the object for the intake
 	 */
-	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
+	public void run(SingDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		
 		
 		AutonMode sidePegMode = onBlueAlliance ? new LeftPeg(gyroRotationConstant, gyro) : new RightPeg(gyroRotationConstant, gyro);

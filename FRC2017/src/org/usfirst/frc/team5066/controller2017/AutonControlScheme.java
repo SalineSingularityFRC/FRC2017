@@ -2,7 +2,7 @@ package org.usfirst.frc.team5066.controller2017;
 
 import java.util.ArrayList;
 
-import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
+//import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
 import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.library.playback.Reader;
@@ -49,7 +49,7 @@ public abstract class AutonControlScheme {
 	 * @param acceleration
 	 * The number of stages to accelerate
 	 */
-	public static void vertical(double verticalSpeed, double distance, boolean reverse, int acceleration) {
+	/*public static void vertical(double verticalSpeed, double distance, boolean reverse, int acceleration) {
 		
 		double vertSpeed = verticalSpeed;
 
@@ -101,7 +101,7 @@ public abstract class AutonControlScheme {
 	 * true means travel left, false right
 	 * @param acceleration
 	 * The number of stages of acceleration
-	 */
+	 *//*
 	public static void horizontal (double horizontalSpeed, double distance, boolean left, int acceleration) {
 		
 		double speed = horizontalSpeed;

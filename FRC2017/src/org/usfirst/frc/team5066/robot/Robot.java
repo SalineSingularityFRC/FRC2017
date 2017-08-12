@@ -32,19 +32,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
-import org.usfirst.frc.team5066.autonomous2017.AutonDriveStraight;
-//import org.usfirst.frc.team5066.autonomous2017.AutonFuelForward;
-import org.usfirst.frc.team5066.autonomous2017.AutonLeft;
-import org.usfirst.frc.team5066.autonomous2017.AutonLeftFuel;
-import org.usfirst.frc.team5066.autonomous2017.AutonMiddle;
-//import org.usfirst.frc.team5066.autonomous2017.AutonMode;
-import org.usfirst.frc.team5066.autonomous2017.AutonRight;
-import org.usfirst.frc.team5066.autonomous2017.AutonRightFuel;
-import org.usfirst.frc.team5066.autonomous2017.AutonTestVision;
-import org.usfirst.frc.team5066.autonomous2017.AutonomousMode;
-import org.usfirst.frc.team5066.autonomous2017.EncoderAuto;
-import org.usfirst.frc.team5066.autonomous2017.Middle;
-import org.usfirst.frc.team5066.autonomous2017.Left;
+
 import org.usfirst.frc.team5066.controller2017.Pipeline;
 import org.usfirst.frc.team5066.controller2017.XboxController;
 
@@ -266,7 +254,7 @@ public class Robot extends IterativeRobot {
 			intake = new SingularityIntake(frontMotor);
 			currentScheme = new OneController(XBOX_PORT, BIG_JOYSTICK_PORT);
 			
-			autonScheme = new AutonDriveStraight(drive, shooter, intake);
+			
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();

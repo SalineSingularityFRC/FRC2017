@@ -1,5 +1,9 @@
 package org.usfirst.frc.team5066.autonomousTwo;
 
+import org.usfirst.frc.team5066.robot.LowGoalShooter;
+import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
+
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -19,5 +23,11 @@ public class LeftCenterPegDash extends GeneralCenterPegDash{
 	 */
 	public LeftCenterPegDash(double gyroRotationConstant, AHRS gyro) {
 		super(false, gyroRotationConstant, gyro);
+	}
+
+	@Override
+	public void run(SingDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
+		// TODO Auto-generated method stub
+		
 	}
 }

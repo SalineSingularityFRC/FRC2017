@@ -4,6 +4,7 @@ import org.usfirst.frc.team5066.library.SingularityDrive;
 import org.usfirst.frc.team5066.library.SpeedMode;
 import org.usfirst.frc.team5066.robot.LowGoalShooter;
 import org.usfirst.frc.team5066.robot.SingularityIntake;
+import org.usfirst.frc.team5066.singularityDrive.SingDrive;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -37,7 +38,7 @@ public class RedShootPeg extends AutonMode {
 	 * @param intake the object for the intake
 	 */
 	@Override
-	public void run(SingularityDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
+	public void run(SingDrive drive, LowGoalShooter shooter, SingularityIntake intake) {
 		
 		//shoot
 		shooter.setSpeed(true, true);
@@ -62,10 +63,10 @@ public class RedShootPeg extends AutonMode {
 		
 		while (t.get() < 4.0) {
 			
-			drive.arcadeSixWheel(0.25, 0.05 * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
+			drive.drive(0.25, 0.0, 0.05 * (origAngle - gyro.getAngle()), false, SpeedMode.FAST);
 		}
 		
-		drive.arcadeSixWheel(0.0, 0.0, true, SpeedMode.FAST);
+		drive.drive(0.0, 0.0, 0.0, true, SpeedMode.FAST);
 		Timer.delay(0.4);
 		/*
 		//turn right slightly
